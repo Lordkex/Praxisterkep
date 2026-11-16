@@ -118,9 +118,14 @@ if (existsSync(monthsDir)) {
   const months = readdirSync(monthsDir).filter((d) => /^\d{4}-\d{2}$/.test(d)).sort();
   const bytes = months.reduce((sum, m) => sum + readdirSync(join(monthsDir, m))
     .reduce((s2, f) => s2 + statSync(join(monthsDir, m, f)).size, 0), 0);
+  // a folder cannot be downloaded as one file, so the page links the newest
+  // month's files one by one — and only those that are really there (the
+  // early months have no gp.json)
+  const newest = months.at(-1);
   manifest.push({
-    path: 'months/', bytes, modified: months.at(-1) ?? '',
-    count: months.length, from: months[0] ?? '', to: months.at(-1) ?? '',
+    path: 'months/', bytes, modified: newest ?? '',
+    count: months.length, from: months[0] ?? '', to: newest ?? '',
+    latest: newest ? readdirSync(join(monthsDir, newest)).filter((f) => f.endsWith('.json')).sort() : [],
   });
 }
 manifest.sort((a, b) => a.path.localeCompare(b.path));

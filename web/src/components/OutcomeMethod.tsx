@@ -8,8 +8,21 @@ import { t } from '../lib/i18n';
 import { OUTCOME_ITEMS } from '../lib/methodSections';
 import { formatDecimal, formatNumber } from '../lib/format';
 import { pairOf, partialOf, pValue, useOutcomes } from '../lib/outcomes';
+import { FORMULAS } from '../lib/formulas';
 
-
+/** A paragraph whose "{formula}" mark becomes the typeset formula, on a line of its own. */
+function WithFormula({ text, formula }: { text: string; formula?: string }) {
+  const [before, after] = text.split('{formula}');
+  if (!formula || after === undefined) return <p>{text}</p>;
+  return (
+    <p>
+      {before}
+      {/* a constant of lib/formulas.ts, never data or user input */}
+      <span className="formula" dangerouslySetInnerHTML={{ __html: formula }} />
+      {after}
+    </p>
+  );
+}
 
 export function OutcomeMethod() {
   const o = useOutcomes();
@@ -36,7 +49,7 @@ export function OutcomeMethod() {
       {OUTCOME_ITEMS.map((k) => (
         <div key={k} className="method__item" id={`k-${k}`}>
           <h3 className="why__chain-title">{t(`outcomeMethod.${k}.title`)}</h3>
-          <p>{t(`outcomeMethod.${k}.text`, vars[k] ?? {})}</p>
+          <WithFormula text={t(`outcomeMethod.${k}.text`, vars[k] ?? {})} formula={FORMULAS[k]} />
         </div>
       ))}
     </section>
