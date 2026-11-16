@@ -13,15 +13,21 @@ describe('outcome method formulas', () => {
     const texts = (dict as unknown as { outcomeMethod: Texts }).outcomeMethod;
     for (const k of OUTCOME_ITEMS) {
       const marks = texts[k].text.split('{formula}').length - 1;
-      expect(marks, k).toBe(k in FORMULAS ? 1 : 0);
+      expect(marks, k).toBe(FORMULAS[k]?.length ?? 0);
     }
     for (const k of Object.keys(FORMULAS)) expect(OUTCOME_ITEMS, k).toContain(k);
   });
 
-  it('typesets a fraction under a root', () => {
-    for (const f of Object.values(FORMULAS)) {
-      expect(f).toMatch(/^<math display="block">.*<mfrac>.*<msqrt>.*<\/math>$/);
+  it('typesets the partial correlations as a fraction over a root', () => {
+    for (const k of ['stats', 'education']) {
+      expect(FORMULAS[k][0]).toMatch(/^<math display="block">.*<mfrac>.*<msqrt>.*<\/math>$/);
     }
-    expect(FORMULAS.education).toContain('<mi>w</mi>');
+    expect(FORMULAS.education[0]).toContain('<mi>w</mi>');
+  });
+
+  it('typesets the forecast: the refill fraction, then the product over districts', () => {
+    const [refill, anyVacant] = FORMULAS.forecast;
+    expect(refill).toMatch(/^<math display="block">.*<mfrac>.*<mn>12<\/mn>.*<\/math>$/);
+    expect(anyVacant).toMatch(/^<math display="block"><mi>P<\/mi>.*<munder><mo>∏<\/mo><mi>i<\/mi><\/munder>.*<munder><mo>∏<\/mo><mi>j<\/mi><\/munder>.*<\/math>$/);
   });
 });

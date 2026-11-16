@@ -10,16 +10,19 @@ import { formatDecimal, formatNumber } from '../lib/format';
 import { pairOf, partialOf, pValue, useOutcomes } from '../lib/outcomes';
 import { FORMULAS } from '../lib/formulas';
 
-/** A paragraph whose "{formula}" mark becomes the typeset formula, on a line of its own. */
-function WithFormula({ text, formula }: { text: string; formula?: string }) {
-  const [before, after] = text.split('{formula}');
-  if (!formula || after === undefined) return <p>{text}</p>;
+/** A paragraph whose "{formula}" marks become the typeset formulas, each on a line of its own. */
+function WithFormula({ text, formulas = [] }: { text: string; formulas?: string[] }) {
+  const parts = text.split('{formula}');
+  if (parts.length !== formulas.length + 1) return <p>{text}</p>;
   return (
     <p>
-      {before}
-      {/* a constant of lib/formulas.ts, never data or user input */}
-      <span className="formula" dangerouslySetInnerHTML={{ __html: formula }} />
-      {after}
+      {parts.map((part, i) => (
+        <span key={i}>
+          {part}
+          {/* a constant of lib/formulas.ts, never data or user input */}
+          {i < formulas.length && <span className="formula" dangerouslySetInnerHTML={{ __html: formulas[i] }} />}
+        </span>
+      ))}
     </p>
   );
 }
@@ -49,7 +52,7 @@ export function OutcomeMethod() {
       {OUTCOME_ITEMS.map((k) => (
         <div key={k} className="method__item" id={`k-${k}`}>
           <h3 className="why__chain-title">{t(`outcomeMethod.${k}.title`)}</h3>
-          <WithFormula text={t(`outcomeMethod.${k}.text`, vars[k] ?? {})} formula={FORMULAS[k]} />
+          <WithFormula text={t(`outcomeMethod.${k}.text`, vars[k] ?? {})} formulas={FORMULAS[k]} />
         </div>
       ))}
     </section>
