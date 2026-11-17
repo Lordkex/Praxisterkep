@@ -1062,6 +1062,9 @@
     "use1": "A fájlok statikusak és verziózottak: a hónap végleges állapota a months/ könyvtárban marad, a latest.json mindig az aktuális hónapra mutat.",
     "use2": "Minden szám visszavezethető egy nyers forrásfájlra, amely a repóban dátummal archiválva van — a git-történet maga az audit napló.",
     "use3": "Ha hivatkozol rá, kérlek tüntesd fel az eredeti forrást is (NEAK / EESZT közzététel, adatállapot dátuma), és azt, hogy az adatok tájékoztató jellegűek.",
+    "sources": "Források és változástörténet:",
+    "rawArchive": "nyers forrásfájlok a repóban",
+    "changelog": "változásnapló",
     "monthsEach": "Ez egy könyvtár, nem egy fájl: minden hónap külön tölthető le, months/ÉÉÉÉ-HH/dental.json vagy gp.json címen. A legutóbbi ({month}):"
   },
   "providers": {

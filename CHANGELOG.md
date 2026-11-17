@@ -5,6 +5,17 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [Unreleased]
+
+### Változott
+- **Módszertan oldal** — Dr. Tyukodi Levente
+  ([@Lordkex](https://github.com/Lordkex)) első közreműködése
+  ([#5](https://github.com/ZoliQua/Praxisterkep/issues/5)): a parciális
+  korreláció és az előrejelzés képletei szedett formában (MathML), egységes
+  szövegszélesség, nem ugráló oldalsó menü, a beágyazási kód a letöltéseknél,
+  és a havi adatkönyvtár legutóbbi hónapjának fájljai közvetlenül
+  letölthetők. A források és a változásnapló linkje a letöltéseknél marad.
+
 ## [1.57.2] - 2026-11-13
 
 ### Hozzáadva

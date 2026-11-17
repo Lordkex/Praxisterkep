@@ -10,6 +10,17 @@ domaint és a technikai hátteret adja; az oldal tartalmáért és az
 adatkezelésért Dr. Dul Zoltán felel (lásd az
 [adatkezelési tájékoztatót](https://praxisterkep.hu/adatkezeles.html)).
 
+## Fejlesztői közreműködők
+
+- **Dr. Tyukodi Levente** (PTE Gyógyszerésztudományi Kar) · GitHub:
+  [@Lordkex](https://github.com/Lordkex) — a módszertani oldal tipográfiája
+  ([#5](https://github.com/ZoliQua/Praxisterkep/issues/5)): a parciális
+  korreláció és az előrejelzés képletei MathML-lel szedve (tört- és gyökjel,
+  képernyőolvasóval is olvasható), tesztekkel; egységes szövegszélesség az
+  egész oldalon; az oldalsó menü nem ugrál és nem tördel, az aktív pont
+  látható marad; a beágyazási kód a letöltésekhez került; a havi
+  adatkönyvtár sorában közvetlen link a legutóbbi hónap fájljaira.
+
 ## Adatközlők
 
 Az oldal minden száma az alábbi intézmények nyilvános adataiból épül. Ők nem

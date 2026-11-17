@@ -90,7 +90,7 @@ export function SideNav({ groups, labelKey }: { groups: SideGroup[]; labelKey: s
     box.scrollBy({ top: delta, behavior: still ? 'auto' : 'smooth' });
   }, [active, present, open]);
 
-  const shown =groups.map((g) => ({ ...g, items: g.items.filter((i) => present.has(i.id)) }))
+  const shown = groups.map((g) => ({ ...g, items: g.items.filter((i) => present.has(i.id)) }))
     .filter((g) => g.items.length);
   if (!shown.length) return null;
   return (

@@ -3408,7 +3408,7 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .side-nav li a:hover { color: var(--ink); }
 /* the lit item keeps the weight of the rest: a bolder label is wider, wraps
    onto another line, and shoves every item under it as the page scrolls */
-.side-nav li a[aria-current] { color: var(--ink); border-left-color: var(--accent); background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent); }
+.side-nav li a[aria-current] { color: var(--ink); border-left-color: var(--accent); background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent); }
 @media (max-width: 720px) { .tp-rail { top: var(--topnav-h, 99px); } }
 /* where the content reaches the left edge, it leaves room for the dot rail */
 @media (max-width: 1240px) { body.has-side-nav .container { padding-left: max(30px, var(--gutter, 16px)); } }

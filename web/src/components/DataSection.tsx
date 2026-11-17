@@ -24,6 +24,8 @@ interface Manifest {
   files: ManifestFile[];
 }
 
+const REPO = 'https://github.com/ZoliQua/Praxisterkep';
+
 /** the files we can describe; anything else is listed without a description */
 const DESCRIBED = new Set([
   'latest.json', 'timeseries.json', 'history.json', 'months/', 'eeszt.json',
@@ -130,6 +132,19 @@ export function DataSection() {
         <li>{t('data.use3')}</li>
       </ul>
       <pre className="embed-snippet"><code>{`curl -O ${base}latest.json`}</code></pre>
+
+      {/* the archive of raw source files is what "every number traces back to
+          a source" rests on: the link stays where the downloads are */}
+      <p className="extra-note">
+        {t('data.sources')}{' '}
+        <a href={`${REPO}/tree/main/data/raw`} target="_blank" rel="noopener">
+          {t('data.rawArchive')}
+        </a>
+        {' · '}
+        <a href={`${REPO}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener">
+          {t('data.changelog')}
+        </a>
+      </p>
 
       <h3 className="section__subheading" id="m-embed">{t('methodology.embedTitle')}</h3>
       <p className="section__explain">{t('methodology.embedText')}</p>

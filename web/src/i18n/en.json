@@ -1062,6 +1062,9 @@
     "use1": "The files are static and versioned: a finished month stays in months/, while latest.json always points at the current one.",
     "use2": "Every number traces back to a raw source file archived in the repository with its date — the git history is the audit trail.",
     "use3": "When you cite it, please name the original source (NEAK / EESZT publication, as-of date) and note that the data is indicative.",
+    "sources": "Sources and change history:",
+    "rawArchive": "raw source files in the repository",
+    "changelog": "changelog",
     "monthsEach": "A folder, not a single file: each month downloads on its own, at months/YYYY-MM/dental.json or gp.json. The latest ({month}):"
   },
   "providers": {
