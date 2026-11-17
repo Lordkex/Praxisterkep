@@ -5,7 +5,7 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
-## [Unreleased]
+## [1.58.0] - 2026-11-18
 
 ### Változott
 - **Módszertan oldal** — Dr. Tyukodi Levente
