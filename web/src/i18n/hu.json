@@ -1062,9 +1062,7 @@
     "use1": "A fájlok statikusak és verziózottak: a hónap végleges állapota a months/ könyvtárban marad, a latest.json mindig az aktuális hónapra mutat.",
     "use2": "Minden szám visszavezethető egy nyers forrásfájlra, amely a repóban dátummal archiválva van — a git-történet maga az audit napló.",
     "use3": "Ha hivatkozol rá, kérlek tüntesd fel az eredeti forrást is (NEAK / EESZT közzététel, adatállapot dátuma), és azt, hogy az adatok tájékoztató jellegűek.",
-    "sources": "Források és változástörténet:",
-    "rawArchive": "nyers forrásfájlok a repóban",
-    "changelog": "változásnapló"
+    "monthsEach": "Ez egy könyvtár, nem egy fájl: minden hónap külön tölthető le, months/ÉÉÉÉ-HH/dental.json vagy gp.json címen. A legutóbbi ({month}):"
   },
   "providers": {
     "part": "{n}. Egységes NEAK lista",
@@ -2796,7 +2794,7 @@
     },
     "stats": {
       "title": "Összefüggések — mit számolunk",
-      "text": "A korreláció a 174 vidéki járás közötti Pearson-féle r, mellette a Spearman-féle rangkorreláció; a p-érték a t-eloszlásból jön. A parciális korreláció azt mutatja, mennyi marad egy összefüggésből, ha a járások jövedelmi különbségét kivesszük (a végzettséggel együtt lásd lent): r_xy·z = (r_xy − r_xz·r_yz) / √((1 − r_xz²)(1 − r_yz²)). A szórásdiagramok egyenese a látható pontokra illesztett legkisebb négyzetes egyenes, amit a felület számol, nem a tárolt adatból vesz."
+      "text": "A korreláció a 174 vidéki járás közötti Pearson-féle r, mellette a Spearman-féle rangkorreláció; a p-érték a t-eloszlásból jön. A parciális korreláció azt mutatja, mennyi marad egy összefüggésből, ha a járások jövedelmi különbségét kivesszük (a végzettséggel együtt lásd lent):{formula}ahol x és y a két összevetett mutató, z a jövedelem. A szórásdiagramok egyenese a látható pontokra illesztett legkisebb négyzetes egyenes, amit a felület számol, nem a tárolt adatból vesz."
     },
     "grid": {
       "title": "A 3 × 3-as rács",
@@ -2820,7 +2818,7 @@
     },
     "education": {
       "title": "Kettős kontroll: jövedelem és végzettség",
-      "text": "A szegény járásokban egyszerre alacsonyabb a jövedelem és az iskolázottság, és mindkettő önmagában is együtt jár a halálozással. Ezért a fő összefüggést másodrendű parciális korrelációval is közöljük: r_xy·zw = (r_xy·z − r_xw·z · r_yw·z) / √((1 − r_xw·z²)(1 − r_yw·z²)), ahol z a jövedelem, w a diplomások aránya. A háziorvosi betöltetlenség és az elkerülhető halálozás között nyersen r = {raw}, a jövedelmet kiszűrve {income}, mindkettőt kiszűrve {both} (p {p}): a kapcsolat nagy része a szegénység és az iskolázatlanság, de egy része ezeken túl is megmarad. Mindhárom számot közöljük, hogy az olvasó lássa, mennyi múlik a kontrollon."
+      "text": "A szegény járásokban egyszerre alacsonyabb a jövedelem és az iskolázottság, és mindkettő önmagában is együtt jár a halálozással. Ezért a fő összefüggést másodrendű parciális korrelációval is közöljük:{formula}ahol z a jövedelem, w a diplomások aránya. A háziorvosi betöltetlenség és az elkerülhető halálozás között nyersen r = {raw}, a jövedelmet kiszűrve {income}, mindkettőt kiszűrve {both} (p {p}): a kapcsolat nagy része a szegénység és az iskolázatlanság, de egy része ezeken túl is megmarad. Mindhárom számot közöljük, hogy az olvasó lássa, mennyi múlik a kontrollon."
     },
     "sbo": {
       "title": "A sürgősségi osztály távolsága",
@@ -2832,7 +2830,7 @@
     },
     "forecast": {
       "title": "Előrejelzés: egy év múlva",
-      "text": "Áramlási modell: a 12 hónap múlva betöltetlen körzetek száma = a most betöltetlenek − a várható betöltődések + a várható új üresedések. A várható új üresedés a betöltött körzetek 12 havi kockázatának összege (a kockázati modellből), a várható betöltődés minden üres körzetre 1 − S(e + 12) / S(e), ahol e az eddigi üresedés hossza, S a megye Kaplan–Meier-görbéje (60 időszaknál kevesebbel az országos). A görbe végén túl nem tételezünk fel további betöltődést. A 90%-os sáv a körzeteket független eseményként kezeli, ezért a valódi bizonytalanságnál szűkebb. Visszamérés két archivált hónap között — a betöltődésnél ugyanezzel a módszerrel, az új üresedésnél a modell alapkockázatával, mert a múltbeli körzetenkénti kockázatot nem őrizzük (háziorvos: {from} → {to}) — új üresedések {newPred} várt / {newAct} tényleges, betöltődések {fillPred} várt / {fillAct} tényleges; az előrejelzés tehát kissé borúlátó. Nem tiszta teszt, mert a túlélési görbe ezt az időszakot is látta. Települési szinten egyetlen valószínűséget közlünk: annak esélyét, hogy 12 hónap múlva a települést ellátó körzetek közül legalább egy betöltetlen, P = 1 − Π(1 − pᵢ) · Π qⱼ, ahol pᵢ a betöltött, qⱼ az üres körzetek betöltődési esélye. Háziorvosnál a körzet az ellátott települések listáján minden településnél számít, fogorvosnál a székhelyén. Az esélyt a településre közöljük, soha nem egy megnevezett orvos körzetére."
+      "text": "Áramlási modell: a 12 hónap múlva betöltetlen körzetek száma = a most betöltetlenek − a várható betöltődések + a várható új üresedések. A várható új üresedés a betöltött körzetek 12 havi kockázatának összege (a kockázati modellből), a várható betöltődés minden üres körzetre{formula}ahol e az eddigi üresedés hossza, S a megye Kaplan–Meier-görbéje (60 időszaknál kevesebbel az országos). A görbe végén túl nem tételezünk fel további betöltődést. A 90%-os sáv a körzeteket független eseményként kezeli, ezért a valódi bizonytalanságnál szűkebb. Visszamérés két archivált hónap között — a betöltődésnél ugyanezzel a módszerrel, az új üresedésnél a modell alapkockázatával, mert a múltbeli körzetenkénti kockázatot nem őrizzük (háziorvos: {from} → {to}) — új üresedések {newPred} várt / {newAct} tényleges, betöltődések {fillPred} várt / {fillAct} tényleges; az előrejelzés tehát kissé borúlátó. Nem tiszta teszt, mert a túlélési görbe ezt az időszakot is látta. Települési szinten egyetlen valószínűséget közlünk: annak esélyét, hogy 12 hónap múlva a települést ellátó körzetek közül legalább egy betöltetlen:{formula}ahol pᵢ a betöltött, qⱼ az üres körzetek betöltődési esélye. Háziorvosnál a körzet az ellátott települések listáján minden településnél számít, fogorvosnál a székhelyén. Az esélyt a településre közöljük, soha nem egy megnevezett orvos körzetére."
     },
     "notAvailable": {
       "title": "Ami nincs benne, mert nincs nyilvános adat",

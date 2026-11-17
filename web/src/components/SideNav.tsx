@@ -5,7 +5,7 @@
 // still showing where the reader is — and opens into the full list on a tap.
 // The section in view is lit, so the menu answers "where am I" as well as
 // "where can I go".
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { t } from '../lib/i18n';
 
 export interface SideGroup { titleKey: string; items: { id: string; labelKey: string }[] }
@@ -70,7 +70,27 @@ export function SideNav({ groups, labelKey }: { groups: SideGroup[]; labelKey: s
     };
   }, [groups]);
 
-  const shown = groups.map((g) => ({ ...g, items: g.items.filter((i) => present.has(i.id)) }))
+  // A long menu scrolls inside its own panel, and the lit item has to stay in
+  // it: on the method page the last two groups were below the panel's fold,
+  // so "where am I" went dark exactly where the page is longest. Only the
+  // panel moves, never the page, and only when the item would leave its view.
+  const panel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const box = panel.current;
+    if (!box || !active || !box.clientHeight) return; // folded into the dot rail
+    const link = box.querySelector<HTMLElement>(`a[href="#${CSS.escape(active)}"]`);
+    if (!link) return;
+    const margin = 32;
+    const b = box.getBoundingClientRect();
+    const l = link.getBoundingClientRect();
+    const delta = l.top < b.top + margin ? l.top - b.top - margin
+      : l.bottom > b.bottom - margin ? l.bottom - b.bottom + margin : 0;
+    if (!delta) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    box.scrollBy({ top: delta, behavior: still ? 'auto' : 'smooth' });
+  }, [active, present, open]);
+
+  const shown =groups.map((g) => ({ ...g, items: g.items.filter((i) => present.has(i.id)) }))
     .filter((g) => g.items.length);
   if (!shown.length) return null;
   return (
@@ -82,7 +102,7 @@ export function SideNav({ groups, labelKey }: { groups: SideGroup[]; labelKey: s
           {ids.filter((id) => present.has(id)).map((id) => <i key={id} className={id === active ? 'is-on' : ''} />)}
         </span>
       </button>
-      <div className="side-nav__panel">
+      <div className="side-nav__panel" ref={panel}>
         {shown.map((g) => (
           <div key={g.titleKey} className="side-nav__group">
             <p className="side-nav__title">{t(g.titleKey)}</p>

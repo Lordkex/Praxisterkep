@@ -1062,9 +1062,7 @@
     "use1": "The files are static and versioned: a finished month stays in months/, while latest.json always points at the current one.",
     "use2": "Every number traces back to a raw source file archived in the repository with its date — the git history is the audit trail.",
     "use3": "When you cite it, please name the original source (NEAK / EESZT publication, as-of date) and note that the data is indicative.",
-    "sources": "Sources and change history:",
-    "rawArchive": "raw source files in the repository",
-    "changelog": "changelog"
+    "monthsEach": "A folder, not a single file: each month downloads on its own, at months/YYYY-MM/dental.json or gp.json. The latest ({month}):"
   },
   "providers": {
     "part": "{n}. Unified NEAK provider list",
@@ -2796,7 +2794,7 @@
     },
     "stats": {
       "title": "Associations — what is computed",
-      "text": "Correlations are Pearson's r across the 174 rural járás, with Spearman's rank correlation beside it; p comes from the t-distribution. The partial correlation shows what remains once income differences are taken out: r_xy·z = (r_xy − r_xz·r_yz) / √((1 − r_xz²)(1 − r_yz²)). Scatter lines are least-squares fits to the dots shown, computed by the page, not taken from stored values."
+      "text": "Correlations are Pearson's r across the 174 rural járás, with Spearman's rank correlation beside it; p comes from the t-distribution. The partial correlation shows what remains once income differences are taken out:{formula}where x and y are the two indicators compared and z is income. Scatter lines are least-squares fits to the dots shown, computed by the page, not taken from stored values."
     },
     "grid": {
       "title": "The 3 × 3 grid",
@@ -2820,7 +2818,7 @@
     },
     "education": {
       "title": "Two controls: income and education",
-      "text": "Poor járás are short of income and schooling at once, and each goes with mortality on its own. The main association is therefore also given as a second-order partial correlation: r_xy·zw = (r_xy·z − r_xw·z · r_yw·z) / √((1 − r_xw·z²)(1 − r_yw·z²)), z income, w the share of graduates. GP vacancy and avoidable mortality: r = {raw} raw, {income} with income held still, {both} (p {p}) with both: most of the link is poverty and low schooling, but part of it remains. All three numbers are shown so the reader can see how much rests on the control."
+      "text": "Poor járás are short of income and schooling at once, and each goes with mortality on its own. The main association is therefore also given as a second-order partial correlation:{formula}where z is income and w the share of graduates. GP vacancy and avoidable mortality: r = {raw} raw, {income} with income held still, {both} (p {p}) with both: most of the link is poverty and low schooling, but part of it remains. All three numbers are shown so the reader can see how much rests on the control."
     },
     "sbo": {
       "title": "Distance to an emergency department",
@@ -2832,7 +2830,7 @@
     },
     "forecast": {
       "title": "Forecast: a year from now",
-      "text": "A flow model: vacant in 12 months = vacant now − expected refills + expected new vacancies. Expected new vacancies are the sum of the filled districts' 12-month risk (from the risk model); each vacant district's refill chance is 1 − S(e + 12) / S(e), e the months it has been vacant, S its county's Kaplan–Meier curve (the national one below 60 spells). No refill is assumed beyond the curve's end. The 90% band treats districts as independent, so it is narrower than the true uncertainty. Back-test between two archived months — refills by the same method, new vacancies at the model's base rate, since past per-district risk is not kept (GP: {from} → {to}) — new vacancies {newPred} expected / {newAct} actual, refills {fillPred} / {fillAct}; the forecast leans slightly pessimistic. Not a clean test: the survival curve has seen that period. Per settlement one probability is published: that in 12 months at least one district serving it is vacant, P = 1 − Π(1 − pᵢ) · Π qⱼ, pᵢ the filled districts' risk, qⱼ the vacant ones' refill chance. A GP district counts for every settlement it serves, a dental one for its seat. The chance is said of the settlement, never of a named doctor's district."
+      "text": "A flow model: vacant in 12 months = vacant now − expected refills + expected new vacancies. Expected new vacancies are the sum of the filled districts' 12-month risk (from the risk model); each vacant district's refill chance is{formula}where e is the months it has been vacant, S its county's Kaplan–Meier curve (the national one below 60 spells). No refill is assumed beyond the curve's end. The 90% band treats districts as independent, so it is narrower than the true uncertainty. Back-test between two archived months — refills by the same method, new vacancies at the model's base rate, since past per-district risk is not kept (GP: {from} → {to}) — new vacancies {newPred} expected / {newAct} actual, refills {fillPred} / {fillAct}; the forecast leans slightly pessimistic. Not a clean test: the survival curve has seen that period. Per settlement one probability is published: that in 12 months at least one district serving it is vacant:{formula}where pᵢ is the filled districts' risk, qⱼ the vacant ones' refill chance. A GP district counts for every settlement it serves, a dental one for its seat. The chance is said of the settlement, never of a named doctor's district."
     },
     "notAvailable": {
       "title": "What is missing, because no public data exists",

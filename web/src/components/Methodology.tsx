@@ -1,14 +1,13 @@
 import { t } from '../lib/i18n';
-import { SITE_URL } from '../lib/site';
 import { ReferralBlock } from './ReferralBlock';
 import { Deferred } from './Deferred';
 import { METHOD_PARAGRAPHS } from '../lib/methodSections';
 import { MethodStory } from './story/PageStories';
 
+// The embed snippet lives with the downloads (DataSection), where the side
+// menu lists it: here, between the referral list and the outcome methods, it
+// lit the menu's very last item halfway down the page.
 export function Methodology() {
-  // the published address, whatever host the page was opened on: a snippet
-  // copied from a preview deployment must still point at the real site
-  const snippet = `<iframe src="${SITE_URL}/embed.html?k=dental" width="100%" height="420" style="border:0" loading="lazy" title="Praxistérkép"></iframe>`;
   return (
     <section className="section container method" id="modszertan">
       <h2 className="section__heading">{t('methodology.heading')}</h2>
@@ -23,9 +22,6 @@ export function Methodology() {
         {/* 10 MB of referral list: fetched only when the reader gets here */}
         <Deferred minHeight={400}><ReferralBlock /></Deferred>
       </div>
-      <h3 className="why__chain-title" id="m-embed">{t('methodology.embedTitle')}</h3>
-      <p>{t('methodology.embedText')}</p>
-      <pre className="embed-snippet"><code>{snippet}</code></pre>
     </section>
   );
 }

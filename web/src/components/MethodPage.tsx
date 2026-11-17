@@ -41,10 +41,13 @@ export function MethodPage() {
     <>
       <PageNav />
       <SideNav groups={GROUPS} labelKey="method.sideNav" />
-      <Methodology />
-      <OutcomeMethod />
-      <EuropeMethod />
-      <DataSection />
+      {/* one reading column: see .method-page in index.css */}
+      <div className="method-page">
+        <Methodology />
+        <OutcomeMethod />
+        <EuropeMethod />
+        <DataSection />
+      </div>
       <div className="section container"><NextSteps items={NEXT} /></div>
       <Footer />
     </>

@@ -15,14 +15,14 @@ interface ManifestFile {
   count?: number;
   from?: string;
   to?: string;
+  /** months/ only: the files of its newest month ("dental.json", "gp.json") */
+  latest?: string[];
 }
 
 interface Manifest {
   generated: string;
   files: ManifestFile[];
 }
-
-const REPO = 'https://github.com/ZoliQua/Praxisterkep';
 
 /** the files we can describe; anything else is listed without a description */
 const DESCRIBED = new Set([
@@ -64,6 +64,9 @@ export function DataSection() {
 
   if (!manifest?.files?.length) return null;
   const base = `${SITE_URL}/data/`;
+  // the published address, whatever host the page was opened on: a snippet
+  // copied from a preview deployment must still point at the real site
+  const snippet = `<iframe src="${SITE_URL}/embed.html?k=dental" width="100%" height="420" style="border:0" loading="lazy" title="Praxistérkép"></iframe>`;
 
   return (
     <section className="section container" id="adatok">
@@ -97,6 +100,20 @@ export function DataSection() {
                 <td>
                   {DESCRIBED.has(f.path) ? t(`data.file.${keyOf(f.path)}`) : t('data.fileOther')}
                   {f.count ? ` (${formatNumber(f.count)} ${t('data.months')}: ${f.from} – ${f.to})` : ''}
+                  {/* a folder has no single file to download: a static host
+                      cannot list or zip it, so the row names the address of
+                      one month and links the newest one */}
+                  {f.path === 'months/' && f.to && f.latest?.length ? (
+                    <span className="data-files__sub">
+                      {t('data.monthsEach', { month: f.to })}
+                      {f.latest.map((name, i) => (
+                        <span key={name}>
+                          {i ? ' · ' : ' '}
+                          <a href={`${base}months/${f.to}/${name}`} download><code>{name}</code></a>
+                        </span>
+                      ))}
+                    </span>
+                  ) : null}
                 </td>
                 <td className="is-num">{size(f.bytes)}</td>
                 <td className="is-num">{f.modified}</td>
@@ -114,16 +131,9 @@ export function DataSection() {
       </ul>
       <pre className="embed-snippet"><code>{`curl -O ${base}latest.json`}</code></pre>
 
-      <p className="extra-note">
-        {t('data.sources')}{' '}
-        <a href={`${REPO}/tree/main/data/raw`} target="_blank" rel="noopener">
-          {t('data.rawArchive')}
-        </a>
-        {' · '}
-        <a href={`${REPO}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener">
-          {t('data.changelog')}
-        </a>
-      </p>
+      <h3 className="section__subheading" id="m-embed">{t('methodology.embedTitle')}</h3>
+      <p className="section__explain">{t('methodology.embedText')}</p>
+      <pre className="embed-snippet"><code>{snippet}</code></pre>
     </section>
   );
 }
