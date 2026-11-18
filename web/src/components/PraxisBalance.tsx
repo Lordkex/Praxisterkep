@@ -16,10 +16,12 @@
 // In GP care it also answers the question the site was asked most after the
 // press coverage: why 6281 here and 6357 elsewhere? The districts carry a
 // territorial obligation; beside them NEAK lists practices without one (TN),
-// never vacant and never on the map. The table shows both, side by side, and
-// links to the page about the second group (tek-nelkul.html).
+// never vacant and never on the map. The chart draws them apart from the
+// district bars (a practice is not a district), the table lists both side by
+// side, and a card links to the page about the second group (tek-nelkul.html).
+import { useState } from 'react';
 import { t, tKind } from '../lib/i18n';
-import { formatNumber, formatPercent } from '../lib/format';
+import { formatMonth, formatNumber, formatPercent } from '../lib/format';
 import { useAppStore, useSnapshot } from '../store/useAppStore';
 import { stockOf, typeRows } from '../lib/balance';
 import { useContextStore } from '../lib/context';
@@ -27,38 +29,22 @@ import { vacancyOf } from '../lib/vacancy';
 import { DissolvedSwitch } from './DissolvedSwitch';
 import { useNonTerritorial } from '../lib/nonterritorial';
 import type { PraxisKind } from '../types';
-
-interface Part { key: string; n: number; color: string; label: string }
-
-function Bar({ parts, total }: { parts: Part[]; total: number }) {
-  if (!total) return null;
-  return (
-    <div className="balance-bar" role="img"
-      aria-label={parts.map((p) => `${p.label}: ${p.n}`).join(', ')}>
-      {parts.filter((p) => p.n > 0).map((p) => (
-        <span key={p.key} className={`balance-bar__part balance-bar__part--${p.key}`}
-          style={{ width: `${(p.n / total) * 100}%` }} title={`${p.label}: ${p.n}`} />
-      ))}
-    </div>
-  );
-}
+import { BalanceLegend, BalanceTotalBar, BalanceTypeChart } from './BalanceTypeChart';
+import { SegmentedControl } from './SegmentedControl';
+import { IconStethoscope } from './icons';
 
 export function PraxisBalance() {
   const snapshot = useSnapshot();
   const kind = useAppStore((s) => s.kind) as PraxisKind;
   const mode = useContextStore((s) => s.dissolved);
   const tekData = useNonTerritorial();
+  // the split by type reads first as a chart; the table holds the exact counts
+  const [view, setView] = useState<'chart' | 'table'>('chart');
   if (!snapshot) return null;
 
   const stock = stockOf(snapshot);
   if (!stock) return null;
   const { total, vacant, dissolved, filled } = stock;
-
-  const parts: Part[] = [
-    { key: 'filled', n: filled, color: 'ok', label: t('stats.statusFilled') },
-    { key: 'vacant', n: vacant, color: 'bad', label: t('stats.statusVacant') },
-    { key: 'dissolved', n: dissolved, color: 'dim', label: t('stats.statusDissolved') },
-  ];
 
   // the same code means a different thing in the two branches: "gyermek" is
   // a házi gyermekorvosi körzet in GP care and gyermekfogászat in dental, and
@@ -70,8 +56,7 @@ export function PraxisBalance() {
       label: named.startsWith('balance.') ? t(`praxisTypes.${row.key}`) : named,
     };
   });
-  const worst = rows.length ? Math.max(...rows.map((r) => r.rate)) : 0;
-  const parts2 = vacancyOf(snapshot.national, mode);
+  const vacancy = vacancyOf(snapshot.national, mode);
 
   // GP only: the practices without a district obligation of the same month
   // (the archive holds most months the map can show; another one shows a dash)
@@ -84,113 +69,117 @@ export function PraxisBalance() {
   return (
     <section className="section container" id="allomany">
       <h2 className="section__heading">{tKind('balance.heading', kind)}</h2>
-      <p className="section__explain">{tKind('balance.lead', kind, {
-        total: formatNumber(total),
-        vacant: formatNumber(parts2.count),
-        rate: parts2.rate !== null ? formatPercent(parts2.rate) : '–',
-      })}</p>
-      {dissolved > 0 && <DissolvedSwitch />}
-
       <div className="balance__panel">
-      <div className="balance__main">
-        <div className="balance__figures">
-          <span className="balance__total">{formatNumber(total)}</span>
-          <span className="balance__totalLabel">{isGp ? t('balance.totalGp') : tKind('balance.total', kind)}</span>
+        {/* the whole stock as one bar, in the manner of the bars by type: the
+            counts on the segments, the headline rate at the end of the row */}
+        <div className="balance__main" role="img" aria-label={t(dissolved && mode === 'with'
+          ? 'balance.shareWith' : 'balance.shareLabel', {
+          count: formatNumber(vacancy.count), total: formatNumber(total),
+        })}>
+          <BalanceTotalBar
+            parts={[
+              { key: 'filled', n: filled }, { key: 'vacant', n: vacant }, { key: 'dissolved', n: dissolved },
+            ]}
+            rate={vacancy.rate !== null ? formatPercent(vacancy.rate) : '–'}
+            rateLabel={t(dissolved && mode === 'with' ? 'balance.rateShortWith' : 'balance.rateShort')} />
         </div>
-        <div className="balance__barwrap">
-          <Bar parts={parts} total={total} />
-          <ul className="balance__legend">
-            {parts.filter((p) => p.n > 0).map((p) => (
-              <li key={p.key}>
-                <i className={`balance-dot balance-dot--${p.key}`} />
-                <strong>{formatNumber(p.n)}</strong>
-                <span>{p.label}</span>
-                <em>{formatPercent(p.n / total)}</em>
-              </li>
-            ))}
-          </ul>
+        {/* the colour keys on the left, the date and the source closed right */}
+        <div className="balance__keyrow">
+          <BalanceLegend items={[
+            { key: 'filled', label: t('balance.legendFilled') },
+            { key: 'vacant', label: t('balance.legendVacant') },
+            ...(dissolved > 0 ? [{ key: 'dissolved' as const, label: t('balance.legendDissolved') }] : []),
+            ...(isGp && tekMonth ? [{ key: 'tn' as const, label: t('balance.legendTn') }] : []),
+          ]} />
+          <small className="balance__source">{formatMonth(snapshot.month)} · {t('site.sourceShort')}</small>
         </div>
-      </div>
+        {dissolved > 0 && <div className="balance__meta"><DissolvedSwitch /></div>}
 
-      {isGp && (
-        <p className="balance__allPractices">
-          <strong>{tnTotal === null ? '…' : formatNumber(total + tnTotal)}</strong>{' '}
-          {t('balance.tekFigureA')}{' '}
-          <strong className="balance__allPracticesTn">{tnTotal === null ? '…' : formatNumber(tnTotal)}</strong>{' '}
-          {t('balance.tekFigureB')}
-        </p>
-      )}
-      <div className={`balance__tablewrap${isGp ? ' balance__tablewrap--gp' : ''}`}>
-      <table className="balance__types">
-        <thead>
-          <tr>
-            <th>{t('balance.thType')}</th>
-            <th className="is-num">{t('balance.thTotal')}</th>
-            <th className="is-num">{t('stats.statusFilled')}</th>
-            <th className="is-num">{t('stats.statusVacant')}</th>
-            <th>{t('balance.thRate')}{dissolved > 0
-              && ` (${t(mode === 'with' ? 'dissolved.withShort' : 'dissolved.withoutShort')})`}</th>
-            {isGp && <th className="is-num balance__tekcol">{t('balance.thNon')}</th>}
-            {isGp && <th className="is-num balance__tekcol">{t('balance.thAllPractices')}</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.key}>
-              <td>{r.label}</td>
-              <td className="is-num">{formatNumber(r.total)}</td>
-              <td className="is-num">{formatNumber(r.filled)}</td>
-              <td className="is-num">{formatNumber(r.vacant)}</td>
-              <td>
-                <span className="balance__rate">
-                  <span className="balance__rateTrack">
-                    {/* scaled to the worst type, so the comparison between
-                        them is what the eye reads */}
-                    <span className="balance__rateFill"
-                      style={{ width: `${worst ? (r.rate / worst) * 100 : 0}%` }} />
-                  </span>
-                  <span className="balance__rateVal">{formatPercent(r.rate)}</span>
-                </span>
-              </td>
-              {isGp && <td className="is-num balance__tekcol">{cell(tnOf(r.key))}</td>}
-              {isGp && <td className="is-num balance__tekcol">
-                {cell(tnOf(r.key) === null ? null : r.total + (tnOf(r.key) ?? 0))}</td>}
-            </tr>
-          ))}
-          {isGp && (
-            <tr className="is-total">
-              <td>{t('balance.totalRow')}</td>
-              <td className="is-num">{formatNumber(total)}</td>
-              <td className="is-num">{formatNumber(filled)}</td>
-              <td className="is-num">{formatNumber(vacant)}</td>
-              <td><span className="balance__rateVal">{parts2.rate !== null ? formatPercent(parts2.rate) : '–'}</span></td>
-              <td className="is-num balance__tekcol">{cell(tnTotal)}</td>
-              <td className="is-num balance__tekcol">{cell(tnTotal === null ? null : total + tnTotal)}</td>
-            </tr>
+        {/* the split by type, always open: a stacked bar chart, or the same
+            numbers as a Mantine-style table */}
+        <div className="balance__details">
+          <div className="balance__viewbar">
+            <h3 className="balance__subhead">{t('balance.byType')}</h3>
+            <SegmentedControl<'chart' | 'table'> size="xs" ariaLabel={t('balance.view')}
+              value={view} onChange={setView}
+              options={[
+                { value: 'chart', label: t('balance.viewChart') },
+                { value: 'table', label: t('balance.viewTable') },
+              ]} />
+          </div>
+          {view === 'chart' ? (
+            <BalanceTypeChart showTn={isGp && tekMonth !== null} legend={false}
+              rows={rows.map((r) => ({ ...r, tn: tnOf(r.key) }))} />
+          ) : (
+            <div className={`balance__tablewrap mtable-wrap${isGp ? ' balance__tablewrap--gp' : ''}`}>
+              <table className="balance__types mtable mtable--striped mtable--hover">
+                <thead>
+                  <tr>
+                    <th>{t('balance.thType')}</th>
+                    <th className="is-num">{t('balance.thTotal')}</th>
+                    <th className="is-num">{t('stats.statusFilled')}</th>
+                    <th className="is-num">{t('stats.statusVacant')}</th>
+                    <th className="is-num">{t('balance.thRate')}{dissolved > 0
+                      && ` (${t(mode === 'with' ? 'dissolved.withShort' : 'dissolved.withoutShort')})`}</th>
+                    {isGp && <th className="is-num balance__tekcol">{t('balance.thNon')}</th>}
+                    {isGp && <th className="is-num balance__tekcol">{t('balance.thAllPractices')}</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.key}>
+                      <td>{r.label}</td>
+                      <td className="is-num">{formatNumber(r.total)}</td>
+                      <td className="is-num">{formatNumber(r.filled)}</td>
+                      <td className="is-num">{formatNumber(r.vacant)}</td>
+                      <td className="is-num"><span className="balance__rateVal">{formatPercent(r.rate)}</span></td>
+                      {isGp && <td className="is-num balance__tekcol">{cell(tnOf(r.key))}</td>}
+                      {isGp && <td className="is-num balance__tekcol">
+                        {cell(tnOf(r.key) === null ? null : r.total + (tnOf(r.key) ?? 0))}</td>}
+                    </tr>
+                  ))}
+                  {isGp && (
+                    <tr className="is-total">
+                      <td>{t('balance.totalRow')}</td>
+                      <td className="is-num">{formatNumber(total)}</td>
+                      <td className="is-num">{formatNumber(filled)}</td>
+                      <td className="is-num">{formatNumber(vacant)}</td>
+                      <td className="is-num"><span className="balance__rateVal">{vacancy.rate !== null ? formatPercent(vacancy.rate) : '–'}</span></td>
+                      <td className="is-num balance__tekcol">{cell(tnTotal)}</td>
+                      <td className="is-num balance__tekcol">{cell(tnTotal === null ? null : total + tnTotal)}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
-        </tbody>
-      </table>
+          <p className="balance__note">
+            {tKind('balance.note', kind)}{' '}
+            {view === 'chart' && t(isGp && tekMonth ? 'balance.chartScale' : 'balance.chartScaleDental')}
+            {dissolved > 0 && mode === 'without' && ` ${t('balance.dissolvedNote', {
+              n: formatNumber(dissolved),
+            })}`}
+            {dissolved > 0 && mode === 'with' && ` ${t('balance.dissolvedCounted', {
+              n: formatNumber(dissolved),
+            })}`}
+          </p>
+          {isGp && tnTotal !== null && (
+            <p className="balance__tekclarify">{t('balance.tekClarify', {
+              districts: formatNumber(total), all: formatNumber(total + tnTotal), tn: formatNumber(tnTotal),
+            })}</p>
+          )}
+          {isGp && (
+            <a className="balance__tekcard" href="/tek-nelkul.html">
+              <span className="balance__tekcard-icon" aria-hidden="true"><IconStethoscope /></span>
+              <span className="balance__tekcard-body">
+                <strong>{t('balance.tekLinkTitle')}</strong>
+                <span>{t('balance.tekLinkText')}</span>
+              </span>
+              <span className="balance__tekcard-arrow" aria-hidden="true">→</span>
+            </a>
+          )}
+        </div>
       </div>
-      <p className="balance__note">
-        {tKind('balance.note', kind)}
-        {dissolved > 0 && mode === 'without' && ` ${t('balance.dissolvedNote', {
-          n: formatNumber(dissolved),
-        })}`}
-        {dissolved > 0 && mode === 'with' && ` ${t('balance.dissolvedCounted', {
-          n: formatNumber(dissolved),
-        })}`}
-      </p>
-      {isGp && tnTotal !== null && (
-        <p className="balance__tekclarify">{t('balance.tekClarify', {
-          districts: formatNumber(total), all: formatNumber(total + tnTotal), tn: formatNumber(tnTotal),
-        })}</p>
-      )}
-      </div>
-      {isGp && (
-        <p className="balance__teklink">
-          <a href="/tek-nelkul.html">{t('balance.tekLink')}</a>
-        </p>
-      )}
     </section>
   );
 }

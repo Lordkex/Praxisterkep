@@ -1,9 +1,9 @@
 {
   "site": {
     "title": "Praxistérkép",
-    "lead": "Interaktív térkép és statisztikai elemző oldal arról, hol nincs szerződött {doctor} Magyarországon: havonta frissülő, nyilvános NEAK-adatokból, megyei, járási és települési bontásban, európai kitekintéssel. Azt is megmutatja, mi jár együtt a hiánnyal: ahol több a betöltetlen háziorvosi körzet, ott jellemzően messzebb van a rendelő, alacsonyabb a jövedelem és az iskolázottság, több az álláskereső és magasabb az elkerülhető halálozás. Ez együttjárás, nem bizonyított ok-okozat.",
+    "lead": "Interaktív térkép és statisztikai elemző oldal arról, hol nincs szerződött {doctor} Magyarországon: havonta frissülő, nyilvános NEAK-adatokból, megyei, járási és települési bontásban, európai kitekintéssel.",
     "lastUpdate": "Utolsó adatfrissítés",
-    "firstMonthNote": "Az adatgyűjtés első hónapja — a havi változás a következő frissítéstől jelenik meg.",
+    "firstMonthNote": "Az adatgyűjtés első hónapja: a havi változás a következő frissítéstől jelenik meg.",
     "monthDelta": "az előző hónaphoz képest",
     "sourceShort": "forrás: NEAK"
   },
@@ -12,13 +12,15 @@
       "label": "Fogorvosi",
       "adj": "fogorvosi",
       "question": "Hol a fogorvos?",
-      "doctor": "fogorvos"
+      "doctor": "fogorvos",
+      "switch": "Fogorvos"
     },
     "gp": {
       "label": "Háziorvosi",
       "adj": "háziorvosi",
       "question": "Hol a háziorvos?",
-      "doctor": "háziorvos"
+      "doctor": "háziorvos",
+      "switch": "Háziorvos"
     }
   },
   "nav": {
@@ -83,8 +85,24 @@
     "caveatLabel": "Fontos:"
   },
   "map": {
+    "groupView": "Nézet",
+    "groupFilters": "Szűrők",
+    "groupLayers": "Rétegek",
+    "fieldLevel": "Szint",
+    "fieldView": "Ábrázolás",
+    "fieldMetric": "Színezés",
+    "fieldType": "Körzettípus",
+    "fieldColor": "Pontok színe",
+    "fieldDuration": "Üres legalább",
+    "layerLabels": "Feliratok",
+    "layerBorders": "Határok",
+    "layerHighlight": "Kiemelés",
+    "savePng": "Mentés PNG-be",
+    "pointBenefit": "kedvezményezett településen",
+    "countyDetails": "Részletes megyei adatok",
+    "filters": "További szűrők és térképrétegek",
     "heading": "Betöltetlenség a térképen",
-    "explain": "A színezés a megye betöltetlenségi arányát mutatja (betöltetlen — és fogorvosi ágon a megszűnt szerződésű — körzetek az összes körzet arányában). A pontok az egyes betöltetlen körzetek rendelőit jelölik. Körzethatár-poligonok hivatalosan nem érhetők el, ezért a körzeteket pontként ábrázoljuk.",
+    "explain": "A színezés a megye betöltetlenségi arányát mutatja: a betöltetlen (fogorvosi ágon a megszűnt szerződésű) körzetek arányát az összes körzeten belül. A pontok az egyes betöltetlen körzetek rendelőit jelölik. Körzethatár-poligonok hivatalosan nem érhetők el, ezért a körzeteket pontként ábrázoljuk.",
     "metricRate": "Betöltetlenségi arány",
     "metricPopulation": "Érintett lakosság",
     "typeAll": "Összes típus",
@@ -156,8 +174,9 @@
     }
   },
   "search": {
+    "toMap": "Megnézem a térképen ↓",
     "heading": "Mi a helyzet nálam?",
-    "explain": "Írd be a településed nevét: megmutatjuk az ott elérhető és a betöltetlen {kind} körzeteket.",
+    "explain": "Írj be legalább két betűt, majd válassz települést a találatok közül.",
     "placeholder": "Település neve…",
     "noResult": "Nincs találat. A lista azokat a településeket tartalmazza, amelyekhez a nyilvántartás szerint {kind} körzet tartozik.",
     "filledSeat": "működő, betöltött körzet rendel a településen",
@@ -167,7 +186,7 @@
     "noVacant": "A településhez tartozó összes nyilvántartott {kind} körzet betöltött.",
     "county": "megye",
     "servedBy": "A körzethez tartozó települések",
-    "reminder": "A betöltetlen körzet lakóit helyettesítő orvos látja el — az ellátás jellemzően más településen vagy szűkebb rendelési időben érhető el.",
+    "reminder": "A betöltetlen körzet lakóit helyettesítő orvos látja el. Az ellátás jellemzően más településen vagy szűkebb rendelési időben érhető el.",
     "filledListTitle": "Betöltött körzetek a településen",
     "filledListTitleCoverage": "A települést ellátó betöltött körzetek",
     "filledMore": "és további {n} körzet",
@@ -180,8 +199,10 @@
     "openProfile": "{name} teljes adatlapja →",
     "vacantCount": "betöltetlen vagy megszűnt {kind} körzet tartozik a településhez",
     "vacantCountOnly": "betöltetlen {kind} körzet tartozik a településhez",
-    "unlisted": "Ez a település egyetlen közzétett {kind} körzet listáján sem szerepel. Ez nem azt jelenti, hogy nincs ellátás — azt jelenti, hogy a NEAK nyilvános adataiból nem derül ki, melyik körzet az illetékes. A település saját lapja megmutatja a legközelebbi rendelőt és a menetidőt.",
-    "dissolvedCount": "megszűnt szerződésű {kind} körzet tartozott a településhez"
+    "unlisted": "Ez a település egyetlen közzétett {kind} körzet listáján sem szerepel. Ez nem azt jelenti, hogy nincs ellátás, hanem azt, hogy a NEAK nyilvános adataiból nem derül ki, melyik körzet az illetékes. A település saját lapja megmutatja a legközelebbi rendelőt és a menetidőt.",
+    "dissolvedCount": "megszűnt szerződésű {kind} körzet tartozott a településhez",
+    "kindLabel": "Ellátási ág",
+    "tableView": "Táblázat nézet"
   },
   "ranking": {
     "heading": "Megyei rangsor",
@@ -425,22 +446,21 @@
   },
   "why": {
     "heading": "Miért számít az alapellátás?",
-    "lead": "A háziorvos, a házi gyermekorvos és a fogorvos az egészségügy kapuja: ők találkoznak először a panasszal, ők ismerik a családot, a kórtörténetet, a település mindennapjait. Az alapellátás nem „kis orvoslás” — hanem az a szint, ahol a betegségek jelentős része megelőzhető vagy időben elkapható.",
+    "lead": "Az alapellátásban követik a tartós betegségeket és itt történik sok szűrővizsgálat. A Praxistérkép megmutatja, hol kell ezeket a feladatokat helyettesítéssel megoldani.",
     "gp": {
       "title": "Háziorvos",
-      "text": "Krónikus betegségek — magas vérnyomás, cukorbetegség — gondozása, szűrések szervezése, védőoltások, és az első vizsgálat, ami eldönti: kell-e szakellátás. Ahol nincs betöltött körzet, ott a helyettesítés szűkebb rendelési idejébe szorul mindez."
+      "text": "A **krónikus betegségek** (magas vérnyomás, cukorbetegség) gondozása, a **szűrések** szervezése, a **védőoltások**, és az első vizsgálat, ami eldönti, kell-e szakellátás. Ahol nincs betöltött körzet, ott mindez a helyettesítés szűkebb rendelési idejébe szorul."
     },
     "ped": {
       "title": "Házi gyermekorvos",
-      "text": "Az életkorhoz kötött státuszvizsgálatok, a védőoltási rend és a fejlődés követése a gyermekkori betegségek korai felismerésének alapja. A gyermekkörzetek betöltetlensége a legfiatalabbakat érinti — ezt a térképen a „gyermek” típusszűrővel nézheted meg.",
+      "text": "Az életkorhoz kötött státuszvizsgálatok, a védőoltási rend és a fejlődés követése a **gyermekkori betegségek korai felismerésének** alapja. A gyermekkörzetek betöltetlensége a legfiatalabbakat érinti: ezt a térképen a „gyermek” típusszűrővel nézheted meg.",
       "linkNote": ""
     },
     "dental": {
       "title": "Fogorvos",
-      "text": "A szuvasodás és a fogágybetegség megelőzhető, a szájüregi daganat korai felismerése életet menthet — mindez a rendszeres fogorvosi szűrésen múlik. Betöltetlen körzetben a lakosság jellemzően csak sürgősségi ellátást ér el helyben: a megelőzés marad el legelőször."
+      "text": "A **szuvasodás** és a **fogágybetegség** megelőzhető, a **szájüregi daganat** korai felismerése életet menthet. Mindez a **rendszeres fogorvosi szűrésen** múlik. Betöltetlen körzetben helyben jellemzően csak sürgősségi ellátás érhető el, így a megelőzés marad el legelőször."
     },
     "chainTitle": "A prevenciós lánc",
-    "chainIntro": "Kapcsold át, mi történik ugyanazzal a beteggel, ha van, és ha nincs betöltött körzet:",
     "chainOk": [
       "Elérhető orvos",
       "Szűrés, korai felismerés",
@@ -453,19 +473,18 @@
       "Későn felismert betegség",
       "Súlyosabb, költségesebb ellátás"
     ],
-    "dataTie": "Ma Magyarországon {gpPop} ember él betöltetlen háziorvosi és {dentalPop} ember betöltetlen fogorvosi körzetben — nekik ez a lánc nem magától értetődő.",
-    "disclaimer": "A fenti összefüggések általános népegészségügyi ismeretek; számszerű állítást csak a saját, forrásolt adatainkból teszünk.",
+    "dataTie": "Ma Magyarországon {gpPop} ember él betöltetlen háziorvosi és {dentalPop} ember betöltetlen fogorvosi körzetben. Nekik ez a lánc nem magától értetődő.",
     "storyToggleOk": "Van háziorvos",
     "storyToggleBroken": "Nincs háziorvos",
     "chainOkDesc": [
       "A körzetnek van orvosa: a panasz nem marad megválaszolatlan, a vizsgálat elérhető, helyben.",
       "A rendszeres szűrésen a még tünetmentes elváltozás is időben szem elé kerül.",
       "A korán felismert betegség kezelése egyszerűbb: gyógyszer, gondozás, kontroll.",
-      "A szövődmény elmarad — a beteg éli az életét, a kórház ki sem kerül a képbe."
+      "A szövődmény elmarad: a beteg éli az életét, a kórház ki sem kerül a képbe."
     ],
     "chainBrokenDesc": [
       "A körzetnek nincs orvosa: a rendelő zárva, a helyettesítés máshol és ritkábban érhető el.",
-      "A szűrések kimaradnak — aki nem jut el orvoshoz, annál senki nem keres semmit.",
+      "A szűrések kimaradnak: aki nem jut el orvoshoz, annál senki nem keres semmit.",
       "A tünetmentes elváltozás csendben növekszik, és csak későn, panaszokkal kerül elő.",
       "A késői diagnózis súlyosabb beavatkozást, hosszabb és költségesebb ellátást jelent."
     ],
@@ -487,38 +506,31 @@
       "A körzetnek van fogorvosa: a panasz és az éves kontroll is helyben, időben elérhető.",
       "A szűrésen a még tünetmentes, apró szuvasodás is időben szem elé kerül.",
       "A korán felismert szuvasodás kezelése egyszerű: egy kis tömés, és kész.",
-      "A fogak épek maradnak — rendszeres kontroll mellett a nagy beavatkozás ki sem kerül a képbe."
+      "A fogak épek maradnak: rendszeres kontroll mellett a nagy beavatkozás ki sem kerül a képbe."
     ],
     "chainBrokenDentalDesc": [
       "A körzetnek nincs fogorvosa: a rendelő zárva, helyben legfeljebb sürgősségi ellátás érhető el.",
-      "A szűrések kimaradnak — az apró szuvasodást senki nem veszi észre.",
+      "A szűrések kimaradnak, így az apró szuvasodást senki nem veszi észre.",
       "A szuvasodás csendben terjed, és fájdalommal, duzzanattal jelentkezik.",
-      "A menthetetlen fogat húzni kell — a pótlás hosszabb, fájdalmasabb és sokkal drágább."
+      "A menthetetlen fogat húzni kell, a pótlás pedig hosszabb, fájdalmasabb és sokkal drágább."
     ],
-    "storyTieBroken": "Ma {count} {kind} körzetben szakad meg ez a lánc — {people} embert érint.",
-    "storyTieOk": "Ez a lánc ma {count} {kind} körzetben működik az ország {total} körzetéből."
-  },
-  "showcase": {
-    "sparkNote": "az archivált hónapok alapján ({first} – {last})",
-    "dissolvedNote": "minden pont egy megszűnt szerződésű körzet",
-    "rateNote": "a {total} nyilvántartott körzetből",
-    "cityNote": "egy piktogram ≈ egy Szombathelynyi (75 ezer) ember",
-    "longestNote": "{settlement} ({county}) — {type} körzet",
-    "sinceYear": "óta",
-    "popShare": "Ez az ország lakosságának {pct}-a.",
-    "longTermNote": "A 313/2011. Korm. rendelet szerinti jogi kategória: a finanszírozási szerződés megszűnése óta legalább 6 hónap telt el. Forrás: OKFŐ, {asOf} állapot."
+    "tieOk": "{kind} körzetben működik ma ez a lánc",
+    "tieBroken": "{kind} körzetben szakad meg ma ez a lánc, ahol {people} ember él"
   },
   "intro": {
+    "trendLabelUp": "betöltetlen {kind} körzet, {year} óta",
+    "trendLabelDown": "betöltetlen {kind} körzet, {year} óta",
+    "trendText": "Az első archivált NEAK-listán ({first}) {from}, a legfrissebben ({last}) {to} betöltetlen {kind} körzet szerepel.",
+    "trendNoDissolved": "A megszűnt szerződésű körzetek nélkül.",
     "aria": "Országos helyzetkép görgetésre",
     "step1Label": "betöltetlen {kind} körzet van ma Magyarországon",
     "step2Label": "ember él betöltetlen {kind} körzetben",
     "step3Label": "a betöltetlenség aránya a legrosszabb helyzetű megyében: {county}",
     "step4Label": "a leghosszabb ideje üres körzet: {settlement}, {month} óta",
-    "text1": "Magyarországon minden hónapban közzéteszi a NEAK, hol nincs szerződött {doctor}. A szám évek óta nem csökken.",
-    "text2": "Ez nem statisztikai absztrakció: minden körzet mögött egy település vagy városrész lakói állnak, akikhez nem jut el a megelőzés.",
-    "text3": "A terhelés nem egyenletes — van megye, ahol több mint minden harmadik körzet üres.",
+    "text1": "A NEAK nyilvános körzetlistája havonta mutatja, hol hiányzik a szerződött {doctor}.",
+    "text2": "A térképen településenként kereshetsz. Az elemzések megyéket, járásokat és európai országokat is összehasonlítanak.",
+    "text3": "Ahol több a betöltetlen háziorvosi körzet, ott jellemzően távolabb van a rendelő, alacsonyabb a jövedelem és az iskolázottság, több az álláskereső és magasabb az elkerülhető halálozás. Ez együttjárás, nem bizonyított ok-okozat.",
     "text4": "És a betöltetlenség nem átmeneti állapot: van körzet, amely évtizedek óta vár orvosra. Nézd meg a térképen, mi a helyzet nálad.",
-    "cta": "Ugrás a térképre ↓",
     "popLabel": "a lakosság {pct}-a",
     "step1LabelWith": "betöltetlen vagy megszűnt szerződésű {kind} körzet van ma Magyarországon",
     "step2LabelWith": "ember él betöltetlen vagy megszűnt szerződésű {kind} körzetben"
@@ -2059,6 +2071,26 @@
     "cellNone": "{county}, {year}: nincs használható pillanatkép"
   },
   "balance": {
+    "view": "Nézet",
+    "byType": "Körzettípusonként",
+    "viewChart": "Diagram",
+    "viewTable": "Táblázat",
+    "chartAria": "Körzetek típusonként: betöltött és betöltetlen körzetek száma",
+    "legendFilled": "betöltött körzet",
+    "legendVacant": "betöltetlen körzet",
+    "legendTn": "TEK nélküli praxis (nem körzet)",
+    "rowCount": "{vacant} betöltetlen / {total} körzet",
+    "rowTn": "+ {n} TEK nélküli praxis",
+    "rateShortWith": "betöltetlen vagy megszűnt",
+    "legendDissolved": "megszűnt körzet",
+    "rateShort": "betöltetlen",
+    "axisUnit": "körzet",
+    "chartScale": "A sávok hossza a körzetek számával arányos, a százalék a típus betöltetlenségi aránya. A lila szakasz praxis, nem körzet: nincs kijelölt területe, ezért nem lehet betöltetlen.",
+    "chartScaleDental": "A sávok hossza a körzetek számával arányos, a százalék a típus betöltetlenségi aránya.",
+    "tekLinkTitle": "TEK nélküli háziorvosi praxisok",
+    "tekLinkText": "Ki működteti őket, és hogyan fogytak 2019 óta",
+    "shareWith": "{count} betöltetlen vagy megszűnt az összesen {total} körzetből",
+    "shareLabel": "{count} betöltetlen az összesen {total} körzetből",
     "thNon": "TEK nélküli praxis",
     "thAllPractices": "Összes praxis",
     "totalRow": "Összesen",
@@ -2067,12 +2099,12 @@
     "tekFigureB": "TEK (területi ellátási kötelezettség) nélküli",
     "tekClarify": "Miért {districts} és nem {all}? A térkép és a betöltetlenségi arány a {districts} körzetről szól: ezeknek van területi ellátási kötelezettségük (TEK), egy kijelölt terület lakóiért felelnek. Mellettük {tn} TEK nélküli praxis működik, amely csak a hozzá bejelentkezett betegeket látja el (például rendőrségi és egyetemi praxisok), ezért betöltetlenként sosem szerepel. A kettő együtt {all} praxis.",
     "tekLink": "A TEK nélküli háziorvosi praxisok részletesen: ki működteti őket, és hogyan fogytak 2019 óta →",
-    "heading": "Hogyan áll a {kind} körzetállomány?",
+    "heading": "A {kind} körzetek mekkora része betöltetlen?",
     "total": "{kind} körzet az országban",
     "thType": "Körzettípus",
     "thTotal": "Körzet",
     "thRate": "Betöltetlenség",
-    "note": "A vegyes körzet felnőtteket és gyerekeket együtt lát el — a kisebb településeken jellemzően ez az egyetlen körzet. A sávok hossza a legrosszabb típushoz van arányosítva, hogy a típusok egymáshoz képest legyenek olvashatók.",
+    "note": "A vegyes körzet felnőtteket és gyerekeket együtt lát el; a kisebb településeken jellemzően ez az egyetlen körzet.",
     "type": {
       "gp": {
         "adult": "felnőtt háziorvosi",
@@ -2087,7 +2119,7 @@
       }
     },
     "dissolvedNote": "A {n} megszűnt körzet nem szerepel a típusonkénti bontásban: megszűnésével a típusa is eltűnt a nyilvántartásból.",
-    "lead": "A {kind} körzetek teljes állománya: {total} körzetből {vacant} a betöltetlen ({rate}). Alatta típusonként is — egy orvos nélküli felnőtt és egy orvos nélküli gyermekkörzet nem ugyanaz a gond.",
+    "lead": "A {kind} körzetek teljes állománya: {total} körzetből {vacant} a betöltetlen ({rate}). Alatta típusonként is, mert egy orvos nélküli felnőtt és egy orvos nélküli gyermekkörzet nem ugyanaz a gond.",
     "dissolvedCounted": "A {n} megszűnt körzet itt a saját típusánál szerepel, a számlálóban és a nevezőben is: a megszűnéssel a körzet kikerült a nyilvántartásból, de a típusát a betöltetlenségi lista megőrzi."
   },
   "threshold": {
@@ -2855,15 +2887,16 @@
   "highlights": {
     "heading": "Amit eddig senki nem számolt ki",
     "vs": "vs.",
+    "tenYears": "üres 10 éve",
     "more": "Hogyan számoltuk? →",
-    "gp": "A letelepedési támogatással betöltött háziorvosi körzetek {a}%-ában ma is van orvos — a hozzájuk illesztett, ugyanannyi ideje üres, hasonló méretű településen lévő, támogatás nélküli körzetekben csak {b}%-ban ({pairs} pár).",
-    "dental": "A ma betöltetlen {vacant} fogorvosi körzet közül {n} már legalább tíz éve üres ({share}) — egy évtizede nincs saját fogorvosuk.",
+    "gp": "Az állam egyszeri letelepedési támogatást ad annak az orvosnak, aki elvállal egy legalább egy éve üres háziorvosi körzetet. Az így betöltött körzetek **{a}%-ában ma is van orvos**. A hasonló méretű településeken lévő, ugyanannyi ideje üres, de támogatás nélküli körzetekben csak {b}%-ban ({pairs} körzetpár összevetése alapján).",
+    "dental": "**{n} fogorvosi körzet** már legalább tíz éve üres: ez a ma betöltetlen {vacant} körzet {share}-a. Egy évtizede nincs saját fogorvosuk.",
     "europe": {
       "heading": "Európai összevetésben",
       "kicker": "Európa",
-      "gp": "Magyarországon {value} praktizáló háziorvos jut 100 ezer lakosra ({year}), a régió mediánja {median}. A régió {of} adatot közlő országa közül ez a {rank}. hely; a legtöbb: {best}, {bestValue}.",
-      "dental": "Az egy év alatt fogorvosnál járt felnőttek aránya Magyarországon {value} ({year}), vidéken csak {rural} — az EU-ban {eu}. A régió {of} országa közül ez a {rank}. hely.",
-      "dentalMedian": "Az egy év alatt fogorvosnál járt felnőttek aránya Magyarországon {value} ({year}), vidéken csak {rural} — a régió mediánja {median}. A régió {of} országa közül ez a {rank}. hely.",
+      "gp": "Magyarországon 100 ezer lakosra **{value} praktizáló háziorvos** jut ({year}), a régió mediánja {median}. A régió {of} adatot közlő országa közül ez a {rank}. hely; a legtöbb: {best}, {bestValue}.",
+      "dental": "Magyarországon a **felnőttek {value}-a járt fogorvosnál** egy év alatt ({year}), vidéken csak {rural}, az EU-ban {eu}. A régió {of} országa közül ez a {rank}. hely.",
+      "dentalMedian": "Magyarországon a **felnőttek {value}-a járt fogorvosnál** egy év alatt ({year}), vidéken csak {rural}, a régió mediánja {median}. A régió {of} országa közül ez a {rank}. hely.",
       "more": "Az európai összevetés →"
     }
   },
@@ -4598,25 +4631,6 @@
       "gp": "háziorvos",
       "dentist": "fogorvos",
       "hospital": "kórház"
-    },
-    "landing": {
-      "title": "{label} körzetek fél percben",
-      "total": "{month}: a NEAK {total} {kind} körzetet tart nyilván.",
-      "totalLabel": "{kind} körzet",
-      "vacant": "Ebből {vacant} betöltetlen, arányuk {rate}.",
-      "vacantWith": "Megszűnt szerződésűekkel együtt {vacant} körzetnek nincs szerződött orvosa, arányuk {rate}.",
-      "dissolvedOut": "Mellettük {n} körzet szerződése megszűnt; ezek nincsenek benne a fenti számban.",
-      "dissolvedIn": "A fenti számban {n} megszűnt szerződésű körzet is benne van.",
-      "people": "Ezekhez a körzetekhez {people} lakos tartozik.",
-      "peopleLabel": "lakos",
-      "caveat": "Betöltetlen ≠ ellátatlan: a lakosok többségét helyettesítő {doctor} látja el, korlátozott rendelési időben.",
-      "longTerm": "Jogilag tartósan betöltetlen: {n} körzet (OKFŐ, {month}).",
-      "longTermShare": "a betöltetlen körzetek közül",
-      "duration": "A ma betöltetlen körzetek felében legalább {dur} telt el az üresedés óta.",
-      "durationLabel": "az üresedés óta (medián)",
-      "trend": "{from}: {a} betöltetlen körzet. {to}: {b}.",
-      "trendWith": "{from}: {a} betöltetlen vagy megszűnt körzet. {to}: {b}.",
-      "counties": "A legmagasabb arány: {c1} ({r1}), {c2} ({r2}), {c3} ({r3})."
     },
     "highlights": {
       "title": "{heading}, fél percben",

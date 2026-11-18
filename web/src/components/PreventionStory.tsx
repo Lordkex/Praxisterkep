@@ -4,8 +4,13 @@
 // global switch says. The picture is drawn in cut paper on the stories'
 // engine (components/story); the step's title and description stay HTML
 // beside it, so they read the same in both themes and to a screen reader.
-// With reduced motion each step is shown finished and nothing moves on by
-// itself.
+//
+// It plays on its own once it is half in view and pauses while it is off
+// screen. The rail between the numbered links is the clock: the stretch
+// leading to the next link fills while the current step plays. The measured
+// count of districts on this side of the chain sits on the picture itself,
+// where it is actually seen. With reduced motion each step is shown finished
+// and nothing moves on by itself.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '../lib/i18n';
 import { formatNumber } from '../lib/format';
@@ -13,6 +18,7 @@ import { useAppStore, useSnapshot } from '../store/useAppStore';
 import { useStoryCanvas } from './story/useStoryCanvas';
 import { drawPrevention, type Variant } from './story/prevention';
 import type { Painter } from './story/paint';
+import { SegmentedControl } from './SegmentedControl';
 import './story/story.css';
 
 const SCENE_MS = 6800;
@@ -33,22 +39,12 @@ export function PreventionStory() {
   const snapshot = useSnapshot();
   const [variant, setVariant] = useState<Variant>('ok');
   const [scene, setScene] = useState(0);
-  // bumped on every manual selection so the auto-advance timer restarts
-  // instead of overriding the user's choice a moment later
+  // bumped on every manual selection so the step's clock starts again
+  // instead of overriding the reader's choice a moment later
   const [timerGen, setTimerGen] = useState(0);
+  const [started, setStarted] = useState(false);
   const [reduced] = useState(prefersReduced);
   const sceneStart = useRef(0);
-
-  useEffect(() => {
-    if (reduced) return undefined;
-    const id = window.setInterval(() => setScene((s) => (s + 1) % 4), SCENE_MS);
-    return () => window.clearInterval(id);
-  }, [variant, timerGen, reduced]);
-
-  // every step draws itself in from its own start
-  useEffect(() => {
-    sceneStart.current = performance.now();
-  }, [scene, variant, kind, timerGen]);
 
   function switchVariant(v: Variant) {
     setVariant(v);
@@ -74,77 +70,137 @@ export function PreventionStory() {
     const local = reduced ? 1 : (p.now - sceneStart.current) / (SCENE_MS * PLAY_IN);
     drawPrevention(p, kind, variant, scene, local);
   }, [kind, variant, scene, reduced]);
-  const { wrap, canvas, size } = useStoryCanvas(draw, { animate: !reduced, still: reduced, height: stageHeight });
+  const onSeen = useCallback(() => setStarted(true), []);
+  const { wrap, canvas, size, visible } = useStoryCanvas(draw, {
+    animate: !reduced, still: reduced, height: stageHeight, onSeen,
+  });
+  const running = started && visible && !reduced;
+
+  // The step's clock. It only runs while the picture is on screen; time spent
+  // away is not counted, so the reader comes back to the step they left and
+  // the filling rail (a CSS animation paused in step with it) still agrees.
+  const elapsed = useRef(0);
+  const clockKey = useRef('');
+  useEffect(() => {
+    const key = `${scene}|${variant}|${timerGen}`;
+    if (key !== clockKey.current) {
+      clockKey.current = key;
+      elapsed.current = 0;
+      sceneStart.current = performance.now();
+    }
+    if (!running) return undefined;
+    const from = performance.now();
+    const id = window.setTimeout(() => setScene((s) => (s + 1) % 4),
+      Math.max(0, SCENE_MS - elapsed.current));
+    return () => {
+      window.clearTimeout(id);
+      elapsed.current += performance.now() - from;
+    };
+  }, [scene, variant, timerGen, running]);
 
   const chainKey = kind === 'dental'
     ? (variant === 'ok' ? 'chainOkDental' : 'chainBrokenDental')
     : (variant === 'ok' ? 'chainOk' : 'chainBroken');
   const titles = [0, 1, 2, 3].map((i) => t(`why.${chainKey}.${i}`));
   const descs = [0, 1, 2, 3].map((i) => t(`why.${chainKey}Desc.${i}`));
+  // the other side's captions too, only to hold the caption box's height
+  const otherKey = kind === 'dental'
+    ? (variant === 'ok' ? 'chainBrokenDental' : 'chainOkDental')
+    : (variant === 'ok' ? 'chainBroken' : 'chainOk');
   const toggleOk = t(kind === 'dental' ? 'why.storyToggleOkDental' : 'why.storyToggleOk');
   const toggleBroken = t(kind === 'dental' ? 'why.storyToggleBrokenDental' : 'why.storyToggleBroken');
 
+  // The chain is an illustration, so it carries the measured thing it
+  // illustrates: how many districts are on this side of it today. Both
+  // numbers come from the snapshot — nothing here is drawn from the air.
+  const adj = t(`kinds.${kind}.adj`);
+  const national = snapshot?.national;
+  const total = national?.totalDistricts ?? 0;
+  const tie = !national ? null : variant === 'broken'
+    ? {
+      value: formatNumber(national.vacant),
+      of: null,
+      text: t('why.tieBroken', { kind: adj, people: formatNumber(national.populationVacant) }),
+    }
+    : total ? {
+      value: formatNumber(total - national.vacant),
+      of: formatNumber(total),
+      text: t('why.tieOk', { kind: adj }),
+    } : null;
+
   return (
     <div className={`story ${variant === 'broken' ? 'story--broken' : ''}`}>
-      <div className="story__switch" role="group">
-        <span className={`story__thumb ${variant === 'broken' ? 'is-right' : ''}`} aria-hidden="true" />
-        <button aria-pressed={variant === 'ok'} onClick={() => switchVariant('ok')}>
-          {toggleOk}
-        </button>
-        <button aria-pressed={variant === 'broken'} onClick={() => switchVariant('broken')}>
-          {toggleBroken}
-        </button>
+      <div className="story__head">
+        <h3 className="story__title">{t('why.chainTitle')}</h3>
+        <SegmentedControl<Variant> variant="filled" size="md"
+          tone={variant === 'ok' ? 'accent' : 'alert'}
+          ariaLabel={t('why.chainTitle')}
+          value={variant} onChange={switchVariant}
+          options={[
+            { value: 'ok', label: toggleOk },
+            { value: 'broken', label: toggleBroken },
+          ]} />
       </div>
 
       {/* The section is called a chain, so it is drawn as one: four named
-          links, joined, filling up to where the story has got to. */}
-      <ol className="story__chain">
-        {titles.map((title, i) => (
-          <li key={title}
-            className={`${i === scene ? 'is-active' : ''} ${i < scene ? 'is-done' : ''}`}>
-            <button onClick={() => selectScene(i)}
-              aria-current={i === scene ? 'step' : undefined}>
-              <span className="story__chain-dot">{i + 1}</span>
-              <span className="story__chain-label">{title}</span>
-            </button>
-          </li>
-        ))}
+          links, joined by a rail that fills as the story moves on. */}
+      <ol className={`story__chain${running ? '' : ' is-paused'}`}>
+        {titles.map((title, i) => {
+          // the stretch of rail leading out of this link to the next one
+          const rail = i === 3 ? null : i < scene ? 'done' : i === scene ? 'live' : 'idle';
+          return (
+            <li key={i}
+              className={`${i === scene ? 'is-active' : ''} ${i < scene ? 'is-done' : ''}`}>
+              {rail && (
+                <span className={`story__rail story__rail--${rail}`} aria-hidden="true">
+                  <i key={rail === 'live' ? `${variant}-${scene}-${timerGen}` : rail}
+                    style={rail === 'live' ? { animationDuration: `${SCENE_MS}ms` } : undefined} />
+                </span>
+              )}
+              <button onClick={() => selectScene(i)}
+                aria-current={i === scene ? 'step' : undefined}>
+                <span className="story__chain-dot">{i + 1}</span>
+                <span className="story__chain-label">{title}</span>
+              </button>
+            </li>
+          );
+        })}
       </ol>
 
       <div className="story__stage cutstory-tokens">
-        {/* restarts on every scene change, so the wait before the next one is
-            visible instead of feeling like a random jump */}
-        <span className="story__timer" key={`t-${variant}-${scene}-${timerGen}`}
-          style={{ animationDuration: `${SCENE_MS}ms` }} aria-hidden="true" />
-        <div className="story__caption" key={`${variant}-${scene}`}>
-          <h4>{titles[scene]}</h4>
-          <p>{descs[scene]}</p>
+        {/* all four captions share one grid cell, so the box is as tall as
+            the longest of them and does not jump when a step's text runs to
+            one line more or less; only the current one is shown */}
+        <div className="story__caption">
+          {titles.map((title, i) => (
+            <div key={i === scene ? `${variant}-${scene}` : `idle-${i}`}
+              className={`story__caption-item${i === scene ? ' is-current' : ''}`}
+              aria-hidden={i === scene ? undefined : true}>
+              <h4>{title}</h4>
+              <p>{descs[i]}</p>
+            </div>
+          ))}
+          {[0, 1, 2, 3].map((i) => (
+            <div key={`other-${i}`} className="story__caption-item" aria-hidden="true">
+              <h4>{t(`why.${otherKey}.${i}`)}</h4>
+              <p>{t(`why.${otherKey}Desc.${i}`)}</p>
+            </div>
+          ))}
         </div>
-        <div ref={wrap}>
+        <div className="story__canvas" ref={wrap}>
           <canvas ref={canvas} role="img" aria-label={`${titles[scene]}: ${descs[scene]}`}
             style={{ width: size.w || '100%', height: size.h || 280 }} />
+          {tie && (
+            <p className="story__tie" key={`${kind}-${variant}`}>
+              <span className="story__tie-value">
+                {tie.value}
+                {tie.of && <small> / {tie.of}</small>}
+              </span>
+              <span className="story__tie-text">{tie.text}</span>
+            </p>
+          )}
         </div>
       </div>
-
-      {/* The chain is an illustration, so it ends on the measured thing it
-          illustrates: how many districts are on each side of it today. Both
-          numbers come from the snapshot — nothing here is drawn from the air. */}
-      {snapshot && (variant === 'broken' || snapshot.national.totalDistricts) && (
-        <p className="story__tie">
-          {variant === 'broken'
-            ? t('why.storyTieBroken', {
-              count: formatNumber(snapshot.national.vacant),
-              people: formatNumber(snapshot.national.populationVacant),
-              kind: t(`kinds.${kind}.adj`),
-            })
-            : t('why.storyTieOk', {
-              count: formatNumber((snapshot.national.totalDistricts ?? 0)
-                - snapshot.national.vacant),
-              total: formatNumber(snapshot.national.totalDistricts ?? 0),
-              kind: t(`kinds.${kind}.adj`),
-            })}
-        </p>
-      )}
     </div>
   );
 }
