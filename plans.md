@@ -1,146 +1,157 @@
-# Nyitóoldal – tartalmi és vizuális átalakítási terv
+# Nyitóoldal – az átalakítás összefoglalója
 
-Modell: GPT-6 Astra| Effort: High| Dátum: 2026-11-16
+Ág: `ui/homepage` · Első változat: Codex GPT-6 Astra High (2026-11-16) · Átdolgozás és véglegesítés: Claude Opus 5.5 High (2026-11-18–19)
 
 ## Cél
 
-A nyitóoldal gyorsabban tegye érthetővé, miért fontos az alapellátás, mekkora a háziorvoshiány, és mi a helyzet a látogató környezetében. Kevesebb ismétlés, rövidebb szövegek, egyértelmű információs sorrend és egységes vizuális megjelenés szükséges.
+A nyitóoldal hatékonyan és letisztultan mutassa meg, mi a helyzet a látogató településén, mekkora a hiány országosan, és miért fontos az alapellátás. Ehhez kevesebb ismétlés, rövidebb szöveg, egyértelmű sorrend és egységes megjelenés kell.
 
-A nyitóoldal átalakítása elkészült. A keresőt, a megye kiválasztását, a térképes lejátszást és a részletek megnyitását magyar és angol felületen, mobil- és asztali szélességen is ellenőriztük (2026-11-18).
+## 1. Szekciósorrend
 
-## 1. Javasolt szekciósorrend
+1. **Nyitóblokk:** a kérdés (például „Hol a háziorvos?”), egy leíró mondat, a **Mi a helyzet nálam?** kereső, a „Fontos:” megjegyzés, az adat dátuma, valamint az eredmények animált bemutatása.
+2. **Görgetős országos kép**, öt lépésben.
+3. **Miért számít az alapellátás?** Három kártya, alattuk a prevenciós lánc.
+4. **Térkép.**
+5. **A körzetek mekkora része betöltetlen?**
+6. **Amit eddig senki nem számolt ki.**
+7. **Mit nézz meg ezután?**
+8. **Lábléc**, benne a széles adatkezelési tájékoztató.
 
-1. **Rövid nyitóblokk és görgetésre épülő bevezető:** mit mutat az oldal, néhány jól elkülönített állítással.
-2. **Miért számít az alapellátás?** A projekt indokoltsága már az oldal elején legyen világos.
-3. **Mi a helyzet nálam?** A rövid tájékoztatás után kapjon kiemelt helyet a településkeresés.
-4. **Térkép:** közvetlenül a kereső után, hogy a találat és annak területi környezete együtt legyen értelmezhető.
-5. **Hogyan áll a háziorvosi körzetállomány?** Újratervezett, könnyen áttekinthető országos összkép.
-6. **Amit eddig senki nem számolt ki:** a megtartandó elemzési blokk, egységesített megjelenéssel.
-7. **További elemzések és kapcsolódó oldalak.**
-8. **Lábléc:** széles adatkezelési és forráskezelési tájékoztató.
+## 2. Mit módosítottunk és miért
 
-A pontos sorrend megvalósítási javaslat; a rögzített prioritás az alapellátás jelentőségének és a helyi keresésnek az előrehozása. A bevezető ne nyúljon olyan hosszúra, hogy ezek ismét az oldal aljára szoruljanak.
+### Nyitóblokk és kereső
 
-## 2. Tartalmi egyszerűsítés és ismétlések megszüntetése
+**Változások:**
+- A kereső a nyitóblokkba került.
+- A háziorvos/fogorvos kapcsoló a keresőben is ott van.
+- A „Táblázat nézet” kiemelt gomb lett.
+- Visszakerült az eredeti leíró mondat („Interaktív térkép és statisztikai elemző oldal…”).
+- Az eredmények animált bemutatója nyitva, a kereső alatt látszik. Szövegleirata csak a képernyőolvasóknak szól.
 
-### P1 – Hosszú bevezető helyett görgetésre épülő bemutatás
+**Miért:**
+- A látogató elsősorban a saját települését keresi.
+- A táblázat nézetet korábban alig lehetett megtalálni.
+- A lenyitott animációt senki nem indította el.
 
-- [x] ~~Az „Interaktív térkép és statisztikai elemző oldal…” kezdetű tömböt rövid, görgetés közben megjelenő tartalmi egységekre bontani.~~
-- [x] ~~Egy egység egy fő gondolatot közvetítsen: az oldal célja; havi frissítés és nyilvános NEAK-forrás; területi bontások és európai kitekintés; a hiánnyal együtt járó társadalmi és egészségi mutatók.~~
-- [x] ~~Az összefüggések bemutatásánál közvetlenül megőrizni a korlátot: **„Ez együttjárás, nem bizonyított ok-okozat.”**~~
-- [x] ~~A meglévő görgetős bevezetőt felhasználni, az új szövegezést abba beépíteni.~~
-- [x] ~~A hosszú bevezető ne maradjon mellette második, azonos tartalmú szövegként.~~
+### Görgetős országos kép
 
-### P1 – Felesleges magyarázatok és duplikált mutatók eltávolítása
+**Változások:**
+- A lépést a görgetés mértéke vezérli, így az animáció nem ugrik át lépéseket és nem akad el.
+- Kikerültek a keretes szövegek, a „01 / 03” számláló és az alsó sávok.
+- Az öt lépés:
+  1. betöltetlen körzetek száma;
+  2. **változás az első archivált hónap óta**, kirajzolódó vonallal és nullától induló skálával;
+  3. érintett lakosság;
+  4. a legrosszabb megye;
+  5. **a leghosszabb ideje üres körzet**.
 
-- [x] ~~Az „És a betöltetlenség nem átmeneti állapot…” kezdetű külön magyarázó bekezdést elhagyni; a szükséges információt a hozzá tartozó adat rövid felirata közvetítse.~~
-- [x] ~~A hasonló, már látható adatot újramondó magyarázó szövegeket átnézni és rövidíteni vagy törölni.~~
-- [x] ~~A bevezető, a történetmesélő elemek és a csatolt képen látható mutatóválasztó közötti átfedést megszüntetni: ugyanaz a mutató ne kapjon több teljes értékű bemutatást egymás után.~~
-- [x] ~~Elsődleges irányként a görgetős bemutatást megtartani; a képen látható ismétlődő blokkot elhagyni, vagy csak a másutt nem szereplő információira szűkíteni.~~
-- [x] ~~Az egysoros feliratokból önmagukban is derüljön ki, mit jelent az adat. A szükséges definíció és forrás maradjon elérhető.~~
+**Miért:**
+- Az előző változat animációja félig volt kész..
+- A trend és a „leghosszabb ideje üres” lépés az eredeti oldalról jött vissza.
 
-A képen szereplő számok az aktuális megjelenés példái, nem rögzítendő tartalmak; továbbra is az adatokból kell származniuk.
+### Miért számít az alapellátás?
 
-## 3. Kiemelt szekciók átalakítása
+**Változások:**
+- A kártyákon az ikon a cím mellett áll, a betű nagyobb, a szöveg sorkizárt, a kulcsszavak félkövérek.
+- A prevenciós lánc nem lenyitható: magától játszik, és a lépések közötti vonal töltődik.
+- A felirat mindig ugyanakkora helyet foglal, így nem ugrál.
+- Az „X / Y körzetben működik ma ez a lánc” adat az animációba került.
+- A felesleges magyarázatok és a záró megjegyzés kikerült.
 
-### P1 – „Miért számít az alapellátás?” előrehozása
+**Miért:**
+- Átfuthatóság.
+- Az animáció alatti adatsor nehezen kelti fel a figyelmet animáció után.
 
-- [x] ~~A szekciót a rövid bevezető után elhelyezni.~~
-- [x] ~~Röviden, jól tagoltan megmutatni, miért lényeges az alapellátás és miért készült a projekt.~~
-- [x] ~~Kerülni a bevezető és az elemzések szövegének ismétlését.~~
+### A körzetek mekkora része betöltetlen?
 
-### P1 – „Mi a helyzet nálam?” előrehozása
+**Változások:**
+- Az összesítő sávon a számok a szakaszokon állnak, a százalék jobbra.
+- Típusonként halmozott sávdiagram, a számok a szakaszokon.
+- A TEK nélküli praxisok saját színt kaptak, a jelmagyarázat szerint.
+- Diagram / Táblázat kapcsoló.
+- A TEK-oldalra kártya vezet.
 
-- [x] ~~A keresőt az alapvető tájékoztatást követően, az országos részletes kimutatások elé tenni.~~
-- [x] ~~Egyértelművé tenni a településkeresés lehetőségét és a következő lépést.~~
-- [x] ~~Megőrizni a kereső és a térkép közvetlen kapcsolatát, valamint a meglévő szekcióhivatkozásokat.~~
+**Miért:**
+- A táblázatnál szemléletesebb így.
 
-### P1 – „Hogyan áll a háziorvosi körzetállomány?” teljes újratervezése
+### Amit eddig senki nem számolt ki
 
-**Probléma:** a jelenlegi blokk túl sok információt mutat egyszerre, ezért a lényegi állítás nehezen található meg.
+**Változások:
+- Az ág és az „Európa” címke a jobb felső sarokba került, ikonnal.
+- A kulcskifejezés a szövegben kék.
+- A „letelepedési támogatás” ÚJ megfogalmazást kapott.
+- A fogorvosi kártyán „87 / 301” helyett „87 üres 10 éve” áll.
+- Az európai kártyák halványan eltérnek a többitől.
 
-- [x] ~~Meghatározni a blokk egyetlen fő kérdését és az azt megválaszoló fő mutatót.~~
-- [x] ~~A fő számot és rövid értelmezését kiemelni; a kiegészítő adatokat kisebb hangsúllyal, elkülönítve elhelyezni.~~
-- [x] ~~A részletes bontásokat és módszertani magyarázatokat másodlagos, megnyitható részbe vagy a kapcsolódó elemzésre tenni.~~
-- [x] ~~A diagramokat, feliratokat és jelmagyarázatokat egyszerűsíteni, az ismétlődő adatközlést megszüntetni.~~
-- [x] ~~A mutatók nevezője, időpontja és eltérő kategóriái továbbra is egyértelműek legyenek.~~
-- [x] ~~Mobilon is jól követhető, egymás alá rendezett információs hierarchiát kialakítani.~~
+**Miért:**
+- Átfuthatóság, érthetőség.
 
-### P2 – „Amit eddig senki nem számolt ki” finomhangolása
+### Térkép
 
-- [x] ~~A blokk alapvető felépítését és tartalmát megtartani.~~
-- [x] ~~A színeket az oldal közös palettájához igazítani.~~
-- [x] ~~A kurzor alatti és aktív elem zavaró aláhúzását megszüntetni; a kijelölés más, következetes vizuális jelzést kapjon.~~
-- [x] ~~A billentyűzetes fókusz láthatóságát megőrizni.~~
+A térképnél még lehetne jobbra designolni, de egyelőre ez lett.
 
-## 4. Térkép és kimutatások
+**Változások:**
+- Nézet, Szűrők, Rétegek.
+- A PNG-mentés a térkép jobb felső sarkába került.
+- A városfeliratok nem fedik egymást, nagyításkor több jelenik meg.
+- A „Kedvezményezett települések” réteg most már rajzol.
+- A „Nagyobb városok” réteg kikerült.
+- A pontok mérete a nagyítással nő.
+- Lejátszás közben csak a hónap látszik, a dátumformátum pedig egységes („2026. január” / „January 2026”). Adathiányosság mutatásának kérdése?
 
-### P1 – Áttekinthetőség és láthatóság javítása
+**Miért:**
+- Kedvezményezett  városok kapcsoló eddig nem működött, a feliratok zsúfoltak voltak.
 
-- [x] ~~A térkép alapvető működését megtartva javítani a kezelőszervek, feliratok és jelmagyarázat olvashatóságát.~~
-- [x] ~~A térképhez tartozó kimutatás információs sorrendjét átgondolni: először a kiválasztott terület fő adatai, utána a részletek.~~
-- [x] ~~Egységesíteni a térkép körüli panelek kereteit, belső térközeit és igazítását.~~
-- [x] ~~A szűrők, kijelölt állapotok és eredmények vizuálisan könnyen megkülönböztethetők legyenek.~~
 
-### P1 – Animáció egyszerűsítése és dátumformátumok
+### Szöveg és egységes megjelenés
 
-- [x] ~~Az animáció közbeni státuszfeliratokat elrejteni; az animációs visszajelzésként csak az aktuális év és hónap maradjon látható.~~
-- [x] ~~A lejátszás kezeléséhez szükséges vezérlőket megtartani.~~
-- [x] ~~Magyarul egységes dátumformátumot használni, például: **2026. január**.~~
-- [x] ~~Angolul ennek megfelelő, következetes lokalizált formátumot használni, például: **January 2026**.~~
-- [x] ~~Mindkét nyelven azonos megjelenési szabályokat és hónappontosságot alkalmazni, kevert nyelvű feliratok nélkül.~~
+**Változások:**
+- A nyitóoldal folyószövegéből kikerültek a gondolatjelek (em dashek). 
+- A szövegek és a képek egyforma szélesek.
+- Az oldal végén kisebbek a térközök.
+- Minden kapcsoló egységes stílust kapott.
+- Lábléc nyilvános adatokról szóló tájékoztató teljes szélességben, magyarul és angolul.
 
-## 5. Egységes vizuális rendszer az egész oldalon
+**Miért:**
+- A nyitóoldal nem hosszú folyószöveg, mint a módszertan.
+- Egységes kép.
+- 
 
-### P1 – Keretek, térközök és tartalomszélességek
+## 3. Felhasznált design-minták
 
-- [x] ~~Közös értékeket használni a keretszínre, keretvastagságra, sarokkerekítésre és belső térközökre.~~
-- [x] ~~Egységesíteni a szekciók közötti távolságot, a címek alatti helyet és a kártyák közötti hézagokat.~~
-- [x] ~~A fő tartalmi blokkok széleit közös konténerhez igazítani.~~
-- [x] ~~Következetes betűméret- és színhierarchiát kialakítani a címek, fő mutatók, leírások és forrásjelölések között.~~
-- [x] ~~A kisebb, halvány feliratok olvashatóságát javítani, különösen a képen látható sötét felületeken.~~
-- [x] ~~Az állapotjelzéseket, hover- és fókuszmegjelenést összehangolni.~~
-- [x] ~~Az egységesítést mobilon és asztali nézetben, magyar és angol szövegekkel is ellenőrizni.~~
+A mintákat saját React-kóddal és CSS-sel valósítottuk meg, a könyvtárakat nem telepítettük. Így nincs új függőség, és minden elem követi az oldal világos/sötét módját és a választható színskálákat.
 
-## 6. Széles tájékoztató a lap alján
+| Minta | Hol használjuk | Eredeti dokumentáció |
+| --- | --- | --- |
+| Mantine SegmentedControl | Minden kapcsoló: felső sáv, kereső, prevenciós lánc, megszűnt körzetek, térképpanel, Diagram / Táblázat | <https://mantine.dev/core/segmented-control/> |
+| Mantine Table (keretes, csíkozott, kiemelés egér alatt) | A körzetállomány táblázat nézete | <https://mantine.dev/core/table/> |
+| Mantine Chip | A térkép rétegkapcsolói | <https://mantine.dev/core/chip/> |
+| nivo vízszintes halmozott sávdiagram | A körzetállomány összesítő és típusonkénti sávjai | <https://nivo.rocks/bar/> |
 
-### P1 – Lábléc átrendezése
+A diagram színeit (betöltött, betöltetlen, TEK nélküli) színtévesztés-szimulációval ellenőriztük.
 
-- [x] ~~Az alábbi szöveget a lap alján, a lábléc teljes tartalomszélességét kihasználó önálló sávban megjeleníteni, keskeny oszlopba tördelés nélkül.~~
-- [x] ~~A szöveget változatlan tartalommal megtartani; mobilon természetes sortörést és megfelelő oldalsó térközt biztosítani.~~
-- [x] ~~Az angol változatot ugyanebben az elrendezésben kezelni.~~
+## 4. Érintett fájlok
 
-> Ez az oldal kizárólag nyilvánosan közzétett hatósági és statisztikai adatokkal dolgozik: havonta letölti őket, változatlan formában archiválja — az archívum az ellenőrizhetőség kedvéért nyilvános —, és összesítve elemzi. Saját adatfelvételt nem végzünk: sem a látogatókról, sem betegekről nem gyűjtünk adatot, és beteg- vagy más személyes egészségügyi adat az oldalon nem szerepel.
-
-## 7. Megvalósítási támpontok
-
-| Terület | Kiinduló fájlok |
+| Terület | Fájlok |
 | --- | --- |
-| Szekciók sorrendje | `web/src/App.tsx` |
-| Bevezető és ismétlődő mutatók | `web/src/components/Hero.tsx`, `web/src/components/ScrollyIntro.tsx` |
-| Körzetállomány | `web/src/components/PraxisBalance.tsx` |
-| Kiemelt elemzések | `web/src/components/Highlights.tsx` |
-| Helyi keresés és alapellátás | `web/src/components/SearchSection.tsx`, `web/src/components/WhySection.tsx` |
-| Térkép | `web/src/components/MapSection.tsx` és kapcsolódó vezérlői |
-| Lábléc | `web/src/components/Footer.tsx` |
-| Közös megjelenés | `web/src/index.css`, `web/src/theme.css` |
-| Magyar és angol szövegek | `web/src/i18n/hu.json`, `web/src/i18n/en.json` |
+| Szekciósorrend | `web/src/App.tsx` |
+| Nyitóblokk és kereső | `Hero.tsx`, `SearchSection.tsx`, `ResultsStory.tsx` *(új)*, `lib/highlights.ts` *(új)* |
+| Görgetős országos kép | `ScrollyIntro.tsx`, `IntroTrend.tsx` *(új)* |
+| Alapellátás | `WhySection.tsx`, `PreventionStory.tsx`, `Emph.tsx` *(új, kiemelés a szövegben)* |
+| Körzetállomány | `PraxisBalance.tsx`, `BalanceTypeChart.tsx` *(új)* |
+| Kiemelések | `Highlights.tsx`, `EuropeHighlights.tsx` |
+| Térkép | `MapSection.tsx`, `useOrientationLayers.ts`, `lib/mapLayers.ts`, `lib/mapColors.ts` |
+| Kapcsoló | `SegmentedControl.tsx` *(új)*, `DissolvedSwitch.tsx` |
+| Megjelenés és szöveg | `web/src/index.css`, `web/src/i18n/hu.json`, `web/src/i18n/en.json` |
 
-## 8. Javasolt munkasorrend és elfogadás
+A komponensek a `web/src/components/` mappában vannak.
 
-1. ~~Tartalmi leltár: ismétlések kijelölése, szövegrövidítés, végleges szekciósorrend.~~
-2. ~~Közös vizuális értékek meghatározása, majd a körzetállomány és a térképes kimutatás új elrendezése.~~
-3. ~~Szekciók áthelyezése, görgetős bevezető és széles lábléc kialakítása.~~
-4. ~~Térképes animáció, dátumformátumok és kiemelt elemzések finomhangolása.~~
-5. ~~Vizuális és működési ellenőrzés mobilon és asztali nézetben, mindkét nyelven.~~
+## 5. Ellenőrzés
 
-**A munka akkor kész, ha:**
-
-- [x] ~~A projekt indokoltsága és a helyi kereső a részletes országos elemzések előtt elérhető.~~
-- [x] ~~A nyitóoldal nem ismétli ugyanazokat a mutatókat és magyarázatokat egymást követő blokkokban.~~
-- [x] ~~A körzetállomány fő üzenete a részletes magyarázat elolvasása nélkül is érthető.~~
-- [x] ~~A térkép, a keresés és a lejátszás működik az átrendezés után is.~~
-- [x] ~~Az animációnál csak az időszak jelenik meg státuszszövegek helyett, mindkét nyelven következetesen.~~
-- [x] ~~A keretek, térközök, színek és interaktív állapotok egységesek; nincs levágott szöveg vagy vízszintes túlcsordulás.~~
-- [x] ~~A nyilvános adatokról szóló teljes tájékoztató a lap alján, széles elrendezésben olvasható.~~
-- [x] ~~A források, definíciók és az együttjárásra vonatkozó értelmezési korlát megmaradtak.~~
+- Típusellenőrzés, build, és mind a 215 teszt rendben lefutott.
+- A `settlementStory` teszt erősen terhelt gépen néha túllépi az 5 másodperces időkorlátot, külön futtatva átmegy.
+- Képernyőképes ellenőrzés:
+  - asztali és mobil (390 px) nézetben;
+  - világos és sötét módban;
+  - magyarul és angolul;
+  - háziorvosi és fogorvosi ágon.
