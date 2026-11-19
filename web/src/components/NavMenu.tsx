@@ -121,7 +121,15 @@ export function NavMenu({ entries }: { entries: readonly NavEntry[] }) {
             <>
               <button className="topnav__toggle" aria-expanded={open === entry.href}
                 aria-label={t(entry.labelKey)}
-                onClick={() => show(entry.href)} />
+                onClick={(event) => {
+                  // a finger has no hover, so nothing opened the panel just
+                  // before this tap: here the caret may close it again. On a
+                  // phone the open "Térkép" fills the screen, and without
+                  // this the only way out was the menu button.
+                  const touch = (event.nativeEvent as PointerEvent).pointerType;
+                  if (touch && touch !== 'mouse' && open === entry.href) setOpen(null);
+                  else show(entry.href);
+                }} />
               <div className={`topnav__submenu${entry.children.some((c) => c[2] === 'group')
                 ? ' is-grouped' : ''}`} hidden={open !== entry.href}>
                 {/* a heading and its links stay together in one column */}

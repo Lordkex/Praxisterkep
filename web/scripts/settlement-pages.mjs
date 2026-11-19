@@ -400,7 +400,8 @@ const navBar = (profile) => nav.entries.map((e, i) => {
   return `${methodology ? internalEntry() : ''}<div class="topnav__group${methodology ? ' no-internal' : ''}${
     i === 0 ? ' topnav__group--first' : ''}"><a href="${esc(ctx(e.href, profile))}">${
     esc(label(e.labelKey))}${children ? '<i class="topnav__caret" aria-hidden="true"></i>' : ''
-  }</a>${children ? `<div class="topnav__submenu${grouped ? ' is-grouped' : ''}" hidden>${
+  }</a>${children ? `<button type="button" class="topnav__toggle" aria-expanded="false" aria-label="${
+    esc(label(e.labelKey))}"></button>` : ''}${children ? `<div class="topnav__submenu${grouped ? ' is-grouped' : ''}" hidden>${
     children}</div>` : ''}</div>`;
 }).concat([navTools()]).join('\n    ');
 
@@ -445,6 +446,27 @@ const menuScript = () => `<script>(function () {
   btn.addEventListener('click', function () {
     var open = links.classList.toggle('is-open'); btn.setAttribute('aria-expanded', String(open));
   });
+  // the caret opens its panel. A phone has no hover, and without this the
+  // submenus (the counties, the járás, the analyses) could not be opened at
+  // all. A mouse still opens them on hover (index.css), so a click there
+  // only pins the panel; it closes when the pointer leaves, on Escape or on
+  // a click outside, as in NavMenu.tsx
+  var toggles = nav.querySelectorAll('.topnav__toggle');
+  function shut() {
+    for (var i = 0; i < toggles.length; i++) {
+      toggles[i].setAttribute('aria-expanded', 'false'); toggles[i].nextElementSibling.hidden = true;
+    }
+  }
+  Array.prototype.forEach.call(toggles, function (t) {
+    t.addEventListener('click', function () {
+      var wasOpen = t.getAttribute('aria-expanded') === 'true';
+      shut();
+      if (!wasOpen) { t.setAttribute('aria-expanded', 'true'); t.nextElementSibling.hidden = false; }
+    });
+    t.parentNode.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') shut(); });
+  });
+  document.addEventListener('pointerdown', function (e) { if (!nav.contains(e.target)) shut(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') shut(); });
   // whatever sticks under the bar reads its real height, folded or open
   function h() { document.documentElement.style.setProperty('--topnav-h', nav.offsetHeight + 'px'); }
   h(); if ('ResizeObserver' in window) new ResizeObserver(h).observe(nav); else window.addEventListener('resize', h);

@@ -25,7 +25,9 @@ const allHrefs = allEntries.flatMap((e) => [e.href, ...(e.children ?? []).map(([
 describe('site navigation', () => {
   it('names every page the site has, in the order of the zooms', () => {
     expect(allEntries.map((e) => e.href)).toEqual([
-      '/', '/elemzo.html', '/europa.html', '/szakellato.html', '/modszertan.html',
+      // "Térkép" opens the map itself, not the top of the landing: a tap on
+      // it from the landing used to look like nothing happened
+      '/#terkep', '/elemzo.html', '/europa.html', '/szakellato.html', '/modszertan.html',
     ]);
     // the zooms live under Térkép: highlights, county, járás, settlement
     const heads = allEntries[0].children?.filter((c) => c[2] === 'group').map(([h]) => h);

@@ -1598,6 +1598,13 @@ html[data-internal] .no-internal { display: none !important; }
   }
   .topnav__group { flex-wrap: wrap; }
   .topnav__group > a { flex: none; }
+  /* the panel opens inside the group here, so a hit area pinned to the
+     group's bottom ran down the whole open submenu and caught the taps
+     meant for its links: it keeps the label row's height instead */
+  .topnav__toggle { bottom: auto; height: 33px; }
+  /* always on its own row under the label: a narrow panel (Elemző) fitted
+     beside it, and the label floated down to the panel's middle */
+  .topnav__submenu, .topnav__submenu.is-grouped { flex-basis: 100%; }
 }
 
 /* the phone menu: one button instead of three rows of links */
@@ -1626,7 +1633,14 @@ html[data-internal] .no-internal { display: none !important; }
     /* 70px ≈ the brand row above: --topnav-h would be circular here, since
        with the menu open that variable already includes the menu itself */
     max-height: calc(100dvh - 70px); overflow-y: auto;
+    /* one column that scrolls, never a second one: with the bar's wrap and
+       the height cap, an open "Térkép" (taller than the phone) pushed every
+       entry after it into a column off the right edge, and the menu lost
+       Elemző, Európa, Továbbiak, Módszertan and the theme and language
+       buttons. The scroll stays in the menu instead of moving the page. */
+    flex-wrap: nowrap; overscroll-behavior: contain;
   }
+  .topnav__menu:not([hidden]) ~ .topnav__links.is-open > * { flex-shrink: 0; }
 }
 /* the narrowest phones keep the three lines and lose the word */
 @media (max-width: 420px) {
