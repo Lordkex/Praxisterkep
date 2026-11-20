@@ -1,9 +1,9 @@
 {
   "site": {
     "title": "Praxis Map",
-    "lead": "An interactive map and statistical analysis of where there is no contracted {doctor} in Hungary — from public NEAK data, refreshed monthly, by county, járás and settlement, with a European comparison. It also shows what goes with the gaps: where more GP districts are vacant, the surgery tends to be farther away, income and education lower, jobseekers more numerous and avoidable mortality higher. That is association, not proven cause.",
+    "lead": "An interactive map and statistical analysis of where there is no contracted {doctor} in Hungary: from public NEAK data, refreshed monthly, by county, járás and settlement, with a European comparison.",
     "lastUpdate": "Last data update",
-    "firstMonthNote": "First month of data collection — monthly change appears from the next update.",
+    "firstMonthNote": "First month of data collection: monthly change appears from the next update.",
     "monthDelta": "compared to the previous month",
     "sourceShort": "source: NEAK"
   },
@@ -12,13 +12,15 @@
       "label": "Dental",
       "adj": "dental",
       "question": "Where is the dentist?",
-      "doctor": "dentist"
+      "doctor": "dentist",
+      "switch": "Dentist"
     },
     "gp": {
       "label": "GP",
       "adj": "GP",
       "question": "Where is the GP?",
-      "doctor": "general practitioner"
+      "doctor": "general practitioner",
+      "switch": "GP"
     }
   },
   "nav": {
@@ -83,8 +85,24 @@
     "caveatLabel": "Important:"
   },
   "map": {
+    "groupView": "View",
+    "groupFilters": "Filters",
+    "groupLayers": "Layers",
+    "fieldLevel": "Level",
+    "fieldView": "Display",
+    "fieldMetric": "Colouring",
+    "fieldType": "District type",
+    "fieldColor": "Point colour",
+    "fieldDuration": "Vacant at least",
+    "layerLabels": "Labels",
+    "layerBorders": "Borders",
+    "layerHighlight": "Highlight",
+    "savePng": "Save as PNG",
+    "pointBenefit": "in a beneficiary settlement",
+    "countyDetails": "Detailed county figures",
+    "filters": "More filters and map layers",
     "heading": "Vacancies on the map",
-    "explain": "The colouring shows each county's vacancy rate (vacant — and, on the dental branch, terminated-contract — districts as a share of all districts). The dots mark the practices of individual vacant districts. Official district boundary polygons are not published, so districts are shown as points.",
+    "explain": "The colouring shows each county’s vacancy rate: vacant districts (on the dental branch, terminated-contract ones too) as a share of all districts. The dots mark the practices of individual vacant districts. Official district boundary polygons are not published, so districts are shown as points.",
     "metricRate": "Vacancy rate",
     "metricPopulation": "Affected population",
     "typeAll": "All types",
@@ -156,8 +174,9 @@
     }
   },
   "search": {
+    "toMap": "View on the map ↓",
     "heading": "What about my town?",
-    "explain": "Type the name of your settlement: we show the available and the vacant {kind} districts there.",
+    "explain": "Type at least two letters and choose a town from the results.",
     "placeholder": "Settlement name…",
     "noResult": "No results. The list contains settlements that have a registered {kind} district.",
     "filledSeat": "operating, filled district(s) hold consultations in this settlement",
@@ -167,7 +186,7 @@
     "noVacant": "Every registered {kind} district belonging to this settlement is filled.",
     "county": "county",
     "servedBy": "Settlements belonging to this district",
-    "reminder": "Residents of a vacant district are covered by a substitute physician — care is typically available in another settlement or with reduced consulting hours.",
+    "reminder": "Residents of a vacant district are covered by a substitute physician. Care is typically available in another settlement or with reduced consulting hours.",
     "filledListTitle": "Filled districts in this settlement",
     "filledListTitleCoverage": "Filled districts covering this settlement",
     "filledMore": "and {n} more districts",
@@ -181,7 +200,9 @@
     "vacantCount": "vacant or dissolved {kind} districts belong to this settlement",
     "vacantCountOnly": "vacant {kind} district(s) belong to this settlement",
     "unlisted": "This settlement appears on no published {kind} district list. That does not mean there is no care: NEAK simply does not publish which district is responsible. Its own page shows the nearest surgery and the drive.",
-    "dissolvedCount": "dissolved {kind} district(s) belonged to this settlement"
+    "dissolvedCount": "dissolved {kind} district(s) belonged to this settlement",
+    "kindLabel": "Branch of care",
+    "tableView": "Table view"
   },
   "ranking": {
     "heading": "County ranking",
@@ -425,22 +446,21 @@
   },
   "why": {
     "heading": "Why does primary care matter?",
-    "lead": "The GP, the paediatrician and the dentist are the gateway to healthcare: they are the first to see a complaint, they know the family, the medical history, the everyday life of the settlement. Primary care is not “minor medicine” — it is the level where a large share of diseases can be prevented or caught in time.",
+    "lead": "Primary care teams monitor long-term conditions and carry out routine screening. Praxis Map shows where these services depend on cover from another clinician.",
     "gp": {
       "title": "General practitioner",
-      "text": "Managing chronic diseases — hypertension, diabetes —, organising screenings, vaccinations, and the first examination that decides whether specialist care is needed. Where a district is unfilled, all of this is squeezed into a substitute's reduced consulting hours."
+      "text": "Managing **chronic diseases** such as hypertension and diabetes, organising **screenings**, **vaccinations**, and the first examination that decides whether specialist care is needed. Where a district is unfilled, all of this is squeezed into a substitute’s reduced consulting hours."
     },
     "ped": {
       "title": "Paediatrician",
-      "text": "Age-linked status examinations, the vaccination schedule and monitoring development are the basis of recognising childhood diseases early. Vacancies in paediatric districts affect the youngest — see them on the map with the “paediatric” type filter.",
+      "text": "Age-linked status examinations, the vaccination schedule and monitoring development are the basis of **recognising childhood diseases early**. Vacancies in paediatric districts affect the youngest: see them on the map with the “paediatric” type filter.",
       "linkNote": ""
     },
     "dental": {
       "title": "Dentist",
-      "text": "Caries and periodontal disease are preventable, and early detection of oral cancer can save lives — all of which depends on regular dental screening. In a vacant district the population typically only has local access to emergency care: prevention is the first thing to fall away."
+      "text": "**Caries** and **periodontal disease** are preventable, and early detection of **oral cancer** can save lives. All of this depends on **regular dental screening**. In a vacant district the population typically only has local access to emergency care, so prevention is the first thing to fall away."
     },
     "chainTitle": "The prevention chain",
-    "chainIntro": "Switch between what happens to the same patient with and without a filled district:",
     "chainOk": [
       "An accessible doctor",
       "Screening, early detection",
@@ -453,19 +473,18 @@
       "Disease found late",
       "Harder, costlier care"
     ],
-    "dataTie": "Today {gpPop} people in Hungary live in a vacant GP district and {dentalPop} in a vacant dental district — for them this chain is not a given.",
-    "disclaimer": "The relationships above are general public-health knowledge; we make numerical claims only from our own, sourced data.",
+    "dataTie": "Today {gpPop} people in Hungary live in a vacant GP district and {dentalPop} in a vacant dental district. For them this chain is not a given.",
     "storyToggleOk": "With a GP",
     "storyToggleBroken": "Without a GP",
     "chainOkDesc": [
       "The district has a doctor: complaints are not left unanswered, examination is available locally.",
       "At regular screening even a still symptomless change comes to light in time.",
       "A disease found early is simpler to treat: medication, care, follow-up.",
-      "The complication never happens — the patient lives their life, the hospital never enters the picture."
+      "The complication never happens: the patient lives their life, and the hospital never enters the picture."
     ],
     "chainBrokenDesc": [
       "The district has no doctor: the practice is closed, substitution is available elsewhere and less often.",
-      "Screenings are missed — for those who cannot reach a doctor, nobody looks for anything.",
+      "Screenings are missed: for those who cannot reach a doctor, nobody looks for anything.",
       "The symptomless change grows quietly and surfaces late, with complaints.",
       "A late diagnosis means more serious intervention and longer, costlier care."
     ],
@@ -487,38 +506,31 @@
       "The district has a dentist: complaints and the annual check-up are both available locally, in time.",
       "At screening even tiny, symptomless decay comes to light in time.",
       "Decay found early is simple to treat: one small filling and done.",
-      "The teeth stay sound — with regular check-ups, major intervention never enters the picture."
+      "The teeth stay sound: with regular check-ups, major intervention never enters the picture."
     ],
     "chainBrokenDentalDesc": [
       "The district has no dentist: the practice is closed, locally only emergency care is available at best.",
-      "Screenings are missed — nobody notices the tiny decay.",
+      "Screenings are missed, so nobody notices the tiny decay.",
       "Decay spreads quietly and announces itself with pain and swelling.",
-      "A tooth beyond saving must be extracted — replacement is longer, more painful and far more expensive."
+      "A tooth beyond saving must be extracted, and replacing it is longer, more painful and far more expensive."
     ],
-    "storyTieBroken": "Today this chain breaks in {count} {kind} districts — {people} people.",
-    "storyTieOk": "Today this chain holds in {count} of the country's {total} {kind} districts."
-  },
-  "showcase": {
-    "sparkNote": "based on the archived months ({first} – {last})",
-    "dissolvedNote": "each dot is one terminated-contract district",
-    "rateNote": "of the {total} registered districts",
-    "cityNote": "one pictogram ≈ one Szombathely's worth (75 thousand) of people",
-    "longestNote": "{settlement} ({county}) — {type} district",
-    "sinceYear": "since",
-    "popShare": "That is {pct} of the country's population.",
-    "longTermNote": "The legal category under Gov. Decree 313/2011: at least 6 months have passed since the financing contract ended. Source: OKFŐ, as of {asOf}."
+    "tieOk": "{kind} districts where this chain holds today",
+    "tieBroken": "{kind} districts where this chain breaks today, home to {people} people"
   },
   "intro": {
+    "trendLabelUp": "vacant {kind} districts since {year}",
+    "trendLabelDown": "vacant {kind} districts since {year}",
+    "trendText": "By NEAK’s archived monthly lists there were {from} vacant {kind} districts in {first} and {to} in {last}.",
+    "trendNoDissolved": "Terminated-contract districts are not included.",
     "aria": "National picture on scroll",
     "step1Label": "vacant {kind} districts in Hungary today",
     "step2Label": "people live in a vacant {kind} district",
     "step3Label": "the vacancy rate in the worst-affected county: {county}",
     "step4Label": "the longest-vacant district: {settlement}, since {month}",
-    "text1": "Every month, NEAK publishes where Hungary has no contracted {doctor}. The number has not fallen in years.",
-    "text2": "This is no statistical abstraction: behind every district are the residents of a settlement or neighbourhood that prevention does not reach.",
-    "text3": "The burden is uneven — there is a county where more than every third district is vacant.",
+    "text1": "NEAK’s monthly public register shows which districts lack a contracted {doctor}.",
+    "text2": "Search the map by town. The analyses also compare counties, districts and European countries.",
+    "text3": "Areas with more vacant GP districts tend to have longer journeys to care, lower incomes and education levels, more jobseekers and higher avoidable mortality. These associations do not establish cause and effect.",
     "text4": "And vacancy is no passing state: there are districts that have waited decades for a doctor. See how your own town is doing on the map.",
-    "cta": "Jump to the map ↓",
     "popLabel": "{pct} of the population",
     "step1LabelWith": "{kind} districts are vacant or dissolved in Hungary today",
     "step2LabelWith": "people live in a vacant or dissolved {kind} district"
@@ -2059,6 +2071,26 @@
     "cellNone": "{county}, {year}: no usable snapshot"
   },
   "balance": {
+    "view": "View",
+    "byType": "By district type",
+    "viewChart": "Chart",
+    "viewTable": "Table",
+    "chartAria": "Districts by type: filled and vacant districts",
+    "legendFilled": "filled district",
+    "legendVacant": "vacant district",
+    "legendTn": "practice without TEK (not a district)",
+    "rowCount": "{vacant} vacant / {total} districts",
+    "rowTn": "+ {n} practices without TEK",
+    "rateShortWith": "vacant or terminated",
+    "legendDissolved": "terminated district",
+    "rateShort": "vacant",
+    "axisUnit": "districts",
+    "chartScale": "Bar length is the number of districts; the percentage is the type’s vacancy rate. The purple end is practices, not districts: they have no assigned area, so they can never be vacant.",
+    "chartScaleDental": "Bar length is the number of districts; the percentage is the type’s vacancy rate.",
+    "tekLinkTitle": "GP practices without TEK",
+    "tekLinkText": "Who runs them, and how they have dwindled since 2019",
+    "shareWith": "{count} vacant or dissolved out of {total} districts",
+    "shareLabel": "{count} vacant out of {total} districts",
     "thNon": "Practices without TEK",
     "thAllPractices": "All practices",
     "totalRow": "Total",
@@ -2067,12 +2099,12 @@
     "tekFigureB": "of them without TEK (territorial care obligation)",
     "tekClarify": "Why {districts} and not {all}? The map and the vacancy rate are about the {districts} districts: they carry a territorial care obligation (TEK) and answer for the residents of a set area. Beside them work {tn} practices without TEK, which take only the patients who register with them (police and university practices, for example), so they are never listed as vacant. Together they make {all} practices.",
     "tekLink": "GP practices without TEK in detail: who runs them, and how they dwindled since 2019 →",
-    "heading": "How the {kind} district stock stands",
+    "heading": "What share of {kind} districts are vacant?",
     "total": "{kind} districts in the country",
     "thType": "District type",
     "thTotal": "Districts",
     "thRate": "Vacancy",
-    "note": "A mixed district serves adults and children together — in smaller settlements it is usually the only one there is. Bar lengths are scaled to the worst type, so the types can be read against each other.",
+    "note": "A mixed district serves adults and children together; in smaller settlements it is usually the only one there is.",
     "type": {
       "gp": {
         "adult": "adult GP",
@@ -2855,15 +2887,16 @@
   "highlights": {
     "heading": "What nobody had counted before",
     "vs": "vs.",
+    "tenYears": "empty for 10 years",
     "more": "How we counted →",
-    "gp": "Of GP districts filled with a settlement grant, {a}% have a doctor today — against only {b}% of the matched districts without a grant, vacant as long, in settlements of the same size ({pairs} pairs).",
-    "dental": "Of today’s {vacant} vacant dental districts, {n} have been empty for ten years or more ({share}) — a decade without a dentist of their own.",
+    "gp": "The state pays a one-off settlement grant to a doctor who takes over a GP district that has been empty for at least a year. Of the districts filled this way, **{a}% still have a doctor today**. Among districts in similar-sized settlements, empty just as long but without a grant, only {b}% do (based on {pairs} matched pairs).",
+    "dental": "**{n} dental districts** have been empty for ten years or more: {share} of today’s {vacant} vacant ones. A decade without a dentist of their own.",
     "europe": {
       "heading": "Against the rest of Europe",
       "kicker": "Europe",
-      "gp": "Hungary has {value} practising GPs per 100,000 people ({year}); the regional median is {median}. Rank {rank} of the {of} countries in the region that report it; the most: {best}, {bestValue}.",
-      "dental": "The share of adults who saw a dentist within a year is {value} in Hungary ({year}), only {rural} in rural areas — {eu} in the EU. Rank {rank} of {of} countries in the region.",
-      "dentalMedian": "The share of adults who saw a dentist within a year is {value} in Hungary ({year}), only {rural} in rural areas — the regional median is {median}. Rank {rank} of {of} countries in the region.",
+      "gp": "Hungary has **{value} practising GPs** per 100,000 people ({year}); the regional median is {median}. Rank {rank} of the {of} countries in the region that report it; the most: {best}, {bestValue}.",
+      "dental": "In Hungary, **{value} of adults saw a dentist** within a year ({year}), only {rural} in rural areas and {eu} in the EU. Rank {rank} of {of} countries in the region.",
+      "dentalMedian": "In Hungary, **{value} of adults saw a dentist** within a year ({year}), only {rural} in rural areas, against a regional median of {median}. Rank {rank} of {of} countries in the region.",
       "more": "The European comparison →"
     }
   },
@@ -4598,25 +4631,6 @@
       "gp": "GP",
       "dentist": "dentist",
       "hospital": "hospital"
-    },
-    "landing": {
-      "title": "{label} districts in half a minute",
-      "total": "{month}: NEAK lists {total} {kind} districts.",
-      "totalLabel": "{kind} districts",
-      "vacant": "Of these, {vacant} are vacant: {rate}.",
-      "vacantWith": "Counting dissolved contracts too, {vacant} districts have no contracted doctor: {rate}.",
-      "dissolvedOut": "Another {n} districts had their contract dissolved; they are not in that figure.",
-      "dissolvedIn": "That figure includes {n} districts whose contract was dissolved.",
-      "people": "{people} residents belong to these districts.",
-      "peopleLabel": "residents",
-      "caveat": "Vacant ≠ unserved: most residents are seen by a substitute {doctor}, in limited surgery hours.",
-      "longTerm": "Legally long-term vacant: {n} districts (OKFŐ, {month}).",
-      "longTermShare": "of the vacant districts",
-      "duration": "Half of today's vacant districts have been empty for at least {dur}.",
-      "durationLabel": "since falling vacant (median)",
-      "trend": "{from}: {a} vacant districts. {to}: {b}.",
-      "trendWith": "{from}: {a} vacant or dissolved districts. {to}: {b}.",
-      "counties": "Highest shares: {c1} ({r1}), {c2} ({r2}), {c3} ({r3})."
     },
     "highlights": {
       "title": "{heading}, in half a minute",

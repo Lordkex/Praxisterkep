@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import sources from '../../lib/sources.json';
 import {
   analysisScenes, countyOverviewScenes, countyScenes, districtOverviewScenes, districtScenes,
-  europeScenes, highlightsScenes, landingScenes, methodScenes, specialistScenes,
+  europeScenes, highlightsScenes, methodScenes, specialistScenes,
   type SpecialistInput,
 } from './stories';
 import type { Scene } from './Story';
@@ -26,18 +26,6 @@ function check(scenes: Scene[], min = 4) {
     expect(typeof s.draw).toBe('function');
   }
 }
-
-describe.runIf(have('latest.json', 'timeseries.json'))('landing story', () => {
-  const latest = load('latest.json');
-  const ts = load('timeseries.json');
-  for (const kind of ['dental', 'gp'] as const) {
-    for (const mode of ['without', 'with'] as const) {
-      it(`${kind}, dissolved ${mode}`, () => {
-        check(landingScenes({ kind, snapshot: latest.kinds[kind], months: ts.kinds[kind], mode }), 6);
-      });
-    }
-  }
-});
 
 describe.runIf(have('highlights.json', 'europe_summary.json'))('highlights story', () => {
   it('tells the four facts', () => {

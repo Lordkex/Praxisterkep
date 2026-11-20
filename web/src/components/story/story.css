@@ -82,3 +82,10 @@
 
 /* the prevention chain's stage (PreventionStory.tsx): the canvas under the caption */
 .cutstory-tokens canvas { display: block; width: 100%; }
+
+/* the lines of a story shown without its on-screen script (the landing):
+   read by a screen reader, not drawn */
+.cutstory__sr {
+  position: absolute; width: 1px; height: 1px; margin: 0; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}

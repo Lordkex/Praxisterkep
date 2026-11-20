@@ -18,7 +18,11 @@ import {
 
 export type { Mood, Mascot, Scene } from './player';
 
-export function Story({ title, mascot, scenes }: { title: string; mascot: Mascot; scenes: Scene[] }) {
+export function Story({ title, mascot, scenes, script = true }: {
+  title: string; mascot: Mascot; scenes: Scene[];
+  /** false keeps the lines for screen readers only, with no "script" disclosure on screen */
+  script?: boolean;
+}) {
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0); // ms into the story
   const started = useRef(false);
@@ -114,10 +118,14 @@ export function Story({ title, mascot, scenes }: { title: string; mascot: Mascot
             now: formatNumber(Math.floor(time / 1000)), total: formatNumber(Math.round(total / 1000)) })}</span>
         </div>
       </div>
-      <details className="cutstory__script">
-        <summary>{t('story.ui.script')}</summary>
-        <ol>{scenes.map((s, i) => <li key={i}>{s.say}</li>)}</ol>
-      </details>
+      {script ? (
+        <details className="cutstory__script">
+          <summary>{t('story.ui.script')}</summary>
+          <ol>{scenes.map((s, i) => <li key={i}>{s.say}</li>)}</ol>
+        </details>
+      ) : (
+        <ol className="cutstory__sr">{scenes.map((s, i) => <li key={i}>{s.say}</li>)}</ol>
+      )}
     </section>
   );
 }
@@ -125,7 +133,7 @@ export function Story({ title, mascot, scenes }: { title: string; mascot: Mascot
 /** The story's place, held while its data is still on the way: the same frame,
  *  controls and script line, empty, so the page under it does not jump when
  *  the story arrives. */
-export function StoryPending() {
+export function StoryPending({ script = true }: { script?: boolean } = {}) {
   return (
     <section className="cutstory cutstory--pending" data-export="skip" aria-hidden="true">
       <div className="cutstory__frame">
@@ -136,7 +144,7 @@ export function StoryPending() {
           <div className="cutstory__track" />
         </div>
       </div>
-      <div className="cutstory__script">&nbsp;</div>
+      {script && <div className="cutstory__script">&nbsp;</div>}
     </section>
   );
 }

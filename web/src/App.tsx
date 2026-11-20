@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect } from 'react';
 import { locale, t } from './lib/i18n';
 import { useAppStore, useSnapshot } from './store/useAppStore';
 import { Hero } from './components/Hero';
-import { HeroShowcase } from './components/HeroShowcase';
 import { PraxisBalance } from './components/PraxisBalance';
 import { ScrollyIntro } from './components/ScrollyIntro';
 import { ContextBar } from './components/ContextBar';
@@ -16,9 +15,9 @@ import { SearchSection } from './components/SearchSection';
 import { Footer } from './components/Footer';
 import { LangToggle } from './components/LangToggle';
 import { Highlights } from './components/Highlights';
-import { LandingStory } from './components/story/PageStories';
 import { NavMenu } from './components/NavMenu';
 import { IconStethoscope, IconTooth } from './components/icons';
+import { SegmentedControl } from './components/SegmentedControl';
 import type { PraxisKind } from './types';
 
 // The map (and MapLibre with it, a megabyte of script, plus the EESZT file
@@ -33,7 +32,6 @@ const LANDING_NEXT = [
   { href: '/megye.html', titleKey: 'next.county.title', textKey: 'next.county.text' },
   { href: '/jaras.html', titleKey: 'next.myDistrict.title', textKey: 'next.myDistrict.text' },
   { href: '/elemzo.html', titleKey: 'next.analysis.title', textKey: 'next.analysis.text' },
-  { href: '/#alapellatas', titleKey: 'next.why.title', textKey: 'next.why.text' },
 ] as const;
 
 export default function App() {
@@ -84,37 +82,30 @@ export default function App() {
           {/* the landing too: every page's brand leads home, and here it is the
               way back to the top with the reader's place kept */}
           <a className="topnav__brand" href={contextHref(import.meta.env.BASE_URL)}>{t('site.title')}</a>
-          <div className="topnav__kind" role="group">
-            <button aria-pressed={kind === 'dental'}
-              title={t('kinds.dental.label')} aria-label={t('kinds.dental.label')}
-              onClick={() => setKind('dental' as PraxisKind)}>
-              <IconTooth />
-            </button>
-            <button aria-pressed={kind === 'gp'}
-              title={t('kinds.gp.label')} aria-label={t('kinds.gp.label')}
-              onClick={() => setKind('gp' as PraxisKind)}>
-              <IconStethoscope />
-            </button>
-          </div>
+          <SegmentedControl<PraxisKind> size="xs" className="topnav__kind"
+            ariaLabel={t('search.kindLabel')} value={kind} onChange={setKind}
+            options={[
+              { value: 'gp', label: <IconStethoscope />, ariaLabel: t('kinds.gp.label'), title: t('kinds.gp.label') },
+              { value: 'dental', label: <IconTooth />, ariaLabel: t('kinds.dental.label'), title: t('kinds.dental.label') },
+            ]} />
           <LangToggle />
           <NavMenu entries={withContext(SITE_NAV)} />
         </div>
       </nav>
       <ContextBar />
-      <Hero />
-      <div className="container"><LandingStory /></div>
-          <ScrollyIntro />
-          <HeroShowcase />
-          <PraxisBalance />
-          <Highlights />
-          <SearchSection />
-          {/* the search narrows the map, so it comes after the question it
-              answers rather than before it */}
-      <Deferred ids={['terkep']} minHeight={720} eager={MAP_LINKED}>
-        <Suspense fallback={<div style={{ minHeight: 720 }} />}><MapSection /></Suspense>
-      </Deferred>
-      <WhySection />
-      <div className="section container"><NextSteps items={LANDING_NEXT} /></div>
+      <main className="landing">
+        {/* the question and the search that answers it for the reader's own
+            town come first; the national picture and the why follow */}
+        <Hero><SearchSection /></Hero>
+        <ScrollyIntro />
+        <WhySection />
+        <Deferred ids={['terkep']} minHeight={720} eager={MAP_LINKED}>
+          <Suspense fallback={<div style={{ minHeight: 720 }} />}><MapSection /></Suspense>
+        </Deferred>
+        <PraxisBalance />
+        <Highlights />
+        <div className="section container"><NextSteps items={LANDING_NEXT} /></div>
+      </main>
       <Footer />
     </>
   );

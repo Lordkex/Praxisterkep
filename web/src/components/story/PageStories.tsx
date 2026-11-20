@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { t } from '../../lib/i18n';
 import { useContextStore } from '../../lib/context';
-import { useAppStore, useSnapshot, useTimeseriesMonths } from '../../store/useAppStore';
+import { useAppStore, useSnapshot } from '../../store/useAppStore';
 import { useCounties } from '../../lib/counties';
 import { useDistricts } from '../../lib/districts';
 import { useSurvival } from '../../lib/analysis';
@@ -21,7 +21,7 @@ import sources from '../../lib/sources.json';
 import { Story, StoryPending, type Mascot, type Scene } from './Story';
 import {
   analysisScenes, countyOverviewScenes, countyScenes, districtOverviewScenes, districtScenes,
-  europeScenes, highlightsScenes, landingScenes, methodScenes, specialistScenes,
+  europeScenes, highlightsScenes, methodScenes, specialistScenes,
   type EuropeSummaryInput, type HighlightsInput, type SpecialistInput,
 } from './stories';
 import type { PraxisKind } from '../../types';
@@ -57,28 +57,14 @@ function useJson<T>(file: string): T | null {
   return data;
 }
 
-/** The landing, after the lead: the monthly picture of the chosen branch. */
-export function LandingStory(): ReactElement | null {
-  const kind = useAppStore((s) => s.kind);
-  const snapshot = useSnapshot();
-  const months = useTimeseriesMonths();
-  const mode = useContextStore((s) => s.dissolved);
-  const scenes = useMemo(() => (snapshot ? safe(() => landingScenes({ kind, snapshot, months, mode })) : []),
-    [kind, snapshot, months, mode]);
-  return (
-    <Shown key={`${kind}-${mode}`} mascot={mascotOf(kind)} scenes={scenes} pending={!snapshot}
-      title={t('story.landing.title', { label: t(`kinds.${kind}.label`) })} />
-  );
-}
-
 /** Under "Amit eddig senki nem számolt ki": the same four facts as the cards. */
-export function HighlightsStory({ data }: { data: HighlightsInput }): ReactElement | null {
+export function HighlightsStory({ data, script = true }: { data: HighlightsInput; script?: boolean }): ReactElement | null {
   const eu = useJson<EuropeSummaryInput>('europe_summary.json');
   const scenes = useMemo(() => safe(() => highlightsScenes(data, eu)), [data, eu]);
   // wait for the European half, so the story does not change length mid-play
-  if (!eu) return <StoryPending />;
+  if (!eu) return <StoryPending script={script} />;
   return (
-    <Story mascot="house" scenes={scenes}
+    <Story mascot="house" scenes={scenes} script={script}
       title={t('story.highlights.title', { heading: t('highlights.heading') })} />
   );
 }

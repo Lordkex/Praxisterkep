@@ -6,6 +6,8 @@ import { t } from '../lib/i18n';
 import { contextHref } from '../lib/context';
 import { formatValue, type EuUnit } from '../lib/europe';
 import { dataUrl } from '../lib/dataUrl';
+import { Emph } from './Emph';
+import { IconStethoscope, IconTooth } from './icons';
 
 interface Fact {
   key: string; unit: EuUnit; year: string; value: number; rank: number; of: number; median: number;
@@ -32,29 +34,29 @@ export function EuropeHighlights() {
     <div className="highlights__europe">
       <h3 className="highlights__subheading">{t('highlights.europe.heading')}</h3>
       <div className="highlights__grid">
-        <a className="highlight" href={contextHref('/europa.html?orszagok=cee#munkaero')}>
-          <span className="highlight__kind">{t('kinds.gp.label')} · {t('highlights.europe.kicker')}</span>
+        <a className="highlight highlight--europe" href={contextHref('/europa.html?orszagok=cee#munkaero')}>
+          <span className="highlight__kind"><IconStethoscope />{t('kinds.gp.label')} · {t('highlights.europe.kicker')}</span>
           <span className="highlight__numbers">
             <b>{f(gp, gp.value)}</b>
             <span className="highlight__vs">{t('highlights.vs')}</span>
             <b className="is-dim">{f(gp, gp.median)}</b>
           </span>
-          <span className="highlight__text">{t('highlights.europe.gp', {
+          <span className="highlight__text"><Emph text={t('highlights.europe.gp', {
             value: f(gp, gp.value), median: f(gp, gp.median), year: gp.year, rank: gp.rank, of: gp.of,
-            best: t(`europe.country.${gp.best.geo}`), bestValue: f(gp, gp.best.value) })}</span>
+            best: t(`europe.country.${gp.best.geo}`), bestValue: f(gp, gp.best.value) })} /></span>
           <span className="highlight__more">{t('highlights.europe.more')}</span>
         </a>
-        <a className="highlight" href={contextHref('/europa.html?orszagok=cee#hozzaferes')}>
-          <span className="highlight__kind">{t('kinds.dental.label')} · {t('highlights.europe.kicker')}</span>
+        <a className="highlight highlight--europe" href={contextHref('/europa.html?orszagok=cee#hozzaferes')}>
+          <span className="highlight__kind"><IconTooth />{t('kinds.dental.label')} · {t('highlights.europe.kicker')}</span>
           <span className="highlight__numbers">
             <b>{f(dental, dental.value)}</b>
             <span className="highlight__vs">{t('highlights.vs')}</span>
             <b className="is-dim">{dental.eu ? f(dental, dental.eu.value) : f(dental, dental.median)}</b>
           </span>
-          <span className="highlight__text">{t(dental.eu ? 'highlights.europe.dental' : 'highlights.europe.dentalMedian', {
+          <span className="highlight__text"><Emph text={t(dental.eu ? 'highlights.europe.dental' : 'highlights.europe.dentalMedian', {
             value: f(dental, dental.value), eu: dental.eu ? f(dental, dental.eu.value) : '–',
             median: f(dental, dental.median), year: dental.year, rank: dental.rank, of: dental.of,
-            rural: dental.rural ? f(dental, dental.rural.value) : '–' })}</span>
+            rural: dental.rural ? f(dental, dental.rural.value) : '–' })} /></span>
           <span className="highlight__more">{t('highlights.europe.more')}</span>
         </a>
       </div>

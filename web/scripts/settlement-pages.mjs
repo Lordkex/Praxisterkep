@@ -1333,7 +1333,6 @@ function siteFooter(homeHref, analysisHref) {
   const f = DICT.footer;
   return `<footer class="footer" id="forrasok">
   <div class="container">
-    <p class="footer__lead">${esc(f.publicOnly)}</p>
     <details class="footer__fold" id="forrasok-lista"><summary><h3>${esc(f.sources)}</h3></summary>
     <p class="footer__note">${esc(f.sourcesNote)}</p>
     <ul class="footer__sources">${sources.groups.map((g) => {
@@ -1369,6 +1368,7 @@ function siteFooter(homeHref, analysisHref) {
       <a href="${esc(pagePath(''))}">${esc(S('footerLinks.all'))}</a> ·
       <a href="${esc(analysisHref)}">${esc(S('footerLinks.analysis'))}</a> ·
       <a href="${esc(appHref('/modszertan.html#adatok'))}">${esc(S('footerLinks.data'))}</a></p>
+    <p class="footer__lead">${esc(f.publicOnly)}</p>
   </div>
   <script>if (location.hash === '#forrasok') document.getElementById('forrasok-lista').open = true;</script>
 </footer>`;

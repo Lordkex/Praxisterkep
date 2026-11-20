@@ -5,7 +5,7 @@
 // live in i18n (story.*); a Hungarian case ending is never glued to a
 // number, the sentences are worded around it instead.
 import { t, tKind, locale } from '../../lib/i18n';
-import { formatDecimal, formatDuration, formatMonth, formatNumber, formatPercent, huArticle, monthsBetween } from '../../lib/format';
+import { formatDecimal, formatMonth, formatNumber, formatPercent, huArticle } from '../../lib/format';
 import { vacancyOf } from '../../lib/vacancy';
 import { formatValue, latest, ranking, reference, type EuropeRaw, type GroupKey } from '../../lib/europe';
 import type { DissolvedMode } from '../../lib/context';
@@ -25,114 +25,6 @@ const minutes = (v: number) => t('county.minutes', { n: dec(v, 1) });
 /** "az" or "a" before a Hungarian number; nothing in English, where the templates do not ask for it. */
 const art = (v: number) => (locale === 'en' ? '' : huArticle(v));
 const kindColor = (p: Painter, kind: PraxisKind) => (kind === 'gp' ? p.c.gp : p.c.dental);
-
-function median(xs: number[]): number | null {
-  if (!xs.length) return null;
-  const s = [...xs].sort((a, b) => a - b);
-  const m = Math.floor(s.length / 2);
-  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-}
-
-/* -------------------------------------------------------------- landing */
-
-export interface LandingInput {
-  kind: PraxisKind;
-  snapshot: Snapshot;
-  months: TimeseriesMonth[];
-  mode: DissolvedMode;
-}
-
-export function landingScenes({ kind, snapshot, months, mode }: LandingInput): Scene[] {
-  const nat = snapshot.national;
-  const parts = vacancyOf(nat, mode);
-  const k = (key: string, params?: Record<string, string | number>) => tKind(`story.landing.${key}`, kind, params);
-  const scenes: Scene[] = [];
-  const total = parts.total;
-  if (total) {
-    scenes.push({
-      say: k('total', { month: formatMonth(snapshot.month), total: n(total) }),
-      draw: (p, tt) => bigNumber(p, total, n, tt, { label: k('totalLabel'), color: p.c.accent }),
-    });
-    const filled = Math.max(0, total - nat.vacant - nat.dissolved);
-    scenes.push({
-      say: k(parts.withDissolved ? 'vacantWith' : 'vacant', { vacant: n(parts.count), rate: pc(parts.rate ?? 0) }),
-      mood: 'worried',
-      draw: (p, tt) => waffle(p, [
-        { n: filled, color: p.c.accent, label: t('story.common.filled') },
-        { n: nat.vacant, color: p.c.alert, label: t('story.common.vacant') },
-        ...(nat.dissolved ? [{ n: nat.dissolved, color: p.c.track, label: t('story.common.dissolved') }] : []),
-      ], total, tt),
-    });
-  }
-  if (nat.dissolved > 0) {
-    scenes.push({
-      say: k(parts.withDissolved ? 'dissolvedIn' : 'dissolvedOut', { n: n(nat.dissolved) }),
-      draw: (p, tt) => columns(p, [
-        { label: t('story.common.vacant'), value: nat.vacant, color: p.c.alert },
-        { label: t('story.common.dissolved'), value: nat.dissolved, color: p.c.soft },
-      ], n, tt),
-    });
-  }
-  if (parts.population > 0) {
-    const share = nat.populationTotal ? parts.population / nat.populationTotal : null;
-    scenes.push({
-      say: k('people', { people: n(parts.population) }),
-      draw: (p, tt) => (share !== null
-        ? people(p, 100, Math.round(share * 100), tt, p.c.alert)
-        : bigNumber(p, parts.population, n, tt, { label: k('peopleLabel') })),
-    });
-  }
-  scenes.push({
-    say: k('caveat'),
-    mood: 'proud',
-    draw: (p, tt) => houses(p, houseShare(parts.rate ?? 0, p.c.soft, p.c.accent), tt),
-  });
-  if (typeof nat.longTerm === 'number' && nat.vacant > 0) {
-    const lt = nat.longTerm;
-    scenes.push({
-      say: k('longTerm', { n: n(lt), month: formatMonth(snapshot.longTermAsOf ?? snapshot.month) }),
-      mood: 'worried',
-      draw: (p, tt) => donut(p, Math.min(1, lt / nat.vacant), tt, p.c.alert, { label: k('longTermShare') }),
-    });
-  }
-  const spells = snapshot.praxes
-    .filter((x) => (x.status === 'vacant' || x.status === 'vacant_longterm') && /^\d{4}-\d{2}$/.test(x.vacantSince))
-    .map((x) => monthsBetween(x.vacantSince, snapshot.month))
-    .filter((m) => m >= 0);
-  const med = median(spells);
-  if (med !== null) {
-    const m = Math.round(med);
-    scenes.push({
-      say: k('duration', { dur: formatDuration(m) }),
-      mood: 'surprised',
-      draw: (p, tt) => bigNumber(p, m, (v) => formatDuration(Math.round(v)), tt, { label: k('durationLabel'), color: p.c.soft }),
-    });
-  }
-  const series = months.map((m) => m.vacant + (parts.withDissolved ? m.dissolved : 0));
-  if (months.length >= 2) {
-    const a = months[0];
-    const b = months[months.length - 1];
-    scenes.push({
-      say: k(parts.withDissolved ? 'trendWith' : 'trend', {
-        from: formatMonth(a.month), a: n(series[0]), to: formatMonth(b.month), b: n(series[series.length - 1]) }),
-      draw: (p, tt) => line(p, series, months.map((m) => formatMonth(m.month)), n, tt, p.c.accent),
-    });
-  }
-  const ranked = snapshot.counties
-    .map((c) => ({ name: c.name, rate: vacancyOf(c, mode).rate }))
-    .filter((c): c is { name: string; rate: number } => c.rate !== null)
-    .sort((a, b) => b.rate - a.rate);
-  if (ranked.length >= 3) {
-    const [c1, c2, c3] = ranked;
-    scenes.push({
-      say: k('counties', { c1: c1.name, r1: pc(c1.rate), c2: c2.name, r2: pc(c2.rate), c3: c3.name, r3: pc(c3.rate) }),
-      mood: 'worried',
-      draw: (p, tt) => bars(p, ranked.slice(0, 5).map((c) => ({ label: c.name, value: c.rate, color: p.c.alert })),
-        (v) => pc(v), tt, parts.rate !== null ? { ref: { label: t('story.common.national'), value: parts.rate } } : {}),
-    });
-  }
-  return scenes;
-}
 
 /* ----------------------------------------------------------- highlights */
 
