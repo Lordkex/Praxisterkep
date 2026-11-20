@@ -136,6 +136,23 @@ def fetch() -> dict[str, bytes]:
     out["INDIKATOR1.json"] = catalogue.content
     years = {r["attributes"]["MUTATO_KOD"]: r["attributes"]
              for r in json.loads(catalogue.content)["features"]}
+    # KSH sometimes drops an indicator from the catalogue while its layer still
+    # answers (2026-11: the four GP indicators TYWJ001/011/012/013). The years
+    # and label then come from the newest archived catalogue that listed it,
+    # kept apart in their own file so the raw catalogue stays as KSH sent it.
+    missing = [c for c in INDICATORS if c not in years]
+    if missing:
+        carried = carried_catalogue(missing)
+        lost = [c for c in missing if c not in carried]
+        if lost:
+            raise ParseError(f"KSH no longer lists indicator(s) {', '.join(lost)}, "
+                             "and no archived catalogue does either")
+        print(f"  WARNING: KSH's catalogue no longer lists {', '.join(missing)}; "
+              "using the years of the last archived catalogue that did")
+        out["INDIKATOR1_carried.json"] = json.dumps(
+            {"features": [{"attributes": carried[c]} for c in sorted(carried)]},
+            ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        years.update(carried)
     level_field = {"settlement": "TELEP", "district": "JARAS", "county": "MEGYE"}
     for code, (_, levels) in INDICATORS.items():
         for level in levels:
@@ -183,6 +200,23 @@ def archive(files: dict[str, bytes]) -> Path:
     return folder
 
 
+def carried_catalogue(codes: list[str], raw: Path | None = None) -> dict[str, dict]:
+    """The catalogue rows of `codes` from the newest archive that still had them."""
+    found: dict[str, dict] = {}
+    for manifest in sorted((raw or RAW).glob("*/manifest.json"), reverse=True):
+        files = read_archive(manifest.parent)
+        for name in ("INDIKATOR1.json", "INDIKATOR1_carried.json"):
+            if name not in files:
+                continue
+            for f in json.loads(files[name])["features"]:
+                code = f["attributes"]["MUTATO_KOD"]
+                if code in codes and code not in found:
+                    found[code] = f["attributes"]
+        if len(found) == len(codes):
+            break
+    return found
+
+
 def read_archive(folder: Path) -> dict[str, bytes]:
     return {p.name[:-3]: gzip.decompress(p.read_bytes()) for p in folder.glob("*.json.gz")}
 
@@ -194,6 +228,9 @@ def parse(files: dict[str, bytes], ksh_ids: dict[str, str]) -> dict:
     """
     catalogue = {f["attributes"]["MUTATO_KOD"]: f["attributes"]
                  for f in json.loads(files["INDIKATOR1.json"])["features"]}
+    if "INDIKATOR1_carried.json" in files:  # see fetch(): rows KSH stopped listing
+        for f in json.loads(files["INDIKATOR1_carried.json"])["features"]:
+            catalogue.setdefault(f["attributes"]["MUTATO_KOD"], f["attributes"])
     indicators = {}
     for code, (key, levels) in INDICATORS.items():
         meta = catalogue.get(code)
