@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { t } from '../../lib/i18n';
 import { useContextStore } from '../../lib/context';
-import { useAppStore, useSnapshot } from '../../store/useAppStore';
+import { useAppStore, useSnapshot, useTimeseriesMonths } from '../../store/useAppStore';
 import { useCounties } from '../../lib/counties';
 import { useDistricts } from '../../lib/districts';
 import { useSurvival } from '../../lib/analysis';
@@ -21,7 +21,7 @@ import sources from '../../lib/sources.json';
 import { Story, StoryPending, type Mascot, type Scene } from './Story';
 import {
   analysisScenes, countyOverviewScenes, countyScenes, districtOverviewScenes, districtScenes,
-  europeScenes, highlightsScenes, methodScenes, specialistScenes,
+  europeScenes, highlightsScenes, landingScenes, methodScenes, specialistScenes,
   type EuropeSummaryInput, type HighlightsInput, type SpecialistInput,
 } from './stories';
 import type { PraxisKind } from '../../types';
@@ -55,6 +55,20 @@ function useJson<T>(file: string): T | null {
     return () => { alive = false; };
   }, [file]);
   return data;
+}
+
+/** The landing, after the lead: the monthly picture of the chosen branch. */
+export function LandingStory(): ReactElement | null {
+  const kind = useAppStore((s) => s.kind);
+  const snapshot = useSnapshot();
+  const months = useTimeseriesMonths();
+  const mode = useContextStore((s) => s.dissolved);
+  const scenes = useMemo(() => (snapshot ? safe(() => landingScenes({ kind, snapshot, months, mode })) : []),
+    [kind, snapshot, months, mode]);
+  return (
+    <Shown key={`${kind}-${mode}`} mascot={mascotOf(kind)} scenes={scenes} pending={!snapshot}
+      title={t('story.landing.title', { label: t(`kinds.${kind}.label`) })} />
+  );
 }
 
 /** Under "Amit eddig senki nem számolt ki": the same four facts as the cards. */

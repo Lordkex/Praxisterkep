@@ -6,20 +6,8 @@
       "children": [
         [
           "/",
-          "nav.home",
+          "nav.highlights",
           "group"
-        ],
-        [
-          "/#alapellatas",
-          "nav.why"
-        ],
-        [
-          "/#nalam",
-          "nav.mine"
-        ],
-        [
-          "/#terkep",
-          "nav.map"
         ],
         [
           "/#allomany",
@@ -28,6 +16,14 @@
         [
           "/tek-nelkul.html",
           "nav.nonTerritorial"
+        ],
+        [
+          "/#nalam",
+          "nav.mine"
+        ],
+        [
+          "/#alapellatas",
+          "nav.why"
         ],
         [
           "/megye.html",

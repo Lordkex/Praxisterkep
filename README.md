@@ -144,9 +144,7 @@ python etl/run.py --month 2026-10 --skip-geocode   # one month, cached coordinat
 python etl/pipeline.py --check
 python -m pytest etl/tests
 
-cd web
-nvm install        # selects Node.js 24 from .nvmrc; skip if Node 24 is already active
-npm ci
+cd web && npm install
 npm run dev        # development server
 npm test           # Vitest
 npm run build      # data copy, build and the static settlement pages
@@ -500,9 +498,7 @@ python etl/forecast.py
 python -m pytest etl/tests
 
 # Web
-cd web
-nvm install            # a .nvmrc alapján a Node.js 24-et aktiválja (aktív Node 24 mellett kihagyható)
-npm ci
+cd web && npm install
 npm run dev            # fejlesztői szerver
 npm test               # Vitest
 npx tsc -b             # típusellenőrzés

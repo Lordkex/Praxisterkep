@@ -31,6 +31,7 @@ export function WhySection() {
       </div>
 
       <PreventionStory />
+      <p className="why__disclaimer">{t('why.disclaimer')}</p>
     </section>
   );
 }

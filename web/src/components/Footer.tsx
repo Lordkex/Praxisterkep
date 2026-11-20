@@ -25,6 +25,7 @@ export function Footer({ month }: { month?: string }) {
   return (
     <footer className="footer" id="forrasok">
       <div className="container">
+        <p className="footer__lead">{t('footer.publicOnly')}</p>
 
         {/* folded by default: the sources and the legal notes are a click
             away on every page, without taking the bottom of each one */}
@@ -94,7 +95,6 @@ export function Footer({ month }: { month?: string }) {
           {' · '}
           {t('footer.license')}
         </p>
-        <p className="footer__lead">{t('footer.publicOnly')}</p>
       </div>
     </footer>
   );

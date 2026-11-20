@@ -2,13 +2,13 @@
 // this", and straight under it the search that answers it for the reader's
 // own town (passed in as children). The caveat and the data date follow in
 // small type: they qualify every number below, but they are not what a
-// visitor came for. The animated tour of the results closes the block.
+// visitor came for. The branch's animated monthly picture closes the block.
 import type { ReactNode } from 'react';
 import { t } from '../lib/i18n';
 import { formatMonth } from '../lib/format';
 import { useAppStore, useSnapshot, useTimeseriesMonths } from '../store/useAppStore';
 import { DissolvedSwitch } from './DissolvedSwitch';
-import { ResultsStory } from './ResultsStory';
+import { LandingStory } from './story/PageStories';
 
 export function Hero({ children }: { children?: ReactNode }) {
   const snapshot = useSnapshot()!;
@@ -42,7 +42,8 @@ export function Hero({ children }: { children?: ReactNode }) {
         </div>
       </div>
 
-      <ResultsStory />
+      {/* the branch's monthly picture opens the page, as on every main page */}
+      <LandingStory />
     </header>
   );
 }

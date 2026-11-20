@@ -8,6 +8,7 @@ import { EuropeHighlights } from './EuropeHighlights';
 import { useHighlights } from '../lib/highlights';
 import { Emph } from './Emph';
 import { IconStethoscope, IconTooth } from './icons';
+import { HighlightsStory } from './story/PageStories';
 
 export function Highlights() {
   const data = useHighlights();
@@ -45,6 +46,7 @@ export function Highlights() {
         </a>
       </div>
       <EuropeHighlights />
+      <HighlightsStory data={data} />
     </section>
   );
 }
