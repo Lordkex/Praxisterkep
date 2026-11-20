@@ -1,7 +1,7 @@
 # Praxistérkép
 
 [![Monthly ETL](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml/badge.svg)](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml)
-[![Version](https://img.shields.io/badge/version-1.58.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.59.0-blue)](CHANGELOG.md)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23460426.svg)](https://doi.org/10.5281/zenodo.23460426)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776ab?logo=python&logoColor=white)](etl/)
@@ -52,7 +52,7 @@ each, and the program, its address and version in the footer.
 
 | Page | What it does |
 |---|---|
-| [Map](https://praxisterkep.hu/) | Vacant and dissolved districts as points and bars, county and district choropleths, a time slider, shareable URLs, a settlement search, the prevention chain explained, two headline findings |
+| [Map](https://praxisterkep.hu/) | The settlement search on the first screen, then vacant and dissolved districts as points and bars, county and district choropleths (map panel grouped into view, filters and layers), a time slider, shareable URLs, the district stock as a stacked chart (with the practices without a district obligation) or a table, the prevention chain explained, headline findings |
 | [County](https://praxisterkep.hu/megye.html) | A county among the other nineteen: vacancy, its districts and settlements, nine rankings (avoidable mortality, income, jobseekers, natural change, migration, education, digital inactivity, emergency drive time, expected vacancy), a 12-month forecast path, settlement grants by year, the four cross-sections |
 | [District](https://praxisterkep.hu/jaras.html) | Each of the 197 units (174 járás + the capital's 23 kerület): districts, on-call care, yardstick cards among the 174 rural járás, mortality by cause, census, emergency access, forecast, grants, the four cross-sections — and a ranking of **the most vulnerable districts** by access |
 | [Settlement](https://praxisterkep.hu/en/telepules/) | 3,177 static pages in Hungarian and English, readable without JavaScript: is there a doctor (named only for staffed districts, from NEAK), how long a district has been vacant, how far care is by car and bus, pharmacies, health visitors, age structure, how people live (income, jobseekers, births and deaths, migration, census), grants, a one-year chance that a serving district falls vacant, a year of change |
@@ -242,7 +242,7 @@ verziója, a végén kiemelve az adatállapot.
 
 | Oldal | Mit tud |
 |---|---|
-| [Térkép](https://praxisterkep.hu/) (`index.html`) | Betöltetlen és megszűnt körzetek pont- és oszlopnézetben, megyei és járási kartogram több mutatóval, idősor-csúszka, megosztható URL; „Hol a háziorvos?” települési kereső; a prevenciós lánc magyarázata |
+| [Térkép](https://praxisterkep.hu/) (`index.html`) | „Mi a helyzet nálam?” települési kereső az első képernyőn; betöltetlen és megszűnt körzetek pont- és oszlopnézetben, megyei és járási kartogram több mutatóval (a térképpanel Nézet / Szűrők / Rétegek csoportokban), idősor-csúszka, megosztható URL; a körzetállomány halmozott diagramon (a TEK nélküli praxisokkal) vagy táblázatban; a prevenciós lánc magyarázata; kiemelt eredmények |
 | [Megye](https://praxisterkep.hu/megye.html) (`megye.html`) | Egy megye a többi tizenkilenc között: betöltetlenség, járásai, települései, és az **Egészség és életkörülmények** rész — kilenc rangsor (elkerülhető halálozás, jövedelem, álláskeresők, népmozgalom, vándorlás, végzettség, digitális inaktivitás, sürgősségi menetidő, várható betöltetlenség), 12 hónapos előrejelzési görbe, letelepedési támogatások évenként |
 | [Járás](https://praxisterkep.hu/jaras.html) (`jaras.html`) | A 197 egység (174 járás + 23 kerület) mindegyike: körzetek, ügyelet, rangsor, és mérőszalag-kártyák a 174 vidéki járás között (halálozás halálokonként, jövedelem, álláskeresők, népszámlálás, sürgősségi elérés, előrejelzés), a járásban elnyert támogatások |
 | [Település](https://praxisterkep.hu/telepules/) (`/telepules/<slug>/`, angolul `/en/telepules/<slug>/`) | 3177 statikus oldal két nyelven, JavaScript nélkül is olvasható: van-e orvos és ki az (betöltött körzetnél), mióta üres, milyen messze az ellátás autóval és busszal, gyógyszertár, védőnő, korösszetétel, **Hogyan élnek itt?** (jövedelem, álláskeresők idősorral, születés és halálozás, vándorlás, betegforgalom, népszámlálási pontdiagram, támogatással betöltött körzet, a járás előrejelzése és elkerülhető halálozása), egy év változása |

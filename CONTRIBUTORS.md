@@ -20,6 +20,17 @@ adatkezelésért Dr. Dul Zoltán felel (lásd az
   egész oldalon; az oldalsó menü nem ugrál és nem tördel, az aktív pont
   látható marad; a beágyazási kód a letöltésekhez került; a havi
   adatkönyvtár sorában közvetlen link a legutóbbi hónap fájljaira.
+  A főoldal átdolgozása
+  ([#6](https://github.com/ZoliQua/Praxisterkep/issues/6)): a települési
+  kereső az első képernyőn, a háziorvos/fogorvos váltóval és látható
+  táblázatnézet-gombbal; a körzetállomány halmozott oszlopdiagramon, saját
+  színnel a TEK nélküli praxisoknak, diagram/táblázat váltóval és a TEK
+  nélküli oldalra vezető kártyával; a térkép szűrőpanelje Nézet / Szűrők /
+  Rétegek csoportokba rendezve, a PNG-mentés a térkép sarkában, a
+  kedvezményezett települések rétegének kirajzolása, egymást nem takaró
+  városfeliratok; a kiemelő kártyák ági címkével és érthetőbb szövegekkel;
+  egységes szegmentált váltók az egész főoldalon; nyugodtabb, öt lépésből
+  álló görgetős bevezető idősorral.
 
 ## Adatközlők
 

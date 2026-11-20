@@ -5,6 +5,24 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.59.0] - 2026-11-20
+
+### Változott
+- **Főoldal** — Dr. Tyukodi Levente ([@Lordkex](https://github.com/Lordkex))
+  második közreműködése ([#6](https://github.com/ZoliQua/Praxisterkep/issues/6)):
+  a települési kereső az első képernyőn, a körzetállomány halmozott
+  diagramon (TEK nélküli praxisokkal, táblázat-váltóval), a térképpanel
+  Nézet / Szűrők / Rétegek csoportokban, egységes váltók, átdolgozott
+  kiemelő kártyák és görgetős bevezető. A főoldali animáció, a bevezető
+  szöveg, a lábléc sorrendje és a menü változatlan maradt.
+
+### Javítva
+- **KSH TIMEA** ([#4](https://github.com/ZoliQua/Praxisterkep/issues/4)): a
+  KSH kivette katalógusából a háziorvosi mutatókat (TYWJ001, 011, 012, 013),
+  miközben az adatok továbbra is lekérhetők; a havi futás emiatt leállt. Az
+  évlista és a megnevezés most az utolsó archivált katalógusból jön, külön
+  fájlban, a nyers katalógus érintetlen marad.
+
 ## [1.58.0] - 2026-11-18
 
 ### Változott
