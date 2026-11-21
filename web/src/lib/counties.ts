@@ -135,7 +135,9 @@ export function rankOf(
   if (!rows.length || !county) return null;
   rows.sort((a, b) => b.v - a.v);
   const i = rows.findIndex((r) => r.name === county);
-  return i < 0 ? null : { rank: i + 1, of: rows.length };
+  if (i < 0) return null;
+  // 1 = the highest; equal values share a rank (1 + how many are higher)
+  return { rank: rows.filter((r) => r.v > rows[i].v).length + 1, of: rows.length };
 }
 
 /** Share of settlements where the branch has no contracted physician at all. */

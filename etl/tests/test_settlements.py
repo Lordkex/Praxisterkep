@@ -83,3 +83,15 @@ def test_the_surgery_rows_name_only_filled_districts():
     assert '"doctor": f.get("doctor", "")' in source
     # and nothing reads a name off the vacant list
     assert '"praxes"' not in source.split("surgeries: dict")[1].split("chemists")[0]
+
+
+
+def test_equal_index_values_share_a_rank():
+    # 1 = the highest; equal values share 1 + how many are higher
+    assert settlements.standings([90.0, 50.0, 50.0, 10.0]) == [1, 2, 2, 4]
+
+
+def test_rank_minus_one_counts_the_worse_placed():
+    # the 3047th highest of 3177 with no ties is better placed than 3046
+    values = [float(v) for v in range(3177, 0, -1)]
+    assert settlements.standings(values)[3046] - 1 == 3046

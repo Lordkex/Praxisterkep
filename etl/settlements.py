@@ -16,6 +16,7 @@ Usage:
 """
 from __future__ import annotations
 
+import bisect
 import collections
 import json
 import statistics
@@ -222,6 +223,17 @@ def living_block(ksh: str, district: str, county: str, ctx: dict) -> dict | None
                             "median": ctx.get("avoidableMedian")}
     return out or None
 
+def standings(values: list[float]) -> list[int]:
+    """The rank of each value, 1 = the highest (the worst-placed settlement).
+
+    The index is rounded to one decimal, so most values are shared: equal
+    values share one rank, 1 + how many are higher. rank - 1 is then exactly
+    the number of settlements worse placed than this one.
+    """
+    ordered = sorted(values)
+    return [len(ordered) - bisect.bisect_right(ordered, v) + 1 for v in values]
+
+
 def build() -> dict:
     ksh = load_reference()
     if ksh is None:
@@ -262,8 +274,9 @@ def build() -> dict:
         "age": {s["kshId"]: s for s in (age or {}).get("settlements", [])},
     }
     # the index is a ranking, so the rank is worth more than the score
-    ranked = sorted(composite["settlements"], key=lambda s: -s["index"])
-    rank_of = {s["kshId"]: i + 1 for i, s in enumerate(ranked)}
+    ranked = composite["settlements"]
+    ranks = standings([s["index"] for s in ranked])
+    rank_of = {s["kshId"]: ranks[i] for i, s in enumerate(ranked)}
 
     cluster_of: dict[str, dict] = {}
     for cluster in (clusters or {}).get("clusters", []):

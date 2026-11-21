@@ -278,6 +278,8 @@
     "authorBy": "Készítette:",
     "authorName": "Dr. Dul Zoltán",
     "authorTitle": ", országos kollegiális szakmai vezető fogorvos",
+    "contributors": "+ Közreműködők",
+    "contributorsTitle": "Akik kóddal, ötlettel vagy hibajelzéssel hozzájárultak (GitHub)",
     "license": "Kód: MIT licenc · Feldolgozott adatok: CC BY 4.0 · A forrásadatok az eredeti kibocsátó feltételei szerint használhatók",
     "updated": "Adatállapot",
     "src": {
@@ -1929,7 +1931,7 @@
     "settlements": "település",
     "gpVacantOnly": "település, ahol csak betöltetlen háziorvosi körzet van",
     "oncall": "medián menetidő a legközelebbi ügyeletig",
-    "rank": "{rank}. a {of} megyéből",
+    "rank": "{rank}. a {of} megyéből (1. = a legrosszabb)",
     "minutes": "{n} perc",
     "gpLine": "Háziorvosi ellátás",
     "dentalLine": "Fogászati ellátás",
@@ -2186,7 +2188,7 @@
     "unplaced": "További {n} fogorvosi szolgálat címében csak „Budapest” szerepel kerület nélkül; ezek egyik kerületi sorban sem szerepelnek.",
     "verdict": {
       "worse": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — ezzel {art} {rank}. legrosszabb a {of} mérhető járás között, az országos medián ({median}) fölött.",
-      "better": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — {art} {rank}. a {of} mérhető járás rangsorában, az országos medián ({median}) alatt.",
+      "better": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — {art} {rank}. a {of} mérhető járás rangsorában a legrosszabbtól számolva, az országos medián ({median}) alatt.",
       "county": "A megyén belül ({county}) a {of} járásból {art} {rank}.",
       "travel": "A települések medián menetideje a legközelebbi háziorvosi rendelőig {n}, ami {art} {rank}. leghosszabb a {of} járás között."
     },
@@ -2210,7 +2212,7 @@
     "distExplain": "Minden oszlop egy sáv: hány járás esik bele. A kiválasztott járás oszlopa kiemelve, alatta a pálcika mutatja a pontos értékét. A rangsorszám önmagában félrevezet: a 103. lehet hajszálnyira a mediántól és félúton a mélypontig is. Válts mértéket, vagy vigyéd rá az egeret egy oszlopra — alatta megjelennek a járások, és át lehet kattintani rájuk.",
     "distMedian": "medián: {n}",
     "distWorse": "ez a rosszabb vég",
-    "distRank": "{rank}. a {of} mérhető járás között",
+    "distRank": "{rank}. a {of} mérhető járás között (1. = a legrosszabb)",
     "distHint": "Vidd rá az egeret egy pontra.",
     "devSource": "Forrás: {source}; illetve {benefit}. A komplex mutató álló besorolás, nem a mai állapot mérése.",
     "measure": {
@@ -3208,7 +3210,7 @@
       "bandTitle": "{label} sáv",
       "best": "0 — a legjobb helyzetű település",
       "worst": "100 — a legrosszabb",
-      "place": "{name} a {of} településből a <strong>{rank}.</strong> helyen áll{better}.",
+      "place": "{name} a {of} településből a <strong>{rank}.</strong> helyen áll, a legrosszabb helyzetűtől számolva{better}.",
       "better": " — az ország {share}-ánál kedvezőbb a helyzete",
       "heading": "Összetett ellátási kockázati index",
       "help": "Nyolc nyilvános mutató súlyozott átlaga, mindegyik országos rangsorszázalékra váltva: betöltetlenség, menetidő háziorvoshoz, fogorvoshoz, ügyelethez, járóbeteg- és fekvőbeteg-ellátáshoz, buszelérés, korösszetétel, kockázati előrejelzés és a kedvezményezett települési besorolás. A 100 a legrosszabb helyzetű települést jelenti, nem azt, hogy ott nincs ellátás.",

@@ -19,6 +19,9 @@ const AUTHOR_URL = 'https://dulzoltan.hu';
 // every release has its notes; the footer links the one being served
 const RELEASES_URL = 'https://github.com/ZoliQua/Praxisterkep/releases';
 
+// the people who helped — code, ideas, bug reports — are named there
+const CONTRIBUTORS_URL = 'https://github.com/ZoliQua/Praxisterkep/blob/main/CONTRIBUTORS.md';
+
 export function Footer({ month }: { month?: string }) {
   const snapshot = useSnapshot();
   const asOf = month ?? snapshot?.month;
@@ -86,7 +89,9 @@ export function Footer({ month }: { month?: string }) {
         <p className="footer__author">
           {t('footer.authorBy')}{' '}
           <a href={AUTHOR_URL} rel="noopener">{t('footer.authorName')}</a>
-          {t('footer.authorTitle')}
+          {t('footer.authorTitle')}{' '}
+          <a href={CONTRIBUTORS_URL} rel="noopener" className="footer__contributors"
+            title={t('footer.contributorsTitle')}>{t('footer.contributors')}</a>
         </p>
         <p>
           {asOf && <>{t('footer.updated')}: {formatMonth(asOf)} · </>}

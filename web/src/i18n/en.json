@@ -278,6 +278,8 @@
     "authorBy": "Made by",
     "authorName": "Dr. Zoltán Dul",
     "authorTitle": ", national collegial professional lead dentist",
+    "contributors": "+ Contributors",
+    "contributorsTitle": "Everyone who contributed code, ideas or bug reports (GitHub)",
     "license": "Code: MIT licence · Processed data: CC BY 4.0 · Source data under the terms of its original publisher",
     "updated": "Data as of",
     "src": {
@@ -1929,7 +1931,7 @@
     "settlements": "settlements",
     "gpVacantOnly": "settlements where every GP district is vacant",
     "oncall": "median driving time to the nearest on-call surgery",
-    "rank": "{rank} of {of} counties",
+    "rank": "{rank} of {of} counties (1 = the worst)",
     "minutes": "{n} min",
     "gpLine": "GP care",
     "dentalLine": "Dental care",
@@ -2186,7 +2188,7 @@
     "unplaced": "A further {n} dental services name only Budapest with no district.",
     "verdict": {
       "worse": "{rate} of {branch} districts in {name} are vacant — {rank} worst of {of} measurable districts, above the national median ({median}).",
-      "better": "{rate} of {branch} districts in {name} are vacant — {rank} of {of}, below the national median ({median}).",
+      "better": "{rate} of {branch} districts in {name} are vacant — {rank} of {of}, counted from the worst, below the national median ({median}).",
       "county": "Within {county} county it is {rank} of {of}.",
       "travel": "The median drive to the nearest GP surgery is {n}, the {rank} longest of {of}."
     },
@@ -2210,7 +2212,7 @@
     "distExplain": "Every column is a band: how many districts fall into it. The selected district's column is marked and the pin below shows its exact value. Switch the measure, or hover a column — the districts in it appear underneath and can be clicked.",
     "distMedian": "median: {n}",
     "distWorse": "the worse end",
-    "distRank": "{rank} of {of} measurable districts",
+    "distRank": "{rank} of {of} measurable districts (1 = the worst)",
     "distHint": "Hover a dot.",
     "devSource": "Source: {source}; and {benefit}. The complex indicator is a standing classification, not a reading of today.",
     "measure": {
@@ -3208,7 +3210,7 @@
       "bandTitle": "{label} band",
       "best": "0 — the best-placed settlement",
       "worst": "100 — the worst",
-      "place": "{name} ranks <strong>{rank}</strong> of {of} settlements{better}.",
+      "place": "{name} ranks <strong>{rank}</strong> of {of} settlements, counted from the worst placed{better}.",
       "better": " — better placed than {share} of the country",
       "heading": "Composite care-risk index",
       "help": "A weighted mean of eight public measures, each turned into a national percentile: vacancy, driving time to the GP, the dentist, the on-call service, outpatient and inpatient care, bus access, age structure, the risk forecast and the beneficiary-settlement status. 100 is the worst-placed settlement, not one without care.",

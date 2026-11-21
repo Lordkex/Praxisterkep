@@ -1361,7 +1361,9 @@ function siteFooter(homeHref, analysisHref) {
       · <a href="${esc(media.facebook)}" rel="noopener">${esc(DICT.media.facebook)}</a></p>
     <p class="footer__author">${esc(f.authorBy)}
       <a href="https://dulzoltan.hu" rel="noopener">${esc(f.authorName)}</a>${
-  esc(f.authorTitle)}</p>
+  esc(f.authorTitle)} <a href="https://github.com/ZoliQua/Praxisterkep/blob/main/CONTRIBUTORS.md"
+      rel="noopener" class="footer__contributors" title="${esc(f.contributorsTitle)}">${
+  esc(f.contributors)}</a></p>
     <p>${esc(f.updated)}: ${esc(monthLabelNow())} ·
       <a href="https://github.com/ZoliQua/Praxisterkep/releases" rel="noopener" class="footer__version">${
   esc(S('footerVersion', { version: VERSION }))}</a> · ${esc(f.license)}</p>
@@ -1473,7 +1475,9 @@ function transitChart(profile) {
 function indexCompare(profile) {
   const index = profile.index;
   if (!index) return '';
-  const percentile = index.of ? 1 - (index.rank - 1) / index.of : null;
+  // rank 1 is the highest index, the worst-placed; equal values share a rank,
+  // so rank - 1 is exactly how many settlements are worse placed than this one
+  const percentile = index.of ? (index.rank - 1) / index.of : null;
   const bands = ['alacsony', 'kozepes', 'magas', 'kiemelt'].map((k) => [k, S(`bandShort.${k}`)]);
   return `<div class="tp-indexscale">
     <div class="tp-indexscale__bar">

@@ -161,10 +161,12 @@ export function rankOf(
   rows.sort((a, b) => b.v - a.v);
   const i = rows.findIndex((r) => r.name === name);
   if (i < 0) return null;
+  // 1 = the highest; equal values share a rank (1 + how many are higher)
+  const rank = rows.filter((r) => r.v > rows[i].v).length + 1;
   const mid = Math.floor(rows.length / 2);
   const median = rows.length % 2
     ? rows[mid].v : (rows[mid - 1].v + rows[mid].v) / 2;
-  return { rank: i + 1, of: rows.length, median };
+  return { rank, of: rows.length, median };
 }
 
 /** Share of settlements where the branch has no contracted physician at all. */
