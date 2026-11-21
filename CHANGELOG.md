@@ -5,6 +5,29 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.59.1] - 2026-11-21
+
+### Javítva
+- **Települési oldalak, „Hol áll ez a település?”** — a mondat fordított
+  százalékot írt: a rangsorban az 1. a legmagasabb indexű, legrosszabb
+  helyzetű település, a képlet viszont fordítva számolt, így Budakalász
+  (3046./3177) „az ország 4,1%-ánál” kedvezőbb helyzetűnek tűnt 95,8% helyett.
+  Pfening András jelezte, köszönjük.
+- **Holtverseny a rangsorokban** — az egy tizedesre kerekített indexen a
+  3177 településből 3057 osztozik valakivel egy értéken, és eddig az egyformák
+  is eltérő helyet kaptak. Most azonos helyen állnak (1 + ahány magasabb), így
+  a „rosszabb helyzetűek” száma pontosan helyezés − 1. Ugyanígy a járási és
+  megyei rangsorok a megyei és járási oldalakon.
+- **Rangsorok iránya** — a megyei oldal helyezései, a járási eloszlásdiagram
+  és a járási összegző mondat kiírja, hogy az 1. a legrosszabb (a PDF-ben az
+  1. a legkedvezőbb, ezt eddig is jelezte).
+
+### Új
+- **„+ Közreműködők” gomb** a lábléc „Készítette” sorában, a GitHubon lévő
+  [CONTRIBUTORS.md](CONTRIBUTORS.md)-re mutat — az alkalmazásban és a
+  statikus településoldalakon is. A listába új szakasz került a
+  hibabejelentőknek.
+
 ## [1.59.0] - 2026-11-20
 
 ### Változott
