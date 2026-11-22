@@ -5,6 +5,14 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.60.1] - 2026-11-22
+
+### Javítva
+- **WebGL nélküli böngésző** — ahol a böngésző nem tud térképet rajzolni, az
+  oldal eddig teljesen kiürült, amint térképhez ért (főoldal, Továbbiak, az
+  Elemző térképes részei, a beágyazható térkép). Mostantól csak a térkép
+  helyén jelenik meg egy rövid üzenet, minden más működik tovább.
+
 ## [1.60.0] - 2026-11-22
 
 ### Új
