@@ -1,7 +1,7 @@
 # Praxistérkép
 
 [![Monthly ETL](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml/badge.svg)](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml)
-[![Version](https://img.shields.io/badge/version-1.59.1-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.60.0-blue)](CHANGELOG.md)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23460426.svg)](https://doi.org/10.5281/zenodo.23460426)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776ab?logo=python&logoColor=white)](etl/)
@@ -296,6 +296,10 @@ audit-nyomvonal**.
 | P | [NEAK — letelepedési és praxisjog-pályázatok](https://neak.gov.hu/felso_menu/szakmai_oldalak/gyogyito_megeleozo_ellatas/alapellatas/haziorvosi_ellatas/archivum) | a nyertesek helye és éve (név nélkül) | PDF | évi | `neak_grants.py` |
 | Q | [Eurostat](https://ec.europa.eu/eurostat/web/health/database) egészségügyi és regionális adatbázis, [GISCO](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) határok | kezelhető és megelőzhető halálozás; az európai összevetés mutatói és térképei | JSON-stat, GeoJSON | évi | `eurostat_avoidable.py`, `eu_compare.py` |
 | R | [OECD Health Statistics](https://data-explorer.oecd.org/) (CC BY 4.0) | elkerülhető kórházi felvételek, orvosi jövedelmek, az Egyesült Királyság 2019 után | SDMX CSV | évi | `eu_compare.py` |
+| S | [NEAK — Országos várólista nyilvántartás](https://jogviszony.neak.gov.hu/varolista_pub/) | műtéti várakozási idők beavatkozásonként és intézményenként (csak összesített) | HTML | havi | `waitlist.py` |
+| T | [OKFŐ — kollegiális praxisközösségek területi beosztása](https://alapellatas.okfo.gov.hu/a-kollegialis-praxiskozossegek-teruleti-beosztasa) | mely járások alkotnak egy praxisközösséget (nem taglista) | HTML | havi | `communities.py` |
+| U | [Eurostat GISCO — Geographic accessibility](https://ec.europa.eu/eurostat/web/gisco/geodata/geographic-accessibility) | autós menetidő kórházig, ország és NUTS 3 | CSV | háromévente, kézzel | `hospital_access.py` |
+| V | [ÚDZS](https://www.udzs-sk.sk/urad/udaje-o-vyhodnoteni-sieti-poskytovatelov-ambulantnej-starostlivosti-podla-zakona-c-578-2004-z-z/) | a szlovák optimális alapellátási hálózathoz hiányzó rendelők járásonként | XLSX, PDF | évi, kézzel | `neighbours.py` |
 
 További nyilvános források, amelyeket egy-egy kiegészítő épít: a NEAK
 [gyógyszertári partnerlistája](https://www.neak.gov.hu/felso_menu/lakossagnak/)

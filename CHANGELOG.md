@@ -5,6 +5,27 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.60.0] - 2026-11-22
+
+### Új
+- **Várólisták** (Továbbiak, `#varolistak`) — a NEAK nyilvántartásából
+  beavatkozásonként az országos várakozás és a listát közlő intézmények.
+  Személyes és esetszintű adat nélkül.
+- **Praxisközösségek** (Elemző › Járások és megyék, `#praxiskozossegek`) — az
+  OKFŐ területi beosztása a járások betöltetlenségével. Nem taglista: a NEAK
+  ilyet nem közöl.
+- **Kórház elérése** (Európa, `#korhaz-eleres`) — Eurostat GISCO-menetidők
+  országonként és a határ két oldalán, külső ellenőrzésként a saját
+  sürgősségi menetidőnk mellett.
+- **Orvoshiány a szomszédban** (Európa, `#szomszedok`) — Szlovákia járási
+  adatai az ÚDZS-től; a többi szomszédnál kiírjuk, miért nincs adat.
+
+### Javítva
+- **Holtverseny minden kiírt helyezésnél** — a megyei kimeneti rangsorok, a
+  térkép megyei helyezése, az európai rangsorok, a nehezen elérhető járások
+  és a legrosszabb nyolc járás listája sorszám helyett közös helyet ad az
+  egyenlő értékeknek.
+
 ## [1.59.1] - 2026-11-21
 
 ### Javítva
