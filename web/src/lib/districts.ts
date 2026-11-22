@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import type { Band, EmergencyPoint, SettlementRow, State } from './counties';
 import { dataUrl } from './dataUrl';
+import { competitionRank } from './rank';
 
 export type { Band, EmergencyPoint, SettlementRow, State };
 
@@ -162,7 +163,7 @@ export function rankOf(
   const i = rows.findIndex((r) => r.name === name);
   if (i < 0) return null;
   // 1 = the highest; equal values share a rank (1 + how many are higher)
-  const rank = rows.filter((r) => r.v > rows[i].v).length + 1;
+  const rank = competitionRank(rows.map((r) => r.v), rows[i].v, 'higherFirst');
   const mid = Math.floor(rows.length / 2);
   const median = rows.length % 2
     ? rows[mid].v : (rows[mid - 1].v + rows[mid].v) / 2;

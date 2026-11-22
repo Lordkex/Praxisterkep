@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { t } from '../lib/i18n';
 import { formatNumber } from '../lib/format';
 import { districtHref, metaOf, useOutcomes } from '../lib/outcomes';
+import { competitionRank } from '../lib/rank';
 import { ACCESS_FACTORS, meanOf, rankVulnerable } from '../lib/vulnerability';
 
 const SHOWN = [10, 20, 30] as const;
@@ -22,6 +23,7 @@ export function VulnerableDistricts() {
   const rest = ranked.slice(n).map((v) => v.district);
   const topRows = top.map((v) => v.district);
   const people = topRows.reduce((a, d) => a + d.population, 0);
+  const scores = ranked.map((v) => v.score);
   const cmp = (key: 'avoidable' | 'income' | 'jobseekers') => ({
     top: meanOf(topRows, (d) => d[key]), rest: meanOf(rest, (d) => d[key]),
   });
@@ -63,9 +65,9 @@ export function VulnerableDistricts() {
           {ACCESS_FACTORS.map((k) => <span key={k}>{t(`vulnerable.factor.${k}`)}</span>)}
           <span>{t('vulnerable.col.score')}</span>
         </div>
-        {top.map((v, i) => (
+        {top.map((v) => (
           <a key={v.district.slug} className="vulnerable__row" href={districtHref(v.district.name)}>
-            <span className="vulnerable__name"><em>{i + 1}.</em> {v.district.name}
+            <span className="vulnerable__name"><em>{competitionRank(scores, v.score, 'higherFirst')}.</em> {v.district.name}
               <small>{v.district.county}</small></span>
             {ACCESS_FACTORS.map((k) => {
               const raw = v.district[k] as number;

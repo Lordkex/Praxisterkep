@@ -12,6 +12,7 @@ import { exportMapPng } from '../lib/mapExport';
 import { t } from '../lib/i18n';
 import { formatDecimal, formatMonth, formatNumber, formatPercent, monthsBetween } from '../lib/format';
 import { countyRanking, filterPraxes, type TypeFilter } from '../lib/selectors';
+import { competitionRank } from '../lib/rank';
 import { readMapState, writeMapState } from '../lib/mapState';
 import { useContextStore } from '../lib/context';
 import { vacancyOf } from '../lib/vacancy';
@@ -755,8 +756,8 @@ export function MapSection() {
   const countyRank = useMemo(() => {
     if (!selectedCounty) return null;
     const rows = countyRanking(snapshot);
-    const i = rows.findIndex((r) => r.name === selectedCounty);
-    return i >= 0 ? i + 1 : null;
+    const here = rows.find((r) => r.name === selectedCounty);
+    return here ? competitionRank(rows.map((r) => r.rate), here.rate, 'higherFirst') : null;
   }, [snapshot, selectedCounty]);
   const isArchive = snapshot.month !== latestMonth;
   const displayedMonth = formatMonth(snapshot.month);

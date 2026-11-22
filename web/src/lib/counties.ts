@@ -5,6 +5,7 @@
 // because a browser should not download 3177 towns to look at one county.
 import { useEffect, useState } from 'react';
 import { dataUrl } from './dataUrl';
+import { competitionRank } from './rank';
 
 export type Branch = 'gp' | 'dental';
 export type State = 'filled' | 'partial' | 'vacantOnly' | 'absent' | '';
@@ -137,7 +138,7 @@ export function rankOf(
   const i = rows.findIndex((r) => r.name === county);
   if (i < 0) return null;
   // 1 = the highest; equal values share a rank (1 + how many are higher)
-  return { rank: rows.filter((r) => r.v > rows[i].v).length + 1, of: rows.length };
+  return { rank: competitionRank(rows.map((r) => r.v), rows[i].v, 'higherFirst'), of: rows.length };
 }
 
 /** Share of settlements where the branch has no contracted physician at all. */

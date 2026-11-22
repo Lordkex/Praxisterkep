@@ -2842,8 +2842,7 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .outcome__celllist li span, .outcome__ranking li span { color: var(--ink-dim); font-variant-numeric: tabular-nums; }
 .outcome__ranking { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--bg-raised); }
 .outcome__ranking h4 { margin: 0 0 10px; font: 600 14px var(--font-display); }
-.outcome__ranking ol { counter-reset: rank; }
-.outcome__ranking li::before { counter-increment: rank; content: counter(rank) '.'; color: var(--ink-faint); width: 22px; flex: none; }
+.outcome__ranking li::before { content: attr(data-rank) '.'; color: var(--ink-faint); width: 22px; flex: none; }
 .outcome__ranking li a { flex: 1; }
 
 /* the association matrix */
