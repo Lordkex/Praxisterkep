@@ -295,12 +295,14 @@
         "outpatient": "Outpatient specialist institutions",
         "listing": "all in one place: NEAK downloads",
         "grantsGp": "winners of the GP settlement and practice-right grants",
-        "grantsDental": "winners of the dental settlement grants"
+        "grantsDental": "winners of the dental settlement grants",
+        "waitlist": "National waiting-list register (waits for surgery)"
       },
       "okfo": {
         "title": "OKFŐ Primary Care Directorate — long-term vacant districts:",
         "dental": "dental",
-        "gp": "GP"
+        "gp": "GP",
+        "communities": "Territories of the collegial praxis communities"
       },
       "eeszt": {
         "title": "EESZT master publication:",
@@ -346,7 +348,9 @@
         "eurostatHealth": "Eurostat — health database (workforce, surveys, screening, spending, mortality)",
         "eurostatRegional": "Eurostat — regional database (NUTS 2: doctors, mortality, life expectancy, GDP)",
         "oecd": "OECD Health Statistics — avoidable hospital admissions, doctors' pay, the United Kingdom (CC BY 4.0)",
-        "gisco": "GISCO — NUTS 2024 region outlines (© EuroGeographics for the administrative boundaries)"
+        "gisco": "GISCO — NUTS 2024 region outlines (© EuroGeographics for the administrative boundaries)",
+        "giscoAccess": "GISCO: driving time to hospitals",
+        "udzs": "ÚDZS: evaluation of the Slovak primary care network"
       }
     },
     "sourcesNote": "Every figure is linked to its source: all of these are public files and pages anyone can download. The NEAK files always serve the current month; earlier months are archived here and downloadable too.",
@@ -1276,7 +1280,8 @@
       "tamogatasok": "Grants",
       "elorejelzes": "A year from now",
       "valtozas-ev": "Year by year",
-      "valtozas-ho": "Month by month"
+      "valtozas-ho": "Month by month",
+      "praxiskozossegek": "Praxis communities"
     },
     "sideNav": "Contents",
     "groupKicker": "Analysis",
@@ -3358,7 +3363,9 @@
       "regiok": "Map of the regions",
       "hatar": "Across the border",
       "igeny": "Who needs care?",
-      "vandorlas": "Where do doctors come from and go?"
+      "vandorlas": "Where do doctors come from and go?",
+      "korhaz-eleres": "Reaching a hospital",
+      "szomszedok": "Shortage next door"
     },
     "groupLabel": "Compare:",
     "group": {
@@ -3772,6 +3779,14 @@
       "migration": {
         "title": "Doctors on the move",
         "text": "The OECD health workforce migration table (source R) counts, from the receiving countries' reports, how many doctors work there with a foreign degree and where they got it. Outflow is therefore visible only in reporting countries; their years differ, and place of training is not nationality — graduates who studied abroad as foreign students and went home look like emigrants in the table. No net loss is computed."
+      },
+      "hospital": {
+        "title": "Reaching a hospital",
+        "text": "We show Eurostat GISCO driving times for the 2023 reference year, weighted by population. The 2026 release is preliminary and 2020 runs on another road network, so no change is computed. Countries define a hospital differently, so no places are given. As an outside check the Hungarian values stand beside our own driving times to emergency departments; neither corrects the other."
+      },
+      "neighbours": {
+        "title": "Shortage in the neighbouring countries",
+        "text": "One official publisher per country, and only where its table can be downloaded and reused. The Slovak ÚDZS publishes surgeries missing from the optimal capacity; the districts must add up to the national figure the authority prints. It is not a vacancy rate, so it shares no table or ranking with a Hungarian number. The countries left out are listed with the reason."
       }
     },
     "country": {
@@ -3879,7 +3894,8 @@
       "vedono": "Health visitors",
       "szakellatas": "Specialist care",
       "gyogyszertar": "Pharmacies",
-      "segedeszkoz": "Medical aids"
+      "segedeszkoz": "Medical aids",
+      "varolistak": "Waiting lists"
     },
     "settlements": {
       "label": "Counties",
@@ -4939,5 +4955,149 @@
     "byCounty": "By county",
     "bySeat": "Outside Budapest, by settlement",
     "tableHeading": "The series in numbers"
+  },
+  "waitlist": {
+    "heading": "How long is the wait for an operation?",
+    "lead": "NEAK's public waiting-list register by procedure: how long those operated on in the past six months waited, and how many have now been waiting for more than 60 days.",
+    "pick": "Procedure",
+    "days": "{n} days",
+    "group": {
+      "mandatory": "Mandatory waiting lists",
+      "capacity": "Lists kept for lack of capacity"
+    },
+    "national": "Nationally, as published by NEAK",
+    "noNational": "NEAK publishes no national figure for this procedure: only providers with lasting waits over 60 days for lack of capacity keep a list. Those who treat patients sooner are not on it.",
+    "median": "median wait",
+    "mean": "mean wait",
+    "over60": "waiting over 60 days",
+    "served": "treated in six months",
+    "institutions": "Institutions publishing a list: {n}",
+    "subset": "These are not all the hospitals that perform the procedure, only those with a list in the register. No regional or national picture can be computed from them.",
+    "institution": "Institution",
+    "region": "Care region",
+    "note": "The wait is what patients already treated actually waited, not a promise to someone joining now. A median of 0 days is as NEAK publishes it: at least half were treated without waiting, while the mean can still be high. No personal data and no case-level list is downloaded.",
+    "source": "Source: NEAK national waiting-list register, queried: {date}.",
+    "proc": {
+      "025": "Cardiac electrophysiology and ablation",
+      "O22": "Hip replacement",
+      "006": "Spinal stabilisation and deformity surgery",
+      "026": "Major extended spinal surgery",
+      "002": "Tonsil and adenoid surgery",
+      "019": "Gynaecological surgery, non-malignant",
+      "017": "Benign prostate enlargement: prostatectomy",
+      "018": "Benign prostate enlargement: transurethral surgery",
+      "001": "Cataract surgery",
+      "O20": "Knee replacement",
+      "104": "Minor bowel surgery, non-malignant",
+      "132": "Major laparoscopic bowel surgery, non-malignant",
+      "009": "Laparoscopic gallstone surgery",
+      "011": "Abdominal and inguinal hernia repair with implant",
+      "131": "Open heart surgery, adults",
+      "117": "Minor orthopaedic surgery",
+      "118": "Major orthopaedic surgery",
+      "114": "Corneal surgery",
+      "012": "Hernia repair without implant",
+      "133": "Transcatheter heart valve implantation",
+      "122": "Varicose vein surgery"
+    }
+  },
+  "communities": {
+    "heading": "Territories of the praxis communities",
+    "lead": "OKFŐ, as praxis manager, has set which járás form one collegial praxis community. This shows how much of each community's districts is vacant.",
+    "notMembership": "This is a territorial division, not a membership list. It does not say which practice joined, and the close and the járás dental communities are not on it, so it cannot measure what a praxis community achieves. A vacant district does not mean no care.",
+    "kindLabel": "Branch",
+    "kind": {
+      "gp": "GP",
+      "dental": "Dentist"
+    },
+    "kpi": {
+      "all": "territorial praxis communities",
+      "single": "consist of a single járás or kerület",
+      "quarter": {
+        "gp": "have at least a quarter of GP districts vacant",
+        "dental": "have at least a quarter of dental districts vacant or dissolved"
+      }
+    },
+    "county": "County",
+    "allCounties": "All",
+    "members": "Járás",
+    "total": "Districts",
+    "vacant": {
+      "gp": "Vacant",
+      "dental": "Vacant or dissolved"
+    },
+    "longTerm": "Of which long-term",
+    "rate": "Share",
+    "source": "Source: OKFŐ Primary Care Directorate, territorial division of the collegial praxis communities (queried: {date}); districts: NEAK, {month}."
+  },
+  "hospital": {
+    "heading": "How far is the hospital?",
+    "lead": "Eurostat's driving time to the nearest hospital, weighted over the 2021 census population grid. Reference year of services and roads: {year}.",
+    "measure": {
+      "median": "Median driving time",
+      "over20": "Living over 20 minutes away",
+      "over45": "Living over 45 minutes away"
+    },
+    "minutes": "{n} min",
+    "definition": "Each country defines a hospital by its own register, so the countries are given no places here. A lower value means a closer hospital.",
+    "pairsHeading": "Counties and the other side of the border",
+    "megye": "County",
+    "across": "Neighbouring region",
+    "pairsNote": "On Eurostat's road network the nearest hospital may be domestic or across the border, which says nothing about whether the patient would be treated there. There are no data for Serbia or Ukraine.",
+    "checkHeading": "Outside check: Eurostat's driving times and ours",
+    "checkText": "The Hungarian median is {gisco} minutes at Eurostat and {own} minutes in this site's driving times to emergency departments. Counties differ more: Eurostat works from a population grid on TomTom roads, we from settlement centres on OpenStreetMap, which can look shorter in large towns.",
+    "gisco": "Eurostat",
+    "own": "This site, emergency department",
+    "source": "Source: Eurostat GISCO, Geographic accessibility ({version}), © European Union, based on TomTom roads; downloaded: {date}."
+  },
+  "neighbours": {
+    "heading": "Doctor shortage next door",
+    "lead": "One official source per country, in its own terms. At present Slovakia publishes downloadable figures from the authority by district.",
+    "notVacancy": "A Slovak “missing surgery” is not a vacant district: it counts the 35-hour-a-week surgeries missing from the statutory optimal capacity. A Hungarian vacant district is an existing district without a contracted physician. The two cannot be compared as rates.",
+    "kindLabel": "Branch",
+    "kind": {
+      "adult": "GP for adults",
+      "child": "Paediatrician"
+    },
+    "kpi": {
+      "missing": "surgeries short of the optimal network",
+      "short": "districts short by at least one whole surgery",
+      "border": "of these in regions bordering Hungary"
+    },
+    "onlyBorder": "Only regions bordering Hungary",
+    "okres": "District (okres)",
+    "kraj": "Region (kraj)",
+    "optimal": "Optimal",
+    "present": "Working",
+    "missing": "Missing",
+    "fill": "Met",
+    "krajName": {
+      "BA": "Bratislava",
+      "TT": "Trnava",
+      "TN": "Trenčín",
+      "NR": "Nitra",
+      "ZA": "Žilina",
+      "BB": "Banská Bystrica",
+      "PO": "Prešov",
+      "KE": "Košice"
+    },
+    "source": "Source: Úrad pre dohľad nad zdravotnou starostlivosťou (ÚDZS), evaluation of the optimal network; downloaded: {date}.",
+    "othersHeading": "What is missing, and why",
+    "country": {
+      "AT": "Austria",
+      "SI": "Slovenia",
+      "HR": "Croatia",
+      "RO": "Romania",
+      "RS": "Serbia",
+      "UA": "Ukraine"
+    },
+    "status": {
+      "AT": "We found no current, downloadable official table by province and branch; figures quoted in the press are not taken over.",
+      "SI": "ZZZS publishes data, but the site's robots.txt does not allow its files to be downloaded automatically.",
+      "HR": "The network table found on the open data portal was last updated in March 2023; we found nothing current.",
+      "RO": "CNAS publishes a list of places without a doctor, but its site restricts automated use, so we did not download it.",
+      "RS": "We found no current official shortage table by municipality.",
+      "UA": "We found no current official shortage table by municipality."
+    }
   }
 }

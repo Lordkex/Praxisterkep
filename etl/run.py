@@ -412,6 +412,21 @@ def main() -> None:
              output=ROOT / "data" / "grants.json"),
         # the analyses turned inside out: one record per settlement, which
         # the build then bakes into a static page for each of them
+        # four from outside the NEAK registers (sources S-V); the two foreign
+        # ones build from their archive, refreshed by hand on a new release
+        Step("waitlist", "surgical waiting lists (NEAK)",
+             simple("waitlist",
+                    describe=lambda r: f", {r['stats']['lists']} lists of "
+                                       f"{r['stats']['procedures']} procedures"),
+             output=ROOT / "data" / "waitlist.json"),
+        Step("hospital_access", "hospital access in Europe (Eurostat GISCO)",
+             simple("hospital_access",
+                    describe=lambda r: f", {r['version']}, {r['year']}"),
+             needs=("traveltime",), output=ROOT / "data" / "hospital_access.json"),
+        Step("neighbours", "missing primary care next door (ÚDZS)",
+             simple("neighbours",
+                    describe=lambda r: f", Slovakia {r['slovakia']['asOf']}"),
+             output=ROOT / "data" / "neighbours.json"),
         Step("settlements", "settlement profiles", simple("settlements"),
              needs=("coverage", "composite", "traveltime", "transit", "ksh_age",
                     "clusters", "gyse", "vedono", "pharmacy", "tenure", "census",
@@ -436,6 +451,10 @@ def main() -> None:
                     describe=lambda r: f", {len(r['districts'])} districts"),
              needs=("settlements", "emergency", "district_development"),
              output=ROOT / "data" / "districts.json"),
+        Step("communities", "collegial praxis communities (OKFŐ)",
+             simple("communities",
+                    describe=lambda r: f", {r['stats']['communities']} communities"),
+             needs=("district_profiles",), output=ROOT / "data" / "communities.json"),
         # what a vacancy goes with: deaths, money, work, people leaving —
         # and the four cross-readings of the existing data
         Step("outcomes", "outcomes against vacancy", outcomes_step,

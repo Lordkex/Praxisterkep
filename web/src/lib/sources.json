@@ -55,6 +55,11 @@
         {
           "key": "grantsDental",
           "href": "https://neak.gov.hu/felso_menu/szakmai_oldalak/gyogyito_megeleozo_ellatas/alapellatas/fogaszati_ellatas/Fogaszati_archivum"
+        },
+        {
+          "key": "waitlist",
+          "href": "https://jogviszony.neak.gov.hu/varolista_pub/varolistak-hosszanak-lekerdezese/",
+          "format": "HTML"
         }
       ]
     },
@@ -68,6 +73,11 @@
         {
           "key": "gp",
           "href": "https://alapellatas.okfo.gov.hu/tajekoztato-a-tartosan-betoltetlen-haziorvosi-korzetekrol/"
+        },
+        {
+          "key": "communities",
+          "href": "https://alapellatas.okfo.gov.hu/a-kollegialis-praxiskozossegek-teruleti-beosztasa",
+          "format": "HTML"
         }
       ]
     },
@@ -141,6 +151,16 @@
         {
           "key": "gisco",
           "href": "https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics"
+        },
+        {
+          "key": "giscoAccess",
+          "href": "https://ec.europa.eu/eurostat/web/gisco/geodata/geographic-accessibility",
+          "format": "CSV"
+        },
+        {
+          "key": "udzs",
+          "href": "https://www.udzs-sk.sk/urad/udaje-o-vyhodnoteni-sieti-poskytovatelov-ambulantnej-starostlivosti-podla-zakona-c-578-2004-z-z/",
+          "format": "XLSX"
         }
       ]
     },

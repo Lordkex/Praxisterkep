@@ -4,6 +4,7 @@ import { DistrictAnalysis } from '../DistrictAnalysis';
 import { MortalitySection } from '../MortalitySection';
 import { LivingSection } from '../LivingSection';
 import { CensusSection } from '../CensusSection';
+import { CommunitiesSection } from '../CommunitiesSection';
 import { LinksSection } from '../LinksSection';
 import { Deferred } from '../Deferred';
 
@@ -11,6 +12,7 @@ export default function Districts() {
   return (
     <>
       <DistrictAnalysis />
+      <Deferred ids={['praxiskozossegek']}><CommunitiesSection /></Deferred>
       <Deferred ids={['halalozas']}><MortalitySection /></Deferred>
       <Deferred ids={['jovedelem', 'allaskeresok', 'nepesseg']}><LivingSection /></Deferred>
       <Deferred ids={['nepszamlalas']}><CensusSection /></Deferred>

@@ -295,12 +295,14 @@
         "outpatient": "Járóbeteg-szakellátó intézmények",
         "listing": "mind egy helyen: NEAK letöltőoldal",
         "grantsGp": "háziorvosi letelepedési és praxisjog-vásárlási pályázatok nyertesei",
-        "grantsDental": "fogorvosi letelepedési pályázatok nyertesei"
+        "grantsDental": "fogorvosi letelepedési pályázatok nyertesei",
+        "waitlist": "Országos várólista nyilvántartás (műtéti várakozási idők)"
       },
       "okfo": {
         "title": "OKFŐ Alapellátási Igazgatóság — tartósan betöltetlen körzetek:",
         "dental": "fogorvosi",
-        "gp": "háziorvosi"
+        "gp": "háziorvosi",
+        "communities": "Kollegiális praxisközösségek területi beosztása"
       },
       "eeszt": {
         "title": "EESZT törzspublikáció:",
@@ -346,7 +348,9 @@
         "eurostatHealth": "Eurostat — egészségügyi adatbázis (munkaerő, felmérések, szűrés, kiadások, halálozás)",
         "eurostatRegional": "Eurostat — regionális adatbázis (NUTS 2: orvosok, halálozás, várható élettartam, GDP)",
         "oecd": "OECD Health Statistics — elkerülhető kórházi felvételek, orvosi jövedelmek, Egyesült Királyság (CC BY 4.0)",
-        "gisco": "GISCO — NUTS 2024 régióhatárok (© EuroGeographics a közigazgatási határokért)"
+        "gisco": "GISCO — NUTS 2024 régióhatárok (© EuroGeographics a közigazgatási határokért)",
+        "giscoAccess": "GISCO: kórházak elérési ideje",
+        "udzs": "ÚDZS: a szlovák alapellátási hálózat értékelése"
       }
     },
     "sourcesNote": "Minden szám alá linkeltük a forrását: ezek mind nyilvános, bárki által letölthető fájlok és oldalak. A NEAK-állományok mindig az aktuális hónapot adják vissza; a korábbi hónapokat mi archiváljuk, azok is letölthetők.",
@@ -1276,7 +1280,8 @@
       "tamogatasok": "Támogatások",
       "elorejelzes": "Egy év múlva",
       "valtozas-ev": "Évről évre",
-      "valtozas-ho": "Hónapról hónapra"
+      "valtozas-ho": "Hónapról hónapra",
+      "praxiskozossegek": "Praxisközösségek"
     },
     "sideNav": "Tartalom",
     "groupKicker": "Elemző",
@@ -3358,7 +3363,9 @@
       "regiok": "Régiók térképe",
       "hatar": "A határ két oldalán",
       "igeny": "Kinek kell az ellátás?",
-      "vandorlas": "Honnan jönnek, hová mennek az orvosok?"
+      "vandorlas": "Honnan jönnek, hová mennek az orvosok?",
+      "korhaz-eleres": "Kórház elérése",
+      "szomszedok": "Orvoshiány a szomszédban"
     },
     "groupLabel": "Összevetés:",
     "group": {
@@ -3772,6 +3779,14 @@
       "migration": {
         "title": "Orvosvándorlás",
         "text": "Az OECD egészségügyi munkaerő-migrációs táblája (R forrás) a fogadó országok jelentéséből számolja, hány orvos dolgozik ott külföldi diplomával, és melyik országban szerezte. A kiáramlás tehát csak azokban az országokban látszik, amelyek jelentenek; az országok évei eltérnek, és a képzés helye nem azonos az állampolgársággal — a külföldi hallgatóként végzettek hazatérése a táblában kivándorlásnak látszik. Ezért nettó veszteséget nem számolunk."
+      },
+      "hospital": {
+        "title": "Kórházak elérése",
+        "text": "Az Eurostat GISCO 2023-as referenciaévű menetidejét mutatjuk, népességgel súlyozva. A 2026-os kiadás előzetes, a 2020-as más úthálózaton készült, ezért változást nem számolunk. A kórház fogalma országonként eltér, ezért nincs helyezés. A magyar értékek mellé külső ellenőrzésként a saját, sürgősségi osztályokra számolt menetidőnk kerül; egyik sem javítja a másikat."
+      },
+      "neighbours": {
+        "title": "Orvoshiány a szomszédos országokban",
+        "text": "Országonként egy hivatalos kibocsátó, és csak akkor, ha a táblája letölthető és felhasználható. A szlovák ÚDZS az optimális kapacitáshoz képest hiányzó rendelőket közli; a járások összege meg kell egyezzen a hatóság kiírt országos számával. Ez nem betöltetlenségi arány, ezért magyar számmal nem kerül közös táblába vagy rangsorba. A kimaradó országokat az oka megnevezésével soroljuk fel."
       }
     },
     "country": {
@@ -3879,7 +3894,8 @@
       "vedono": "Védőnői ellátás",
       "szakellatas": "Szakellátás",
       "gyogyszertar": "Gyógyszertárak",
-      "segedeszkoz": "Gyógyászati segédeszköz"
+      "segedeszkoz": "Gyógyászati segédeszköz",
+      "varolistak": "Várólisták"
     },
     "settlements": {
       "label": "Megyék",
@@ -4939,5 +4955,126 @@
     "byCounty": "Megyénként",
     "bySeat": "Budapesten kívül, településenként",
     "tableHeading": "Az idősor számokban"
+  },
+  "waitlist": {
+    "heading": "Mennyit kell várni egy műtétre?",
+    "lead": "A NEAK nyilvános várólista-nyilvántartása beavatkozásonként: mennyit vártak azok, akiket az elmúlt hat hónapban megműtöttek, és hányan várnak most több mint 60 napja.",
+    "pick": "Beavatkozás",
+    "days": "{n} nap",
+    "group": {
+      "mandatory": "Kötelező vezetésű várólisták",
+      "capacity": "Kapacitáshiány miatt vezetett várólisták"
+    },
+    "national": "Országosan, a NEAK közlése szerint",
+    "noNational": "Ennél a beavatkozásnál a NEAK nem közöl országos adatot: csak azok a szolgáltatók vezetnek listát, ahol kapacitáshiány miatt tartósan 60 napnál többet kell várni. Ahol hamarabb sorra lehet kerülni, az nincs a listán.",
+    "median": "medián várakozás",
+    "mean": "átlagos várakozás",
+    "over60": "60 napnál régebben vár",
+    "served": "ellátott eset fél év alatt",
+    "institutions": "Várólistát közlő intézmények: {n}",
+    "subset": "Ez nem az összes kórház, amely a beavatkozást végzi, csak a nyilvántartásban listával szereplők. Ezért térségi vagy országos kép nem számolható belőlük.",
+    "institution": "Intézmény",
+    "region": "Ellátási térség",
+    "note": "A várakozási idő a már ellátott betegek tényleges várakozása, nem ígéret annak, aki most kerül listára. A 0 napos medián a NEAK közölt értéke: az ellátottak legalább fele várakozás nélkül került sorra, miközben az átlag ettől magas lehet. Személyes adatot és esetszintű listát az oldal nem tölt le.",
+    "source": "Forrás: NEAK Országos várólista nyilvántartás, lekérdezve: {date}."
+  },
+  "communities": {
+    "heading": "Praxisközösségek területi beosztása",
+    "lead": "Az OKFŐ, mint praxiskezelő, kijelölte, mely járások alkotnak együtt egy kollegiális praxisközösséget. Itt az látszik, hogy az egyes közösségek területén a körzetek mekkora része betöltetlen.",
+    "notMembership": "Ez területi beosztás, nem taglista. Nem derül ki belőle, melyik praxis lépett be, és nincsenek benne a szoros és a járási fogorvosi praxisközösségek. Arra ezért nem alkalmas, hogy a praxisközösség hatását mérje. A betöltetlen körzet nem jelent ellátatlanságot.",
+    "kindLabel": "Ellátási ág",
+    "kind": {
+      "gp": "Háziorvos",
+      "dental": "Fogorvos"
+    },
+    "kpi": {
+      "all": "területi praxisközösség",
+      "single": "áll egyetlen járásból vagy kerületből",
+      "quarter": {
+        "gp": "területén a háziorvosi körzetek legalább negyede betöltetlen",
+        "dental": "területén a fogorvosi körzetek legalább negyede betöltetlen vagy megszűnt"
+      }
+    },
+    "county": "Megye",
+    "allCounties": "Mind",
+    "members": "Járások",
+    "total": "Körzet",
+    "vacant": {
+      "gp": "Betöltetlen",
+      "dental": "Betöltetlen vagy megszűnt"
+    },
+    "longTerm": "Ebből tartósan",
+    "rate": "Arány",
+    "source": "Forrás: OKFŐ Alapellátási Igazgatóság, a kollegiális praxisközösségek területi beosztása (lekérdezve: {date}); körzetek: NEAK, {month}."
+  },
+  "hospital": {
+    "heading": "Milyen messze van a kórház?",
+    "lead": "Az Eurostat autós menetideje a legközelebbi kórházig, a 2021-es népszámlálás népességrácsával súlyozva. A szolgáltatások és az úthálózat referenciaéve: {year}.",
+    "measure": {
+      "median": "Medián menetidő",
+      "over20": "20 percnél messzebb él",
+      "over45": "45 percnél messzebb él"
+    },
+    "minutes": "{n} perc",
+    "definition": "Hogy mi számít kórháznak, azt minden ország a saját nyilvántartása szerint adja meg, ezért az oldal nem ad helyezést az országoknak. Alacsonyabb érték: közelebbi kórház.",
+    "pairsHeading": "Megyék és a határ túloldala",
+    "megye": "Megye",
+    "across": "Szomszédos régió",
+    "pairsNote": "A menetidő országon belüli és határon túli kórházra is vonatkozhat az Eurostat úthálózatán, és semmit nem mond arról, hogy a beteget ott ellátják-e. Szerbiára és Ukrajnára nincs adat.",
+    "checkHeading": "Külső ellenőrzés: az Eurostat és a Praxistérkép menetideje",
+    "checkText": "A magyar medián az Eurostatnál {gisco} perc, a Praxistérkép sürgősségi osztályokra számolt menetidejében {own} perc. Megyénként nagyobb az eltérés: az Eurostat népességrácsból és TomTom-úthálózaton számol, mi településközéppontból és OpenStreetMapen, ami a nagyvárosokban rövidebb utat mutathat.",
+    "gisco": "Eurostat",
+    "own": "Praxistérkép, sürgősségi osztály",
+    "source": "Forrás: Eurostat GISCO, Geographic accessibility ({version}), © Európai Unió, TomTom-úthálózat alapján; letöltve: {date}."
+  },
+  "neighbours": {
+    "heading": "Orvoshiány a szomszédban",
+    "lead": "Országonként egy hivatalos forrás, a saját fogalmaival. Jelenleg Szlovákiáról van járási szintű, letölthető hatósági adat.",
+    "notVacancy": "A szlovák „hiányzó rendelő” nem betöltetlen körzet: azt méri, mennyi heti 35 órás rendelő hiányzik a jogszabályi optimális kapacitáshoz. A magyar betöltetlen körzet meglévő körzet szerződött orvos nélkül. A kettő nem vethető össze arányként.",
+    "kindLabel": "Ellátási ág",
+    "kind": {
+      "adult": "Felnőtt háziorvos",
+      "child": "Gyermekorvos"
+    },
+    "kpi": {
+      "missing": "rendelő hiányzik az optimális hálózathoz",
+      "short": "járásban hiányzik legalább egy teljes rendelő",
+      "border": "ebből a Magyarországgal határos kerületekben"
+    },
+    "onlyBorder": "Csak a Magyarországgal határos kerületek",
+    "okres": "Járás (okres)",
+    "kraj": "Kerület (kraj)",
+    "optimal": "Optimális",
+    "present": "Működő",
+    "missing": "Hiányzik",
+    "fill": "Teljesülés",
+    "krajName": {
+      "BA": "Pozsonyi",
+      "TT": "Nagyszombati",
+      "TN": "Trencséni",
+      "NR": "Nyitrai",
+      "ZA": "Zsolnai",
+      "BB": "Besztercebányai",
+      "PO": "Eperjesi",
+      "KE": "Kassai"
+    },
+    "source": "Forrás: Úrad pre dohľad nad zdravotnou starostlivosťou (ÚDZS), az optimális hálózat értékelése; letöltve: {date}.",
+    "othersHeading": "Ami hiányzik, és miért",
+    "country": {
+      "AT": "Ausztria",
+      "SI": "Szlovénia",
+      "HR": "Horvátország",
+      "RO": "Románia",
+      "RS": "Szerbia",
+      "UA": "Ukrajna"
+    },
+    "status": {
+      "AT": "Nem találtunk friss, tartományonként és áganként bontott, letölthető hivatalos táblát; a sajtóban közölt számokat nem vesszük át.",
+      "SI": "A ZZZS közöl adatot, de a fájljai gépi letöltését az oldal robots.txt szabálya nem engedi.",
+      "HR": "A nyílt adatportálon talált hálózati táblát 2023 márciusában frissítették utoljára; frisset nem találtunk.",
+      "RO": "A CNAS közöl listát az orvos nélküli településekről, de az oldala korlátozza a gépi felhasználást, ezért nem töltöttük le.",
+      "RS": "Nem találtunk községi szintű, friss hivatalos hiánytáblát.",
+      "UA": "Nem találtunk községi szintű, friss hivatalos hiánytáblát."
+    }
   }
 }

@@ -7,4 +7,4 @@ export const OUTCOME_ITEMS = ['mortality', 'whyNotKsh', 'income', 'jobs', 'popul
   'limits'] as const;
 
 export const EUROPE_METHOD_ITEMS = ['sources', 'oneSource', 'concepts', 'years', 'selfReport', 'migration',
-  'regions', 'limits'] as const;
+  'regions', 'hospital', 'neighbours', 'limits'] as const;
