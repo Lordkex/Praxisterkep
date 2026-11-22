@@ -85,6 +85,7 @@
     "caveatLabel": "Important:"
   },
   "map": {
+    "unsupported": "Your browser cannot draw the map here because WebGL is unavailable. The figures and tables are available without it.",
     "groupView": "View",
     "groupFilters": "Filters",
     "groupLayers": "Layers",

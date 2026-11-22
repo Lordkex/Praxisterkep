@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Map as MLMap, Marker, NavigationControl, Popup } from 'maplibre-gl';
+import { type Map as MLMap, Marker, NavigationControl, Popup } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type {
   ExpressionSpecification, GeoJSONSource, MapLayerMouseEvent,
@@ -9,6 +9,8 @@ import { benefitOf, useBenefit, type BenefitRaw } from '../lib/kedvezmenyezett';
 import { SegmentedControl } from './SegmentedControl';
 import { useOrientationLayers } from './useOrientationLayers';
 import { exportMapPng } from '../lib/mapExport';
+import { createMap } from '../lib/safeMap';
+import { MapUnsupported } from './MapUnsupported';
 import { t } from '../lib/i18n';
 import { formatDecimal, formatMonth, formatNumber, formatPercent, monthsBetween } from '../lib/format';
 import { countyRanking, filterPraxes, type TypeFilter } from '../lib/selectors';
@@ -312,6 +314,7 @@ export function MapSection() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
+  const [unsupported, setUnsupported] = useState(false);
 
   const readyRef = useRef(false);
   const markersRef = useRef<Marker[]>([]);
@@ -455,7 +458,7 @@ export function MapSection() {
   /* ---------------- map lifecycle ---------------- */
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = new MLMap({
+    const map = createMap({
       container: containerRef.current,
       style: {
         version: 8,
@@ -469,6 +472,10 @@ export function MapSection() {
       // the PNG export reads the canvas back after the frame
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    if (!map) {
+      setUnsupported(true);
+      return;
+    }
     mapRef.current = map;
     if (import.meta.env.DEV) {
       (window as unknown as Record<string, unknown>).__map = map;
@@ -856,6 +863,7 @@ export function MapSection() {
 
       <div className={`map-wrap${playing ? ' is-playing' : ''}`}>
         <div ref={containerRef} className="map-canvas" />
+        {unsupported && <MapUnsupported />}
         <button type="button" className="map-save" title={t('map.savePng')}
           onClick={() => mapRef.current && exportMapPng(mapRef.current, `praxisterkep-terkep-${kind}`)}>
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"

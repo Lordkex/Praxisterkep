@@ -5,13 +5,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useEffect, useRef, useState } from 'react';
-import { Map as MLMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './index.css';
 import { t } from './lib/i18n';
 import { formatMonth, formatNumber } from './lib/format';
 import type { LatestFile, PraxisKind, Snapshot } from './types';
 import { dataUrl } from './lib/dataUrl';
+import { createMap } from './lib/safeMap';
+import { MapUnsupported } from './components/MapUnsupported';
 
 const HUNGARY_BOUNDS: [[number, number], [number, number]] =
   [[15.9, 45.6], [23.2, 48.7]];
@@ -36,6 +37,7 @@ function EmbedApp() {
   const kind: PraxisKind = params.get('k') === 'gp' ? 'gp' : 'dental';
   const county = params.get('m');
   const containerRef = useRef<HTMLDivElement>(null);
+  const [unsupported, setUnsupported] = useState(false);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ function EmbedApp() {
 
   useEffect(() => {
     if (!snapshot || !containerRef.current) return;
-    const map = new MLMap({
+    const map = createMap({
       container: containerRef.current,
       style: {
         version: 8,
@@ -63,6 +65,10 @@ function EmbedApp() {
       dragRotate: false,
       interactive: true,
     });
+    if (!map) {
+      setUnsupported(true);
+      return;
+    }
     if (import.meta.env.DEV) {
       (window as unknown as Record<string, unknown>).__emap = map;
     }
@@ -141,6 +147,7 @@ function EmbedApp() {
   return (
     <div className="embed">
       <div className="embed__map" ref={containerRef} />
+      {unsupported && <MapUnsupported />}
       <div className="embed__bar">
         <span>
           <strong>{formatNumber(vacantAll)}</strong>{' '}

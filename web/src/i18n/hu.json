@@ -85,6 +85,7 @@
     "caveatLabel": "Fontos:"
   },
   "map": {
+    "unsupported": "A böngésződ itt nem tud térképet rajzolni, mert a WebGL nem érhető el. A számok és a táblázatok térkép nélkül is elérhetők.",
     "groupView": "Nézet",
     "groupFilters": "Szűrők",
     "groupLayers": "Rétegek",
