@@ -25,7 +25,10 @@ describe('analyses', () => {
         n++;
       }
     }
-    expect(n).toBe(59);
+    const onDisk = readdirSync(root).filter((d) => /^20\d\d-\d\d$/.test(d))
+      .flatMap((m) => ['gp', 'dental'].filter((k) => existsSync(new URL(`${m}/${k}.json`, root)))).length;
+    expect(onDisk).toBeGreaterThanOrEqual(59);
+    expect(n).toBe(onDisk);
   });
 
   it('county ranking shares tied places', () => {

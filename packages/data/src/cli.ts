@@ -13,9 +13,9 @@ Commands (CSV on stdout; --kind defaults to gp):
   national                   national figures, month by month
   counties <month>           counties ranked by vacancy rate
   longest <month> [--limit N]  longest-vacant districts (default 50)
-  history <fin>              one district's status, both branches
+  history <fin>              one district's status (both branches without --kind)
   diff <from> <to>           districts whose status changed
-  verify                     check every file against the manifest hashes
+  verify                     check the manifest's data files against their hashes
   help                       this text
 `;
 
@@ -83,7 +83,7 @@ export async function run(
         return 0;
       case 'history':
         need(pos, 1, 'history <fin>');
-        out(toCsv(await client.praxisHistory(pos[1]) as unknown as Record<string, unknown>[], ['month', 'kind', 'status']));
+        out(toCsv(await client.praxisHistory(pos[1], kind) as unknown as Record<string, unknown>[], ['month', 'kind', 'status']));
         return 0;
       case 'diff':
         need(pos, 2, 'diff <from> <to>');
@@ -117,6 +117,11 @@ function isMain(): boolean {
 }
 
 if (isMain()) {
+  // `hungarian-praxismap national | head` closes the pipe early: stop quietly.
+  process.stdout.on('error', (e: NodeJS.ErrnoException) => {
+    if (e.code === 'EPIPE') process.exit(0);
+    throw e;
+  });
   const { client } = await import('./node.ts');
   process.exitCode = await run(process.argv.slice(2), client, (s) => process.stdout.write(s));
 }

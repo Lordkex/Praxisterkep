@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { build, assertParseable, assertSafeOutDir, fillMonths, fillReadme } from '../build/build.ts';
+import { build, assertParseable, assertSafeOutDir, fillMonths, fillReadme, packageJson } from '../build/build.ts';
 import { checkNoCoordinates, guardOutput } from '../build/guard.ts';
 import { rawFiles } from '../build/manifest.ts';
 import type { Manifest } from '../src/types.ts';
@@ -39,6 +39,7 @@ describe('build on fixtures', () => {
     expect(manifest.tag).toBe('data-2026.11.0');
     expect(manifest.built).toBe(opts.committedAt);
     expect(JSON.parse(readFileSync(join(out, 'package.json'), 'utf8')).version).toBe('2026.11.0');
+    expect(JSON.parse(readFileSync(join(out, 'package.json'), 'utf8')).private).toBeUndefined();
     expect(existsSync(join(out, 'lib/node.js'))).toBe(true);
     expect(readFileSync(join(out, 'lib/version.js'), 'utf8')).toContain('2026.11.0');
     expect(result.version).toBe('2026.11.0');
@@ -173,13 +174,31 @@ describe('output checks', () => {
   });
 });
 
+describe('local build', () => {
+  it('packageJson marks a local build private so npm publish refuses it', () => {
+    const t = { name: 'hungarian-praxismap', version: '0.0.0' };
+    expect(packageJson(t, '2026.11.0', false)).toEqual({ name: 'hungarian-praxismap', version: '2026.11.0' });
+    expect(packageJson(t, '2026.11.0', true)).toEqual({ name: 'hungarian-praxismap', version: '2026.11.0', private: true });
+    expect(t.version).toBe('0.0.0');
+  });
+
+  it('build({ local: true }) writes "private": true into package.json', async () => {
+    const out = tmp();
+    await build({ dataDir: FIX, outDir: out, ...opts, local: true });
+    expect(JSON.parse(readFileSync(join(out, 'package.json'), 'utf8')).private).toBe(true);
+  });
+});
+
 describe('real archive', () => {
   it('builds clean', async () => {
     const out = tmp();
     const r = await build({ dataDir: REAL, outDir: out, ...opts, minNames: 1000 });
     const m: Manifest = JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8'));
     const entries = Object.values(m.months).flatMap((b) => Object.values(b));
-    expect(entries).toHaveLength(59);
+    const onDisk = readdirSync(REAL).filter((d) => /^20\d\d-\d\d$/.test(d))
+      .flatMap((d) => ['gp', 'dental'].filter((k) => existsSync(join(REAL, d, `${k}.json`)))).length;
+    expect(onDisk).toBeGreaterThanOrEqual(59);
+    expect(entries).toHaveLength(onDisk);
     for (const e of entries) for (const f of Object.keys(e.files)) expect(existsSync(join(out, f))).toBe(true);
     const pack = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: out, encoding: 'utf8' }));
     console.log(`real archive: ${r.version} ${r.files} files, packed ${pack[0].size} bytes, unpacked ${pack[0].unpackedSize}`);

@@ -49,6 +49,15 @@ describe('cli', () => {
     expect((await go('longest', '2026-11', '--limit', '1')).out.trim().split('\n')).toHaveLength(2);
     expect((await go('history', 'X')).out.startsWith('month,kind,status\n')).toBe(true);
   });
+  it('history honours an explicit --kind, both branches without it', async () => {
+    const kinds = (out: string) => [...new Set(out.trim().split('\n').slice(1).map((r) => r.split(',')[1]))].sort();
+    expect(kinds((await go('history', 'X')).out)).toEqual(['dental', 'gp']);
+    const dental = await go('history', 'X', '--kind', 'dental');
+    expect(dental.code).toBe(0);
+    expect(kinds(dental.out)).toEqual(['dental']);
+    expect(dental.out).toMatch(/^month,kind,status\n2026-11,dental,[a-z_]+\n$/);
+    expect(kinds((await go('history', 'X', '--kind', 'gp')).out)).toEqual(['gp']);
+  });
   it('diff has a header and only changed ids', async () => {
     const r = await go('diff', '2026-10', '2026-11');
     expect(r.code).toBe(0);

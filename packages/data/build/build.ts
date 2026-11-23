@@ -1,7 +1,9 @@
 // Turns the repo's data/ archive into a publishable package root.
-//   node build/build.ts [--patch N] [--data DIR] [--out DIR]
-// build() is pure file work; the "data/ must be clean" refusal and the git
-// calls live only in the CLI entry below.
+//   node build/build.ts [--patch N] [--data DIR] [--out DIR] [--local]
+// build() is pure file work; the "data/ must be clean" and "HEAD is on
+// origin/main" refusals and the git calls live only in the CLI entry below.
+// --local skips the origin/main check for a development build and marks its
+// package.json private, so npm publish refuses it.
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -28,6 +30,15 @@ export interface BuildOptions {
   committedAt: string;
   /** Refuse when fewer names were collected (a guard over too few names means a misread source). */
   minNames?: number;
+  /** A development build: package.json gets "private": true, so npm publish refuses it. */
+  local?: boolean;
+}
+
+/** The published package.json: the template with the version filled, private when local. */
+export function packageJson(template: Record<string, unknown>, version: string, local: boolean): Record<string, unknown> {
+  const pkg: Record<string, unknown> = { ...template, version };
+  if (local) pkg.private = true;
+  return pkg;
 }
 
 const compact = (v: unknown): string => JSON.stringify(v) + '\n';
@@ -204,8 +215,7 @@ async function assemble(
   guardOutput(names, checked);
 
   const template = JSON.parse(readFileSync(join(PKG, 'package.template.json'), 'utf8'));
-  template.version = version;
-  write(o.outDir, 'package.json', pretty(template));
+  write(o.outDir, 'package.json', pretty(packageJson(template, version, o.local ?? false)));
   return { version, files: walkFiles(o.outDir).length };
 }
 
@@ -218,10 +228,23 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const repo = join(PKG, '../..');
   const dataDir = arg('--data', join(repo, 'data'));
   const git = (...a: string[]): string => execFileSync('git', a, { cwd: repo, encoding: 'utf8' }).trim();
-  const dirty = git('status', '--porcelain', 'data');
+  const local = process.argv.includes('--local');
+  // dist/ is git-ignored, so a finished build does not count as a change here.
+  const dirty = git('status', '--porcelain', '--', 'data', 'packages/data');
   if (dirty) {
-    console.error(`data/ has uncommitted changes; the manifest would name a commit that does not hold these files:\n${dirty}`);
+    console.error(`data/ or packages/data/ has uncommitted changes; the manifest would name a commit that does not hold these files:\n${dirty}`);
     process.exit(1);
+  }
+  if (local) {
+    console.warn('--local: origin/main is not checked; dist/package.json is marked "private": true, so npm publish refuses this build.');
+  } else {
+    try {
+      execFileSync('git', ['merge-base', '--is-ancestor', 'HEAD', 'origin/main'], { cwd: repo, stdio: 'pipe' });
+    } catch {
+      console.error('HEAD is not on origin/main, so the commit the manifest names may not exist on GitHub. '
+        + 'Fetch (git fetch origin), merge your work into main and push it first, or build with --local for a development build that cannot be published.');
+      process.exit(1);
+    }
   }
   try {
     const r = await build({
@@ -231,6 +254,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       commit: git('rev-parse', 'HEAD'),
       committedAt: git('log', '-1', '--format=%cI'),
       minNames: 1000,
+      local,
     });
     console.log(`hungarian-praxismap ${r.version}: ${r.files} files`);
   } catch (e) {

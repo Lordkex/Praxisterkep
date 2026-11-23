@@ -15,7 +15,8 @@
   "exports": {
     ".": { "types": "./lib/index.d.ts", "node": "./lib/node.js", "default": "./lib/index.js" },
     "./manifest.json": "./manifest.json",
-    "./months/*": "./months/*"
+    "./months/*": "./months/*",
+    "./schema/*": "./schema/*"
   },
   "engines": { "node": ">=22.18" },
   "keywords": ["hungary", "primary-care", "open-data", "neak"]

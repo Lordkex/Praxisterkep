@@ -29,7 +29,7 @@ mutatja, melyik hónapban melyik.
 | `months/<hónap>/<ág>-counties.csv` | megyénként: körzetek, betöltetlenek, megszűntek, arány, érintett lakosság, típusonként |
 | `months/<hónap>/<ág>-settlements.csv` | településenként: lakosság, betöltött körzetek, a betöltetlen és a megszűnt körzetek FIN-kódja |
 | `months/<hónap>/<ág>-coordinates.csv` | a rendelők koordinátái (FIN, rendelő sorszáma, lat, lon, `geoApprox`) — **ODbL 1.0**, lásd lent |
-| `manifest.json` | minden fájl SHA-256-ja és mérete, a git-commit, a nyers forrásfájlok jegyzéke |
+| `manifest.json` | minden adatfájl (`months/*`) SHA-256-ja és mérete, a git-commit, a nyers forrásfájlok jegyzéke |
 | `schema/*.json` | JSON Schema a pillanatképre és a jegyzékre |
 | `lib/` | TypeScript-kliens és parancssori eszköz, futásidejű függőség nélkül |
 
@@ -146,19 +146,19 @@ npx hungarian-praxismap counties 2026-11           # megyei rangsor
 npx hungarian-praxismap longest 2026-11 --limit 20 # a legrégebben betöltetlen körzetek
 npx hungarian-praxismap history 050091387          # egy körzet hónapról hónapra
 npx hungarian-praxismap diff 2026-10 2026-11       # változott körzetek
-npx hungarian-praxismap verify                     # a fájlok ellenőrzése a jegyzék ujjlenyomatai alapján
+npx hungarian-praxismap verify                     # az adatfájlok ellenőrzése a jegyzék ujjlenyomatai alapján
 ```
 
 A `verify` és a `help` kivételével minden parancs CSV-t ír a szabványos
 kimenetre. A `--kind gp|dental` alapértéke `gp`, két kivétellel: a `months`
 kapcsoló nélkül mindkét ág összes hónapját felsorolja, a `history` pedig
-mindig mindkét ágat mutatja. A megyei rangsorban az azonos arányú megyék
+kapcsoló nélkül mindkét ágat mutatja (`--kind`-dal csak az egyiket). A megyei rangsorban az azonos arányú megyék
 közös helyen állnak, a hiányzó arányú megye a végén, hely nélkül.
 
 ### Ellenőrzés
 
-`npx hungarian-praxismap verify` minden fájlt összevet a `manifest.json`
-SHA-256-jaival. A jegyzék megadja a git-commitot, amelyből a csomag készült,
+`npx hungarian-praxismap verify` a jegyzékben (`manifest.json`) felsorolt
+adatfájlokat (`months/*`) veti össze az ott rögzített SHA-256-jukkal. A jegyzék megadja a git-commitot, amelyből a csomag készült,
 és minden hónapnál a nyers forrásfájlok SHA-256-ját és GitHub-linkjét azon a
 commiton (`https://github.com/ZoliQua/Praxisterkep/blob/<commit>/data/raw/<hónap>/<fájl>`).
 Így bármelyik szám visszakövethető a NEAK eredeti fájljáig.
@@ -215,7 +215,7 @@ part above shows which month has which.
 | `months/<month>/<kind>-counties.csv` | per county: districts, vacant, dissolved, rate, affected population, by type |
 | `months/<month>/<kind>-settlements.csv` | per settlement: population, filled districts, FIN codes of the vacant and dissolved districts |
 | `months/<month>/<kind>-coordinates.csv` | surgery coordinates (FIN, surgery index, lat, lon, `geoApprox`) — **ODbL 1.0**, see below |
-| `manifest.json` | SHA-256 and size of every file, the git commit, the list of raw source files |
+| `manifest.json` | SHA-256 and size of every data file (`months/*`), the git commit, the list of raw source files |
 | `schema/*.json` | JSON Schema for the snapshot and the manifest |
 | `lib/` | TypeScript client and command-line tool, no runtime dependencies |
 
@@ -324,19 +324,20 @@ npx hungarian-praxismap counties 2026-11           # county ranking
 npx hungarian-praxismap longest 2026-11 --limit 20 # longest-vacant districts
 npx hungarian-praxismap history 050091387          # one district month by month
 npx hungarian-praxismap diff 2026-10 2026-11       # districts that changed
-npx hungarian-praxismap verify                     # check the files against the manifest's SHA-256 values
+npx hungarian-praxismap verify                     # check the data files against the manifest's SHA-256 values
 ```
 
 Every command except `verify` and `help` writes CSV to standard output.
 `--kind gp|dental` defaults to `gp`, with two exceptions: without it `months`
-lists every month of both branches, and `history` always shows both branches.
+lists every month of both branches, and `history` shows both branches
+(with `--kind`, only that one).
 In the county ranking, counties with equal rates share a place; a county
 without a rate comes last, unranked.
 
 ### Verifying
 
-`npx hungarian-praxismap verify` checks every file against the SHA-256 values
-in `manifest.json`. The manifest names the git commit the package was built
+`npx hungarian-praxismap verify` checks the data files listed in
+`manifest.json` (`months/*`) against the SHA-256 values recorded there. The manifest names the git commit the package was built
 from and, for every month, the SHA-256 and GitHub link of each raw source file
 at that commit
 (`https://github.com/ZoliQua/Praxisterkep/blob/<commit>/data/raw/<month>/<file>`).

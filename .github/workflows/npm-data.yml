@@ -19,6 +19,11 @@
 # dispatch of this workflow.
 # A same-month data refresh keeps the version and is skipped: dispatch with
 # patch=1 to publish it.
+#
+# The owner's monthly step: the release text is written by hand. Before a new
+# version can publish, add "## <version> - <YYYY-MM-DD>" with a short note to
+# packages/data/CHANGELOG.md on main and push it; if the run after the ETL
+# already failed for want of that section, run this workflow by hand.
 name: npm-data
 on:
   workflow_run:
@@ -83,12 +88,18 @@ jobs:
           version=$(node -p "require('./dist/package.json').version")
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          if out=$(npm view hungarian-praxismap@"$version" version 2>&1); then
-            published=true
-          elif echo "$out" | grep -q 'E404'; then
+          if out=$(npm view hungarian-praxismap@"$version" version 2> npm-view.err); then
+            # exit 0 alone is not proof: only the exact version counts
+            if [ "$out" = "$version" ]; then
+              published=true
+            else
+              echo "::error::npm view exited 0 but printed '$out', not $version"
+              exit 1
+            fi
+          elif grep -q 'E404' npm-view.err; then
             published=false
           else
-            echo "::error::npm view failed: $out"
+            echo "::error::npm view failed: $(cat npm-view.err)"
             exit 1
           fi
           echo "published=$published" >> "$GITHUB_OUTPUT"
@@ -116,7 +127,7 @@ jobs:
             on { print }
           ' CHANGELOG.md > notes.md
           if ! grep -q '[^[:space:]]' notes.md; then
-            echo "::error::CHANGELOG.md has no section for $VERSION"
+            echo "::error::CHANGELOG.md has no section for $VERSION: add \"## $VERSION - <YYYY-MM-DD>\" with a short note to packages/data/CHANGELOG.md on main, push, then run this workflow by hand"
             exit 1
           fi
       - name: Pack
@@ -165,19 +176,51 @@ jobs:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           # re-checked now: a re-run must not publish over a published version
-          if out=$(npm view hungarian-praxismap@"$VERSION" version 2>&1); then
+          if out=$(npm view hungarian-praxismap@"$VERSION" version 2> npm-view.err); then
+            if [ "$out" != "$VERSION" ]; then
+              echo "::error::npm view exited 0 but printed '$out', not $VERSION"
+              exit 1
+            fi
             echo "::notice::hungarian-praxismap@$VERSION is already on npm, not publishing again"
-          elif echo "$out" | grep -q 'E404'; then
+          elif grep -q 'E404' npm-view.err; then
             npm publish "./artifact/$TARBALL" --provenance --access public
+            # the Tag step then uses the commit this run built and published
+            echo "PUBLISHED_NOW=true" >> "$GITHUB_ENV"
           else
-            echo "::error::npm view failed: $out"
+            echo "::error::npm view failed: $(cat npm-view.err)"
             exit 1
           fi
       - name: Tag
         env:
           VERSION: ${{ needs.build.outputs.version }}
-          COMMIT: ${{ needs.build.outputs.commit }}
+          BUILT: ${{ needs.build.outputs.commit }}
         run: |
+          # The tag and the release name the commit the PUBLISHED package's
+          # manifest records. When this run published, that is the commit it
+          # built. When npm already had the version (published earlier, maybe
+          # by hand, maybe from another commit), it is read back from the
+          # tarball on npm, never assumed to be this run's HEAD.
+          if [ "${PUBLISHED_NOW:-}" = true ]; then
+            COMMIT="$BUILT"
+          else
+            tmp=$(mktemp -d)
+            (cd "$tmp" && npm pack hungarian-praxismap@"$VERSION" --silent > /dev/null)
+            tar -xzf "$tmp"/hungarian-praxismap-*.tgz -C "$tmp" package/manifest.json
+            COMMIT=$(node -e "process.stdout.write(String(require(process.argv[1]).commit ?? ''))" "$tmp/package/manifest.json")
+          fi
+          case "$COMMIT" in
+            *[!0-9a-f]*|'') echo "::error::hungarian-praxismap@$VERSION: '$COMMIT' is not a commit hash"; exit 1 ;;
+          esac
+          [ ${#COMMIT} -eq 40 ] || { echo "::error::hungarian-praxismap@$VERSION: '$COMMIT' is not a full commit hash"; exit 1; }
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$COMMIT" origin/main; then
+            echo "::error::hungarian-praxismap@$VERSION names commit $COMMIT, which is not on origin/main"
+            exit 1
+          fi
+          if [ "$COMMIT" != "$BUILT" ]; then
+            echo "::notice::the published package names $COMMIT; this run built $BUILT"
+          fi
+          echo "COMMIT=$COMMIT" >> "$GITHUB_ENV"
           git config user.name "Dul Zoltán"
           git config user.email "ZoliQua@users.noreply.github.com"
           if line=$(git ls-remote --exit-code --tags origin "refs/tags/data-$VERSION"); then
@@ -195,7 +238,7 @@ jobs:
       - name: Release
         env:
           VERSION: ${{ needs.build.outputs.version }}
-          COMMIT: ${{ needs.build.outputs.commit }}
+          # COMMIT comes from the Tag step through GITHUB_ENV
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "data-$VERSION" > /dev/null 2>&1; then

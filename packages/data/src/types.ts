@@ -1,15 +1,17 @@
+// A field the allowlist marks with a trailing "?" (build/allowlist.ts) may be
+// null or absent in the archive, so it is typed `?: T | null`.
 export type Kind = 'gp' | 'dental';
 export type PraxisType = 'adult' | 'child' | 'mixed' | 'school';
 
-export interface ByTypeEntry { total: number | null; vacant: number }
+export interface ByTypeEntry { total?: number | null; vacant: number }
 export interface ByType { adult?: ByTypeEntry; child?: ByTypeEntry; mixed?: ByTypeEntry; school?: ByTypeEntry }
 
 interface Counts {
   vacant: number;
   dissolved: number;
-  longTerm?: number;
-  vacancyRate: number | null;
-  praxesPer10k: number | null;
+  longTerm?: number | null;
+  vacancyRate?: number | null;
+  praxesPer10k?: number | null;
   populationTotal: number;
   populationVacant: number;
   populationDissolved: number;
@@ -17,17 +19,17 @@ interface Counts {
   byType: ByType;
 }
 
-export interface National extends Counts { totalDistricts: number | null }
-export interface County extends Counts { name: string; total: number | null }
+export interface National extends Counts { totalDistricts?: number | null }
+export interface County extends Counts { name: string; total?: number | null }
 
 export interface Site {
   address: string;
-  addressRaw?: string;
+  addressRaw?: string | null;
   district: string;
   settlement: string;
   postalCode: string;
   isHeadquarters: boolean;
-  geoApprox?: boolean;
+  geoApprox?: boolean | null;
 }
 
 export interface Praxis {
@@ -38,8 +40,8 @@ export interface Praxis {
   county: string;
   countyCode: string;
   vacantSince: string;
-  longTerm?: boolean;
-  longTermSince?: string;
+  longTerm?: boolean | null;
+  longTermSince?: string | null;
   population: number;
   servedSettlements?: string[];
   sites: Site[];
@@ -49,13 +51,13 @@ export interface FilledPraxis {
   id: string;
   type: PraxisType;
   county: string;
-  district?: string;
+  district?: string | null;
   settlement: string;
   postalCode: string;
   address: string;
-  addressRaw?: string;
-  level?: string;
-  neakCode?: string;
+  addressRaw?: string | null;
+  level?: string | null;
+  neakCode?: string | null;
   servedSettlements?: string[];
 }
 
