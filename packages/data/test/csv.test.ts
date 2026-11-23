@@ -18,4 +18,8 @@ describe('csv', () => {
     expect(parseCsv('a,b\r\n1,"2\r\n3"\r\n')).toEqual([['a', 'b'], ['1', '2\r\n3']]);
     expect(parseCsv('a,b\n1,2')).toEqual([['a', 'b'], ['1', '2']]);
   });
+
+  it('throws on an unterminated quote', () => {
+    expect(() => parseCsv('a,b\n1,"2\n3,4\n')).toThrow(/unterminated/);
+  });
 });

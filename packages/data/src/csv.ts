@@ -29,6 +29,7 @@ export function parseCsv(text: string): string[][] {
       row.push(field); rows.push(row); row = []; field = ''; pending = false;
     } else { field += ch; pending = true; }
   }
+  if (quoted) throw new Error('CSV ends inside a quoted field (unterminated quote)');
   if (pending) { row.push(field); rows.push(row); }
   return rows;
 }
