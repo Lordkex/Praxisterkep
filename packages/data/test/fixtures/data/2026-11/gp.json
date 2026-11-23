@@ -1,0 +1,263 @@
+{
+ "schemaVersion": 3,
+ "kind": "gp",
+ "month": "2026-11",
+ "disclaimer": "A NEAK adatai tájékoztató jellegűek.",
+ "longTermAsOf": "2026-10",
+ "sources": [
+  "NEAK Betöltetlen háziorvosi szolgálatok (PDF)",
+  "NEAK Háziorvosi szolgálatok / szerződött szolgáltatók (XLS)"
+ ],
+ "national": {
+  "totalDistricts": 6,
+  "vacant": 3,
+  "dissolved": 0,
+  "longTerm": 2,
+  "vacancyRate": 0.5,
+  "populationVacant": 23000,
+  "populationDissolved": 0,
+  "byType": {
+   "adult": {
+    "total": 3,
+    "vacant": 1
+   },
+   "child": {
+    "total": 1,
+    "vacant": 1
+   },
+   "mixed": {
+    "total": 2,
+    "vacant": 1
+   }
+  },
+  "populationTotal": 60000,
+  "populationShare": 0.3833,
+  "praxesPer10k": 1.0
+ },
+ "counties": [
+  {
+   "name": "Alpha",
+   "total": 3,
+   "vacant": 1,
+   "dissolved": 0,
+   "longTerm": 1,
+   "vacancyRate": 0.3333,
+   "populationVacant": 7000,
+   "populationDissolved": 0,
+   "byType": {
+    "adult": {
+     "total": 1,
+     "vacant": 0
+    },
+    "child": {
+     "total": 1,
+     "vacant": 1
+    },
+    "mixed": {
+     "total": 1,
+     "vacant": 0
+    }
+   },
+   "populationTotal": 30000,
+   "populationShare": 0.2333,
+   "praxesPer10k": 1.0
+  },
+  {
+   "name": "Beta",
+   "total": 3,
+   "vacant": 2,
+   "dissolved": 0,
+   "longTerm": 1,
+   "vacancyRate": 0.6667,
+   "populationVacant": 16000,
+   "populationDissolved": 0,
+   "byType": {
+    "adult": {
+     "total": 2,
+     "vacant": 1
+    },
+    "child": {
+     "total": 0,
+     "vacant": 0
+    },
+    "mixed": {
+     "total": 1,
+     "vacant": 1
+    }
+   },
+   "populationTotal": 30000,
+   "populationShare": 0.5333,
+   "praxesPer10k": 1.0
+  }
+ ],
+ "praxes": [
+  {
+   "id": "GP000002",
+   "kind": "gp",
+   "type": "child",
+   "status": "vacant",
+   "county": "Alpha",
+   "countyCode": "",
+   "sites": [
+    {
+     "postalCode": "1111",
+     "settlement": "Alfalva",
+     "address": "Dr. Pikó Béla u. 3.",
+     "district": "Alsó",
+     "isHeadquarters": true,
+     "lat": 47.2,
+     "lon": 19.2,
+     "geoApprox": false,
+     "addressRaw": "DR. PIKÓ BÉLA U. 3., \"földszint\",\nbal oldal"
+    },
+    {
+     "postalCode": "1112",
+     "settlement": "Betafalva",
+     "address": "Kert utca 2.",
+     "district": "Alsó",
+     "isHeadquarters": false,
+     "lat": 47.3,
+     "lon": 19.3,
+     "geoApprox": true
+    }
+   ],
+   "vacantSince": "2025-08",
+   "population": 7000,
+   "longTerm": true,
+   "longTermSince": "2026-08",
+   "servedSettlements": [
+    "Alfalva",
+    "Betafalva"
+   ]
+  },
+  {
+   "id": "GP000004",
+   "kind": "gp",
+   "type": "adult",
+   "status": "vacant",
+   "county": "Beta",
+   "countyCode": "",
+   "sites": [
+    {
+     "postalCode": "2221",
+     "settlement": "Gammafalva",
+     "address": "Piac tér 4.",
+     "district": "Felső",
+     "isHeadquarters": true,
+     "lat": 46.5,
+     "lon": 20.5,
+     "geoApprox": false
+    }
+   ],
+   "vacantSince": "2026-05",
+   "population": 9000
+  },
+  {
+   "id": "GP000005",
+   "kind": "gp",
+   "type": "mixed",
+   "status": "vacant",
+   "county": "Beta",
+   "countyCode": "",
+   "sites": [
+    {
+     "postalCode": "2221",
+     "settlement": "Gammafalva",
+     "address": "Piac tér 8.",
+     "district": "Felső",
+     "isHeadquarters": false,
+     "geoApprox": false
+    }
+   ],
+   "vacantSince": "2026-11",
+   "population": 7000
+  }
+ ],
+ "filledPraxes": [
+  {
+   "id": "GP000001",
+   "type": "adult",
+   "county": "Alpha",
+   "settlement": "Alfalva",
+   "postalCode": "1111",
+   "address": "Fő utca 1.",
+   "district": "Alsó",
+   "neakCode": "1000",
+   "provider": "Minta Bt.",
+   "doctor": "Dr. Új Orvos"
+  },
+  {
+   "id": "GP000003",
+   "type": "mixed",
+   "county": "Alpha",
+   "settlement": "Alfalva",
+   "postalCode": "1111",
+   "address": "Fő utca 9.",
+   "district": "Alsó",
+   "servedSettlements": [
+    "Alfalva"
+   ],
+   "neakCode": "1001",
+   "provider": "Teszt Bt.",
+   "addressRaw": "FŐ U. 9.",
+   "doctor": "Dr. Teszt Elek"
+  },
+  {
+   "id": "GP000006",
+   "type": "adult",
+   "county": "Beta",
+   "settlement": "Deltafalva",
+   "postalCode": "2222",
+   "address": "Park u. 1.",
+   "provider": "Példa Zrt.",
+   "doctor": "Dr. Példa Péter"
+  }
+ ],
+ "settlements": [
+  {
+   "name": "Alfalva",
+   "county": "Alpha",
+   "filled": 2,
+   "vacantPraxisIds": [
+    "GP000002"
+   ],
+   "dissolvedPraxisIds": [],
+   "affectedByDissolved": false,
+   "kshId": "11111",
+   "population": 4000
+  },
+  {
+   "name": "Betafalva",
+   "county": "Alpha",
+   "filled": 0,
+   "vacantPraxisIds": [
+    "GP000002"
+   ],
+   "affectedByDissolved": false,
+   "kshId": "11112",
+   "population": 1500
+  },
+  {
+   "name": "Gammafalva",
+   "county": "Beta",
+   "filled": 0,
+   "vacantPraxisIds": [
+    "GP000004",
+    "GP000005"
+   ],
+   "dissolvedPraxisIds": [],
+   "affectedByDissolved": false,
+   "kshId": "22221",
+   "population": 6000
+  },
+  {
+   "name": "Deltafalva",
+   "county": "Beta",
+   "filled": 1,
+   "vacantPraxisIds": [],
+   "affectedByDissolved": false,
+   "kshId": "22222",
+   "population": 2500
+  }
+ ]
+}

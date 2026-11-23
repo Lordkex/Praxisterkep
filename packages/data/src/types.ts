@@ -2,7 +2,7 @@ export type Kind = 'gp' | 'dental';
 export type PraxisType = 'adult' | 'child' | 'mixed' | 'school';
 
 export interface ByTypeEntry { total: number | null; vacant: number }
-export interface ByType { adult: ByTypeEntry; child: ByTypeEntry; mixed: ByTypeEntry; school: ByTypeEntry }
+export interface ByType { adult?: ByTypeEntry; child?: ByTypeEntry; mixed?: ByTypeEntry; school?: ByTypeEntry }
 
 interface Counts {
   vacant: number;
@@ -27,7 +27,7 @@ export interface Site {
   settlement: string;
   postalCode: string;
   isHeadquarters: boolean;
-  geoApprox: boolean;
+  geoApprox?: boolean;
 }
 
 export interface Praxis {
