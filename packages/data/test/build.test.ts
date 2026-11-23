@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { build } from '../build/build.ts';
+import { build, assertParseable, assertSafeOutDir } from '../build/build.ts';
+import { checkNoCoordinates, guardOutput } from '../build/guard.ts';
 import { rawFiles } from '../build/manifest.ts';
 import type { Manifest } from '../src/types.ts';
 
@@ -107,6 +108,38 @@ describe('guard failure', () => {
     const out = tmp();
     await expect(build({ dataDir: d, outDir: out, ...opts })).rejects.toThrow(/Name guard/);
     expect(existsSync(join(out, 'package.json'))).toBe(false);
+    expect(existsSync(out) ? readdirSync(out) : []).toEqual([]);
+  });
+
+  it('names the file for an unterminated-quote CSV', () => {
+    expect(() => assertParseable([{ path: 'months/a-praxes.csv', text: 'a,b\n"1,2\n' }])).toThrow(/^months\/a-praxes\.csv: .*unterminated/);
+  });
+
+  it('build prefixes parse errors with the file path', async () => {
+    const d = tmp();
+    cpSync(FIX, d, { recursive: true });
+    writeFileSync(join(d, '2026-11/gp.json'), '{broken');
+    await expect(build({ dataDir: d, outDir: tmp(), ...opts })).rejects.toThrow(/2026-11\/gp\.json/);
+  });
+});
+
+describe('output checks', () => {
+  it('rejects a lat key in a months json', () => {
+    const files = [{ path: 'months/2026-11/gp.json', text: '{"praxes":[{"sites":[{"lat":47.1}]}]}' }];
+    expect(() => checkNoCoordinates(files)).toThrow(/months\/2026-11\/gp\.json \/praxes\/0\/sites\/0\/lat/);
+    expect(() => checkNoCoordinates([{ path: 'months/a.json', text: '{"x":1}' }])).not.toThrow();
+  });
+
+  it('refuses an ancestor, the repo, the data dir and a foreign non-empty dir', () => {
+    expect(() => assertSafeOutDir('..', FIX)).toThrow(/Refusing/);
+    expect(() => assertSafeOutDir('../../..', FIX)).toThrow(/Refusing/);
+    expect(() => assertSafeOutDir(join(FIX, '..'), FIX)).toThrow(/Refusing/);
+    expect(() => assertSafeOutDir(FIX, FIX)).toThrow(/Refusing/);
+    const foreign = tmp();
+    writeFileSync(join(foreign, 'precious.txt'), 'x');
+    expect(() => assertSafeOutDir(foreign, FIX)).toThrow(/manifest\.json/);
+    expect(existsSync(join(foreign, 'precious.txt'))).toBe(true);
+    expect(() => assertSafeOutDir(tmp(), FIX)).not.toThrow();
   });
 });
 

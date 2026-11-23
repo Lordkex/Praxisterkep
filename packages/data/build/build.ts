@@ -6,13 +6,13 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ALLOWLIST, schemaFrom, strip } from './allowlist.ts';
-import { collectNames, guardOutput } from './guard.ts';
+import { checkNoCoordinates, collectNames, guardOutput } from './guard.ts';
 import { MANIFEST_SCHEMA, missingRaw, rawFiles } from './manifest.ts';
 import { versionFor } from './version.ts';
-import { toCsv } from '../src/csv.ts';
+import { parseCsv, toCsv } from '../src/csv.ts';
 import { COORDINATE_COLUMNS, TABLES } from '../src/tables.ts';
 import type { Kind, Manifest, ManifestEntry, Snapshot } from '../src/types.ts';
 
@@ -39,6 +39,30 @@ function write(outDir: string, rel: string, text: string): { sha256: string; byt
   const buf = Buffer.from(text, 'utf8');
   writeFileSync(path, buf);
   return { sha256: createHash('sha256').update(buf).digest('hex'), bytes: buf.length };
+}
+
+/** Parse every output file, naming the file when one cannot be read. */
+export function assertParseable(files: { path: string; text: string }[]): void {
+  for (const c of files) {
+    try {
+      if (c.path.endsWith('.json')) JSON.parse(c.text);
+      else parseCsv(c.text);
+    } catch (e) {
+      throw new Error(`${c.path}: ${(e as Error).message}`);
+    }
+  }
+}
+
+/** Resolve outDir and refuse anything build() must never empty. */
+export function assertSafeOutDir(outDir: string, dataDir: string): string {
+  const out = resolve(outDir);
+  const inside = (parent: string, child: string): boolean => child === parent || child.startsWith(parent + sep);
+  const protectedDirs = [PKG, join(PKG, '../..'), resolve(dataDir), process.cwd()];
+  for (const d of protectedDirs)
+    if (inside(out, d)) throw new Error(`Refusing to build into ${out}: it is or contains ${d}`);
+  if (existsSync(out) && readdirSync(out).length > 0 && !existsSync(join(out, 'manifest.json')))
+    throw new Error(`Refusing to empty ${out}: it is not empty and holds no manifest.json from an earlier build`);
+  return out;
 }
 
 function walkFiles(dir: string): string[] {
@@ -81,7 +105,11 @@ export async function build(o: BuildOptions): Promise<{ version: string; files: 
   for (const month of months)
     for (const kind of KINDS) {
       const p = join(o.dataDir, month, `${kind}.json`);
-      if (existsSync(p)) sources.push({ month, kind, raw: JSON.parse(readFileSync(p, 'utf8')), where: `${month}/${kind}.json` });
+      if (!existsSync(p)) continue;
+      const where = `${month}/${kind}.json`;
+      let raw: any;
+      try { raw = JSON.parse(readFileSync(p, 'utf8')); } catch (e) { throw new Error(`${where}: ${(e as Error).message}`); }
+      sources.push({ month, kind, raw, where });
     }
   if (sources.length === 0) throw new Error(`No snapshots found in ${o.dataDir}`);
 
@@ -90,8 +118,23 @@ export async function build(o: BuildOptions): Promise<{ version: string; files: 
   if (o.minNames !== undefined && names.size < o.minNames)
     throw new Error(`Name guard: only ${names.size} names collected, expected at least ${o.minNames}; the source was misread`);
 
-  rmSync(o.outDir, { recursive: true, force: true });
-  mkdirSync(o.outDir, { recursive: true });
+  const outDir = assertSafeOutDir(o.outDir, o.dataDir);
+  rmSync(outDir, { recursive: true, force: true });
+  mkdirSync(outDir, { recursive: true });
+  try {
+    return await assemble({ ...o, outDir }, sources, version, names);
+  } catch (e) {
+    rmSync(outDir, { recursive: true, force: true });
+    throw e;
+  }
+}
+
+async function assemble(
+  o: BuildOptions,
+  sources: { month: string; kind: Kind; raw: any; where: string }[],
+  version: string,
+  names: Map<string, string>,
+): Promise<{ version: string; files: number }> {
 
   const manifest: Manifest = {
     package: 'hungarian-praxismap',
@@ -137,13 +180,9 @@ export async function build(o: BuildOptions): Promise<{ version: string; files: 
     .filter((p) => /\.(json|csv)$/.test(p) && !relative(o.outDir, p).startsWith('lib/'))
     .sort()
     .map((p) => ({ path: relative(o.outDir, p), text: readFileSync(p, 'utf8') }));
-  try {
-    guardOutput(names, checked);
-  } catch (e) {
-    // A CSV parse error does not name its file; do.
-    const msg = (e as Error).message;
-    throw checked.some((c) => msg.includes(c.path)) || msg.startsWith('Name guard') ? e : new Error(`Name guard could not read the output: ${msg}`);
-  }
+  assertParseable(checked);
+  checkNoCoordinates(checked);
+  guardOutput(names, checked);
 
   const template = JSON.parse(readFileSync(join(PKG, 'package.template.json'), 'utf8'));
   template.version = version;

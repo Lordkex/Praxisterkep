@@ -81,3 +81,21 @@ export function guardOutput(names: ReadonlyMap<string, string>, files: { path: s
     throw new Error(`Name guard: ${hits.length} hit(s), refusing to publish\n${hits.join('\n')}`);
   }
 }
+
+/** Fails on any lat/lon key in a published snapshot JSON: coordinates live only in the ODbL coordinates CSV. */
+export function checkNoCoordinates(files: { path: string; text: string }[]): void {
+  const hits: string[] = [];
+  const visit = (path: string, node: unknown, pointer: string): void => {
+    if (Array.isArray(node)) node.forEach((v, i) => visit(path, v, `${pointer}/${i}`));
+    else if (node && typeof node === 'object')
+      for (const [k, v] of Object.entries(node)) {
+        if (k === 'lat' || k === 'lon') hits.push(`${path} ${pointer}/${k} coordinate key in snapshot JSON`);
+        visit(path, v, `${pointer}/${k}`);
+      }
+  };
+  for (const { path, text } of files) {
+    if (!/\.json$/i.test(path) || !/(^|[\\/])months[\\/]/.test(path)) continue;
+    visit(path, JSON.parse(text), '');
+  }
+  if (hits.length) throw new Error(`Coordinate check: ${hits.length} hit(s), refusing to publish\n${hits.join('\n')}`);
+}
