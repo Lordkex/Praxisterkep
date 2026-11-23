@@ -175,12 +175,15 @@ function coordinatesOf(snapshot: Record<string, unknown>, where: string): Coordi
       if (none(lat) || none(lon)) {
         throw new Error(`${where}: praxes[].sites[] ${String(p.id)}#${siteIndex} has only one of lat/lon`);
       }
+      if (typeof s.geoApprox !== 'boolean') {
+        throw new Error(`${where}: praxes[].sites[] ${String(p.id)}#${siteIndex} geoApprox missing`);
+      }
       rows.push({
         id: p.id as string,
         siteIndex,
         lat: lat as number,
         lon: lon as number,
-        geoApprox: s.geoApprox === true,
+        geoApprox: s.geoApprox,
       });
     });
   }

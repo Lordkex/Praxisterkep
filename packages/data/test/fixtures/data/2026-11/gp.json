@@ -165,8 +165,7 @@
      "settlement": "Gammafalva",
      "address": "Piac tér 8.",
      "district": "Felső",
-     "isHeadquarters": false,
-     "geoApprox": false
+     "isHeadquarters": false
     }
    ],
    "vacantSince": "2026-11",

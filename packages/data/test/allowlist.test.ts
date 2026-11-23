@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, globSync } from 'node:fs';
+import { readFileSync, globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ALLOWLIST, DROPPED, MOVED, schemaFrom, strip } from '../build/allowlist.ts';
 
@@ -33,6 +33,18 @@ describe('strip', () => {
     expect(input.praxes).toHaveLength(3);
     expect(coordinates.map((c) => c.id)).not.toContain('GP000005');
     expect(coordinates).toHaveLength(3);
+  });
+
+  it('fails when a site has only one of lat/lon', () => {
+    const input = fixture('2026-10', 'gp');
+    delete input.praxes[0].sites[0].lon;
+    expect(() => strip(input, '2026-10/gp.json')).toThrow(/only one of lat\/lon/);
+  });
+
+  it('fails when a site has coordinates but no geoApprox', () => {
+    const input = fixture('2026-10', 'gp');
+    delete input.praxes[0].sites[0].geoApprox;
+    expect(() => strip(input, '2026-10/gp.json')).toThrow(/2026-10\/gp\.json.*geoApprox missing/);
   });
 
   it('uses the site index within the praxis', () => {
