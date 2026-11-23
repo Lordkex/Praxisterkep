@@ -25,7 +25,14 @@ export function createClient(load: (path: string) => Promise<string>): Client {
   let manifestP: Promise<Manifest> | undefined;
   const snaps = new Map<string, Promise<Snapshot>>();
 
-  const manifest = () => (manifestP ??= load('manifest.json').then((t) => JSON.parse(t) as Manifest));
+  const manifest = () => {
+    if (!manifestP) {
+      const p = load('manifest.json').then((t) => JSON.parse(t) as Manifest);
+      p.catch(() => { if (manifestP === p) manifestP = undefined; });
+      manifestP = p;
+    }
+    return manifestP;
+  };
 
   const months = async (kind?: Kind) => {
     const m = await manifest();
@@ -37,7 +44,7 @@ export function createClient(load: (path: string) => Promise<string>): Client {
   const snapshot = async (month: string, kind: Kind) => {
     const have = await months(kind);
     if (!have.includes(month))
-      throw new Error(`No ${kind} data archived for ${month}. Available months for ${kind}: ${have.join(', ')}`);
+      throw new Error(`No ${kind} data archived for ${month}. Available months for ${kind}: ${have.length ? have.join(', ') : 'none'}`);
     const path = `months/${month}/${kind}.json`;
     let p = snaps.get(path);
     if (!p) {

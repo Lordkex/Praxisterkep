@@ -55,6 +55,22 @@ describe('client', () => {
     expect(load).not.toHaveBeenCalled();
   });
 
+  it('retries the manifest after a failed load', async () => {
+    let n = 0;
+    const client = createClient(async (p) => {
+      if (p === 'manifest.json' && n++ === 0) throw new Error('transient');
+      return files[p];
+    });
+    await expect(client.months()).rejects.toThrow('transient');
+    expect(await client.months('gp')).toEqual(['2026-10', '2026-11']);
+  });
+
+  it('says none when a branch has no months', async () => {
+    const m = { ...manifest, months: {} };
+    const client = createClient(async () => JSON.stringify(m));
+    await expect(client.snapshot('2026-11', 'gp')).rejects.toThrow(/none/);
+  });
+
   it('verify catches a changed file', async () => {
     const ok = await make().client.verify();
     expect(ok).toMatchObject({ ok: true, checked: 6, mismatched: [] });
