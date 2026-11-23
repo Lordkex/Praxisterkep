@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { build, assertParseable, assertSafeOutDir } from '../build/build.ts';
+import { build, assertParseable, assertSafeOutDir, fillMonths } from '../build/build.ts';
 import { checkNoCoordinates, guardOutput } from '../build/guard.ts';
 import { rawFiles } from '../build/manifest.ts';
 import type { Manifest } from '../src/types.ts';
@@ -70,6 +70,20 @@ describe('build on fixtures', () => {
     expect(gp.raw!.map((r) => [r.name, r.role])).toEqual([['gp_registry.xls', 'registry'], ['gp_vacant.pdf', 'vacant']]);
     expect(gp.raw![0].url).toBe('https://github.com/ZoliQua/Praxisterkep/blob/test/data/raw/2026-11/gp_registry.xls');
     expect(gp.raw![0].sha256).toBe(sha(join(FIX, 'raw/2026-11/gp_registry.xls')));
+  });
+
+  it('fills the months table in the dist README only', () => {
+    const src = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+    expect(src).toMatch(/<!-- months -->\s*<!-- \/months -->/);
+    const dist = readFileSync(join(out, 'README.md'), 'utf8');
+    expect(dist).toMatch(/^\| 2026-11 \| ✓ \| ✓ \|$/m);
+    expect(dist).toMatch(/^\| 2026-10 \| ✓ \| – \|$/m);
+    expect(dist.indexOf('| 2026-11 |')).toBeLessThan(dist.indexOf('| 2026-10 |'));
+    expect(dist).not.toBe(src);
+  });
+
+  it('fillMonths refuses a README without the block', () => {
+    expect(() => fillMonths('# x\n', { months: {} } as unknown as Manifest)).toThrow(/months/);
   });
 
   it('is deterministic', async () => {

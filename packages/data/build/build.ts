@@ -65,6 +65,18 @@ export function assertSafeOutDir(outDir: string, dataDir: string): string {
   return out;
 }
 
+const MONTHS_BLOCK = /<!-- months -->[\s\S]*?<!-- \/months -->/;
+
+/** Fill the README's months block from the manifest: newest month first, ✓ / – per branch. */
+export function fillMonths(readme: string, manifest: Pick<Manifest, 'months'>): string {
+  if (!MONTHS_BLOCK.test(readme)) throw new Error('README.md has no <!-- months --> … <!-- /months --> block');
+  const mark = (on: unknown): string => (on ? '✓' : '–');
+  const rows = Object.keys(manifest.months).sort().reverse()
+    .map((m) => `| ${m} | ${mark(manifest.months[m].gp)} | ${mark(manifest.months[m].dental)} |`);
+  const table = ['| Hónap / Month | Háziorvos / GP | Fogorvos / Dental |', '|---|:-:|:-:|', ...rows].join('\n');
+  return readme.replace(MONTHS_BLOCK, () => `<!-- months -->\n${table}\n<!-- /months -->`);
+}
+
 function walkFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory() ? walkFiles(join(dir, e.name)) : [join(dir, e.name)]);
@@ -174,6 +186,8 @@ async function assemble(
   write(o.outDir, 'schema/snapshot.schema.json', pretty(schemaFrom(ALLOWLIST)));
   write(o.outDir, 'schema/manifest.schema.json', pretty(MANIFEST_SCHEMA));
   for (const f of DOC_FILES) cpSync(join(PKG, f), join(o.outDir, f));
+  // .md files are not passed to the guard; the table holds only months and marks.
+  write(o.outDir, 'README.md', fillMonths(readFileSync(join(PKG, 'README.md'), 'utf8'), manifest));
   compileLib(o.outDir, version);
 
   const checked = walkFiles(o.outDir)
