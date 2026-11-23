@@ -176,8 +176,8 @@ Every release is archived on Zenodo. To cite all versions, use the concept DOI
 ### npm data package
 
 The monthly data is also released as the npm package
-[`hungarian-praxismap`](packages/data/): every archived month since October
-2017, GP and dental, as JSON and CSV, without physician or provider names,
+[`hungarian-praxismap`](packages/data/): every archived month, dental since
+October 2017 and GP since March 2019, as JSON and CSV, without physician or provider names,
 with the SHA-256 of every file and a manifest pointing at the raw source
 files, plus a TypeScript client and a command-line tool. Its version is
 calendar-based (`2026.11.0`); every version gets its own `data-…` tag and
@@ -562,8 +562,8 @@ verzióra együtt a [10.5281/zenodo.23460426](https://doi.org/10.5281/zenodo.234
 ### NPM-adatcsomag
 
 A havi adatokat npm-csomagként is kiadjuk,
-[`hungarian-praxismap`](packages/data/) néven: minden archivált hónap
-2017 októberétől, háziorvosi és fogorvosi ágon, JSON-ban és CSV-ben, orvos- és
+[`hungarian-praxismap`](packages/data/) néven: minden archivált hónap, a
+fogorvosi ág 2017 októberétől, a háziorvosi 2019 márciusától, JSON-ban és CSV-ben, orvos- és
 szolgáltatónevek nélkül, minden fájl SHA-256-jával és a nyers forrásfájlokra
 mutató jegyzékkel, mellette egy TypeScript-kliens és parancssori eszköz. A
 csomag verziója naptári (`2026.11.0`), minden verzió saját `data-…` címkét és

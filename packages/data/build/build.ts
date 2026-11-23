@@ -77,6 +77,11 @@ export function fillMonths(readme: string, manifest: Pick<Manifest, 'months'>): 
   return readme.replace(MONTHS_BLOCK, () => `<!-- months -->\n${table}\n<!-- /months -->`);
 }
 
+/** The dist README: the version token replaced everywhere, the months block filled. */
+export function fillReadme(readme: string, manifest: Pick<Manifest, 'months' | 'version'>): string {
+  return fillMonths(readme.replaceAll('{{VERSION}}', manifest.version), manifest);
+}
+
 function walkFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory() ? walkFiles(join(dir, e.name)) : [join(dir, e.name)]);
@@ -186,8 +191,8 @@ async function assemble(
   write(o.outDir, 'schema/snapshot.schema.json', pretty(schemaFrom(ALLOWLIST)));
   write(o.outDir, 'schema/manifest.schema.json', pretty(MANIFEST_SCHEMA));
   for (const f of DOC_FILES) cpSync(join(PKG, f), join(o.outDir, f));
-  // .md files are not passed to the guard; the table holds only months and marks.
-  write(o.outDir, 'README.md', fillMonths(readFileSync(join(PKG, 'README.md'), 'utf8'), manifest));
+  // .md files are not passed to the guard; the fill adds only the version, months and marks.
+  write(o.outDir, 'README.md', fillReadme(readFileSync(join(PKG, 'README.md'), 'utf8'), manifest));
   compileLib(o.outDir, version);
 
   const checked = walkFiles(o.outDir)

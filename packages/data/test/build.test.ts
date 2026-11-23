@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { build, assertParseable, assertSafeOutDir, fillMonths } from '../build/build.ts';
+import { build, assertParseable, assertSafeOutDir, fillMonths, fillReadme } from '../build/build.ts';
 import { checkNoCoordinates, guardOutput } from '../build/guard.ts';
 import { rawFiles } from '../build/manifest.ts';
 import type { Manifest } from '../src/types.ts';
@@ -80,6 +80,22 @@ describe('build on fixtures', () => {
     expect(dist).toMatch(/^\| 2026-10 \| ✓ \| – \|$/m);
     expect(dist.indexOf('| 2026-11 |')).toBeLessThan(dist.indexOf('| 2026-10 |'));
     expect(dist).not.toBe(src);
+  });
+
+  it('fills the version in the dist README only', () => {
+    const src = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+    expect(src).toContain('{{VERSION}}');
+    const dist = readFileSync(join(out, 'README.md'), 'utf8');
+    expect(dist).not.toContain('{{VERSION}}');
+    expect(dist).toContain('data-2026.11.0');
+    expect(dist).toContain('https://cdn.jsdelivr.net/npm/hungarian-praxismap@2026.11.0/months/2026-11/gp-counties.csv');
+    expect(dist).toContain('npm install hungarian-praxismap@2026.11.0');
+  });
+
+  it('fillReadme replaces every version token and the months block', () => {
+    const r = fillReadme('a {{VERSION}} b {{VERSION}}\n<!-- months -->\n<!-- /months -->\n',
+      { version: '2027.1.0', months: { '2027-01': { gp: {} } } } as unknown as Manifest);
+    expect(r).toBe('a 2027.1.0 b 2027.1.0\n<!-- months -->\n| Hónap / Month | Háziorvos / GP | Fogorvos / Dental |\n|---|:-:|:-:|\n| 2027-01 | ✓ | – |\n<!-- /months -->\n');
   });
 
   it('fillMonths refuses a README without the block', () => {

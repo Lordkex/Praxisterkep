@@ -10,12 +10,17 @@ describe('package docs', () => {
 
   it('README names the package, the DOI, the licences, the disclaimer and the vacancy rule', () => {
     for (const s of ['hungarian-praxismap', '10.5281/zenodo.23460426', 'ODbL', 'tájékoztató jellegű', 'Betöltetlen ≠ ellátatlan',
-      'A NEAK adatai tájékoztató jellegűek.', 'CC BY 4.0', 'MIT', 'data-2026.11.0'])
+      'A NEAK adatai tájékoztató jellegűek.', 'CC BY 4.0', 'MIT', 'data-{{VERSION}}', 'hungarian-praxismap@{{VERSION}}/'])
       expect(readme).toContain(s);
   });
 
   it('README carries an empty months block for the build to fill', () => {
     expect(readme).toMatch(/<!-- months -->\s*<!-- \/months -->/);
+  });
+
+  it('README hardcodes no package version outside the first-release note', () => {
+    const rest = readme.replace(/\(2026\.11\.0\)/g, '');
+    expect(rest).not.toMatch(/\b\d{4}\.\d{1,2}\.\d+\b/);
   });
 
   it('no forbidden words in the docs', () => {
