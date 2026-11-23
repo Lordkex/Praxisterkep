@@ -1,0 +1,158 @@
+# Publishes the data package `hungarian-praxismap` after the monthly ETL.
+#
+# The gate: the build job only builds and tests. The publish job runs in the
+# `npm-publish` environment, whose required reviewer is the owner, so every
+# publish waits for an explicit approval. Publishing uses npm trusted
+# publishing (OIDC, no stored credential) with provenance; afterwards the
+# data-<version> tag and a GitHub release (not marked Latest) are created,
+# and Zenodo archives that release.
+#
+# The very first version is published by hand: trusted publishing can only be
+# configured on a package that already exists on npm.
+name: npm-data
+on:
+  workflow_run:
+    workflows: [monthly-etl]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      patch:
+        description: "Patch number of the version (non-negative integer)"
+        type: string
+        default: "0"
+
+concurrency:
+  group: npm-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      skip: ${{ steps.version.outputs.skip }}
+      commit: ${{ steps.version.outputs.commit }}
+      tarball: ${{ steps.pack.outputs.tarball }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # after the ETL the new data commit is on main; a manual run uses its own ref
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Validate patch
+        env:
+          PATCH: ${{ inputs.patch || '0' }}
+        run: |
+          case "$PATCH" in
+            ''|*[!0-9]*) echo "::error::patch must be a non-negative integer, got '$PATCH'"; exit 1 ;;
+          esac
+      - name: Install and test
+        working-directory: packages/data
+        run: |
+          npm ci
+          npm test
+      - name: Build
+        working-directory: packages/data
+        env:
+          PATCH: ${{ inputs.patch || '0' }}
+        run: node build/build.ts --patch "$PATCH"
+      - name: Read version and check npm
+        id: version
+        working-directory: packages/data
+        run: |
+          version=$(node -p "require('./dist/package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if out=$(npm view hungarian-praxismap@"$version" version 2>&1); then
+            echo "::notice::hungarian-praxismap@$version is already on npm, nothing to publish"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          elif echo "$out" | grep -q 'E404'; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::npm view failed: $out"
+            exit 1
+          fi
+      - name: Extract release notes
+        if: steps.version.outputs.skip != 'true'
+        working-directory: packages/data
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # the section under "## <version>", up to the next "## " heading;
+          # the heading must be followed by a space or the end of the line
+          awk -v v="$VERSION" '
+            /^## / {
+              if (on) exit
+              if ($0 == "## " v || index($0, "## " v " ") == 1) { on = 1; next }
+            }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error::CHANGELOG.md has no section for $VERSION"
+            exit 1
+          fi
+      - name: Pack
+        id: pack
+        if: steps.version.outputs.skip != 'true'
+        working-directory: packages/data/dist
+        run: |
+          tarball=$(npm pack --silent | tail -n 1)
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          mv "$tarball" ../
+      - uses: actions/upload-artifact@v4
+        if: steps.version.outputs.skip != 'true'
+        with:
+          name: npm-data
+          path: |
+            packages/data/${{ steps.pack.outputs.tarball }}
+            packages/data/notes.md
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: needs.build.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.commit }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # trusted publishing needs npm 11.5.1 or newer
+      - run: npm install -g npm@^11.5.1
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-data
+          path: artifact
+      - name: Publish
+        env:
+          TARBALL: ${{ needs.build.outputs.tarball }}
+        run: npm publish "./artifact/$TARBALL" --provenance --access public
+      - name: Tag and release
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          COMMIT: ${{ needs.build.outputs.commit }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "Dul Zoltán"
+          git config user.email "ZoliQua@users.noreply.github.com"
+          git tag "data-$VERSION" "$COMMIT"
+          git push origin "data-$VERSION"
+          gh release create "data-$VERSION" \
+            --title "Adatcsomag $VERSION" \
+            --notes-file artifact/notes.md \
+            --latest=false \
+            --target "$COMMIT"
