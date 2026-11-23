@@ -24,4 +24,16 @@ describe('npm-data workflow', () => {
     expect(text).toContain('group: npm-data');
     expect(text).toContain('cancel-in-progress: false');
   });
+  it('makes every irreversible step idempotent and restricted to main', () => {
+    for (const s of ['branches: [main]', 'gh release view', 'git ls-remote', "github.ref == 'refs/heads/main'"]) {
+      expect(text).toContain(s);
+    }
+  });
+  it('never puts workflow inputs into a shell script', () => {
+    const lines = text.split('\n');
+    expect(lines.filter((l) => /^\s*(- )?run:.*\$\{\{\s*inputs\./.test(l))).toEqual([]);
+    for (const l of lines.filter((l) => l.includes('${{ inputs.'))) {
+      expect(l).toMatch(/^\s+PATCH: /);
+    }
+  });
 });
