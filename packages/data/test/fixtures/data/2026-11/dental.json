@@ -1,0 +1,145 @@
+{
+ "schemaVersion": 3,
+ "kind": "dental",
+ "month": "2026-11",
+ "disclaimer": "A NEAK adatai tájékoztató jellegűek.",
+ "longTermAsOf": null,
+ "sources": [
+  "NEAK Betöltetlen fogorvosi szolgálatok (PDF)"
+ ],
+ "national": {
+  "totalDistricts": 6,
+  "vacant": 2,
+  "dissolved": 0,
+  "longTerm": 1,
+  "vacancyRate": 0.3333,
+  "populationVacant": 9000,
+  "populationDissolved": 0,
+  "byType": {
+   "adult": {
+    "total": 4,
+    "vacant": 1
+   },
+   "child": {
+    "total": 1,
+    "vacant": 0
+   },
+   "mixed": {
+    "total": null,
+    "vacant": 0
+   },
+   "school": {
+    "total": 1,
+    "vacant": 1
+   }
+  },
+  "populationTotal": 50000,
+  "populationShare": 0.18,
+  "praxesPer10k": 1.2
+ },
+ "counties": [
+  {
+   "name": "Alpha",
+   "total": null,
+   "vacant": 2,
+   "dissolved": 0,
+   "longTerm": 1,
+   "vacancyRate": null,
+   "populationVacant": 9000,
+   "populationDissolved": 0,
+   "byType": {
+    "adult": {
+     "total": 4,
+     "vacant": 1
+    },
+    "child": {
+     "total": 1,
+     "vacant": 0
+    },
+    "mixed": {
+     "total": 0,
+     "vacant": 0
+    },
+    "school": {
+     "total": 1,
+     "vacant": 1
+    }
+   },
+   "populationTotal": 50000,
+   "populationShare": 0.18,
+   "praxesPer10k": null
+  }
+ ],
+ "praxes": [
+  {
+   "id": "DE000001",
+   "kind": "dental",
+   "type": "adult",
+   "status": "vacant",
+   "county": "Alpha",
+   "countyCode": "",
+   "sites": [
+    {
+     "postalCode": "1111",
+     "settlement": "Alfalva",
+     "address": "Fogász u. 1.",
+     "district": "Alsó",
+     "isHeadquarters": true,
+     "lat": 47.1,
+     "lon": 19.1,
+     "geoApprox": false
+    }
+   ],
+   "vacantSince": "2026-03",
+   "population": 4000
+  },
+  {
+   "id": "DE000002",
+   "kind": "dental",
+   "type": "school",
+   "status": "vacant",
+   "county": "Alpha",
+   "countyCode": "",
+   "sites": [
+    {
+     "postalCode": "1112",
+     "settlement": "Betafalva",
+     "address": "Iskola u. 2.",
+     "district": "Alsó",
+     "isHeadquarters": false,
+     "lat": 47.3,
+     "lon": 19.3,
+     "geoApprox": true
+    }
+   ],
+   "vacantSince": "2026-06",
+   "population": 5000,
+   "longTerm": false
+  }
+ ],
+ "filledPraxes": [],
+ "settlements": [
+  {
+   "name": "Alfalva",
+   "county": "Alpha",
+   "filled": 0,
+   "vacantPraxisIds": [
+    "DE000001"
+   ],
+   "affectedByDissolved": false,
+   "kshId": "11111",
+   "population": 4000
+  },
+  {
+   "name": "Betafalva",
+   "county": "Alpha",
+   "filled": 0,
+   "vacantPraxisIds": [
+    "DE000002"
+   ],
+   "affectedByDissolved": false,
+   "kshId": "11112",
+   "population": 1500
+  }
+ ]
+}

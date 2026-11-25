@@ -10,8 +10,18 @@ export type LayerKey =
   | 'counties' | 'seats' | 'county' | 'jarasSeats' | 'towns' | 'jaras' | 'budapest'
   | 'benefit';
 
+// "towns" (larger towns by size) stays a key, so a stored choice still reads,
+// but it is no longer offered: on top of the county seats, county-rank cities
+// and járás seats it only crowded the map
 export const LAYER_KEYS: LayerKey[] = [
-  'counties', 'seats', 'county', 'jarasSeats', 'towns', 'jaras', 'budapest', 'benefit',
+  'counties', 'seats', 'county', 'jarasSeats', 'jaras', 'budapest', 'benefit',
+];
+
+/** the same switches, grouped the way the main map's panel shows them */
+export const LAYER_GROUPS: { key: 'labels' | 'borders' | 'highlight'; layers: LayerKey[] }[] = [
+  { key: 'labels', layers: ['counties', 'seats', 'county', 'jarasSeats'] },
+  { key: 'borders', layers: ['jaras', 'budapest'] },
+  { key: 'highlight', layers: ['benefit'] },
 ];
 
 /** what a layer does when neither the visitor nor the map says otherwise */
@@ -112,5 +122,5 @@ export function cityVisible(city: CityPoint, layers: LayerState): boolean {
   if (layers.seats && city.rank === 'seat') return true;
   if (layers.county && city.rank === 'county') return true;
   if (layers.jarasSeats && city.rank === 'jarasSeat') return true;
-  return Boolean(layers.towns && city.big);
+  return false;
 }

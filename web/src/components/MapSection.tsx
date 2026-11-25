@@ -1,15 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Map as MLMap, Marker, NavigationControl, Popup } from 'maplibre-gl';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { type Map as MLMap, Marker, NavigationControl, Popup } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type {
   ExpressionSpecification, GeoJSONSource, MapLayerMouseEvent,
 } from 'maplibre-gl';
-import { LAYER_KEYS, setLayer } from '../lib/mapLayers';
+import { LAYER_GROUPS, setLayer } from '../lib/mapLayers';
+import { benefitOf, useBenefit, type BenefitRaw } from '../lib/kedvezmenyezett';
+import { SegmentedControl } from './SegmentedControl';
 import { useOrientationLayers } from './useOrientationLayers';
 import { exportMapPng } from '../lib/mapExport';
+import { createMap } from '../lib/safeMap';
+import { MapUnsupported } from './MapUnsupported';
 import { t } from '../lib/i18n';
-import { formatMonth, formatNumber, formatPercent, monthsBetween } from '../lib/format';
+import { formatDecimal, formatMonth, formatNumber, formatPercent, monthsBetween } from '../lib/format';
 import { countyRanking, filterPraxes, type TypeFilter } from '../lib/selectors';
+import { competitionRank } from '../lib/rank';
 import { readMapState, writeMapState } from '../lib/mapState';
 import { useContextStore } from '../lib/context';
 import { vacancyOf } from '../lib/vacancy';
@@ -116,6 +121,7 @@ function pointOpacityExpression(focus: string | null): ExpressionSpecification {
 
 function praxesToGeoJSON(
   praxes: Praxis[], month: string, showDissolved: boolean, minYears: number,
+  benefit: BenefitRaw | null = null,
 ): GeoJSON.FeatureCollection {
   const features: GeoJSON.Feature[] = [];
   for (const p of praxes) {
@@ -142,6 +148,8 @@ function praxesToGeoJSON(
           population: p.population,
           geoApprox: s.geoApprox === true,
           isHeadquarters: s.isHeadquarters,
+          // listed by the beneficiary-settlement decree (105/2015. Korm. r.)
+          benefit: benefitOf(benefit, s.settlement, p.county) !== null,
         },
       });
     }
@@ -267,6 +275,16 @@ function PanelSpark({ values, color }: { values: number[]; color: string }) {
   );
 }
 
+/** one labelled control in the map panel */
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="map-field">
+      <span className="map-field__label">{label}</span>
+      {children}
+    </div>
+  );
+}
+
 export function MapSection() {
   const snapshot = useMapSnapshot()!;
   const latestMonth = useAppStore((s) => s.latest?.month ?? snapshot.month);
@@ -296,6 +314,7 @@ export function MapSection() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
+  const [unsupported, setUnsupported] = useState(false);
 
   const readyRef = useRef(false);
   const markersRef = useRef<Marker[]>([]);
@@ -432,11 +451,14 @@ export function MapSection() {
   // this map draws its own county markers, so the hook leaves them alone
   const layers = useOrientationLayers(mapRef, { counties: true }, false);
   const showNames = layers.counties;
+  // the beneficiary-settlement list, fetched once and only if asked for
+  const benefitData = useBenefit();
+  const benefit = layers.benefit ? benefitData : null;
 
   /* ---------------- map lifecycle ---------------- */
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = new MLMap({
+    const map = createMap({
       container: containerRef.current,
       style: {
         version: 8,
@@ -450,6 +472,10 @@ export function MapSection() {
       // the PNG export reads the canvas back after the frame
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    if (!map) {
+      setUnsupported(true);
+      return;
+    }
     mapRef.current = map;
     if (import.meta.env.DEV) {
       (window as unknown as Record<string, unknown>).__map = map;
@@ -498,15 +524,35 @@ export function MapSection() {
         paint: { 'line-color': colorsRef.current.line, 'line-width': 0.8 },
       });
       map.addSource('praxes', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      // points in a beneficiary settlement get a halo, under the points
+      map.addLayer({
+        id: 'benefit-ring',
+        type: 'circle',
+        source: 'praxes',
+        filter: ['==', ['get', 'benefit'], true],
+        layout: { visibility: 'none' },
+        paint: {
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 6.5, 9, 10, 12, 14],
+          'circle-color': colorsRef.current.benefit,
+          'circle-opacity': 0.18,
+          'circle-stroke-width': 1.4,
+          'circle-stroke-color': colorsRef.current.benefit,
+          'circle-stroke-opacity': 0.85,
+        },
+      });
       map.addLayer({
         id: 'praxis-points',
         type: 'circle',
         source: 'praxes',
         paint: {
-          'circle-radius': ['case', ['get', 'geoApprox'], 3.5, 5],
+          // smaller at the national view, where a thousand points overlap
+          'circle-radius': ['interpolate', ['linear'], ['zoom'],
+            6, ['case', ['get', 'geoApprox'], 2.2, 3.4],
+            9, ['case', ['get', 'geoApprox'], 3.5, 5.5],
+            12, ['case', ['get', 'geoApprox'], 5, 7.5]],
           'circle-color': pointColorExpression('status', colorsRef.current),
           'circle-opacity': pointOpacityExpression(null),
-          'circle-stroke-width': 1,
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 10, 1],
           'circle-stroke-color': colorsRef.current.halo,
         },
       });
@@ -590,6 +636,8 @@ export function MapSection() {
       map.setPaintProperty('praxis-points', 'circle-opacity', pointOpacityExpression(selectedCounty));
       map.setPaintProperty('praxis-points', 'circle-color', pointColorExpression(colorMode, colors));
       map.setPaintProperty('praxis-points', 'circle-stroke-color', colors.halo);
+      map.setPaintProperty('benefit-ring', 'circle-color', colors.benefit);
+      map.setPaintProperty('benefit-ring', 'circle-stroke-color', colors.benefit);
       map.setPaintProperty('bg', 'background-color', colors.bg);
       map.setPaintProperty('county-line', 'line-color', colors.line);
       map.setPaintProperty('jaras-line', 'line-color', colors.line);
@@ -606,14 +654,16 @@ export function MapSection() {
       const src = map.getSource('praxes') as GeoJSONSource | undefined;
       src?.setData(praxesToGeoJSON(
         filterPraxes(snapshot.praxes, typeFilter), snapshot.month, showDissolved, minYears,
+        benefit,
       ));
-      map.setLayoutProperty(
-        'praxis-points', 'visibility', view === 'points' ? 'visible' : 'none',
-      );
+      const pts = view === 'points' ? 'visible' : 'none';
+      map.setLayoutProperty('praxis-points', 'visibility', pts);
+      map.setLayoutProperty('benefit-ring', 'visibility',
+        view === 'points' && layers.benefit ? 'visible' : 'none');
     };
     if (readyRef.current) apply();
     else map.once('praxisterkep:ready', apply);
-  }, [snapshot, typeFilter, showDissolved, view, minYears]);
+  }, [snapshot, typeFilter, showDissolved, view, minYears, benefit, layers.benefit]);
 
   /* county <-> járás level: swap the fill layers, lazy-load the polygons */
   const jarasLoaded = useRef(false);
@@ -713,11 +763,11 @@ export function MapSection() {
   const countyRank = useMemo(() => {
     if (!selectedCounty) return null;
     const rows = countyRanking(snapshot);
-    const i = rows.findIndex((r) => r.name === selectedCounty);
-    return i >= 0 ? i + 1 : null;
+    const here = rows.find((r) => r.name === selectedCounty);
+    return here ? competitionRank(rows.map((r) => r.rate), here.rate, 'higherFirst') : null;
   }, [snapshot, selectedCounty]);
   const isArchive = snapshot.month !== latestMonth;
-  const monthLoading = selectedMonth !== null && snapshot.month !== selectedMonth;
+  const displayedMonth = formatMonth(snapshot.month);
 
   return (
     <section className="section container" id="terkep">
@@ -727,84 +777,102 @@ export function MapSection() {
         {mapMetric === 'popshare' && t('map.popShareExplain')}
       </p>
 
-      <div className="map-controls">
-        <div className="seg" role="group">
-          {(['county', 'jaras'] as const).map((l) => (
-            <button key={l} aria-pressed={level === l} onClick={() => setLevel(l)}>
-              {l === 'county' ? t('map.levelCounty') : t('map.levelJaras')}
-            </button>
-          ))}
-        </div>
-        <div className="seg" role="group">
-          {(['points', 'columns'] as MapView[]).map((v) => (
-            <button key={v} aria-pressed={view === v} onClick={() => setView(v)}>
-              {v === 'points' ? t('map.viewPoints') : t('map.viewColumns')}
-            </button>
-          ))}
-        </div>
-        {level === 'county' && (
-          <div className="seg" role="group">
-            {(['rate', 'population', 'popshare'] as MapMetric[]).map((m) => (
-              <button key={m} aria-pressed={mapMetric === m} onClick={() => setMapMetric(m)}>
-                {t(METRIC_LABEL_KEYS[m])}
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="seg" role="group">
-          {typeOptions(snapshot).map((o) => (
-            <button
-              key={o.value}
-              aria-pressed={typeFilter === o.value}
-              onClick={() => setTypeFilter(o.value)}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-        {snapshot.national.dissolved > 0 && view === 'points' && (
-          <label className="map-check">
-            <input type="checkbox" checked={showDissolved}
-              onChange={(e) => setShowDissolved(e.target.checked)} />
-            {t('map.toggleDissolved')}
-          </label>
-        )}
-        <button type="button" className="eeszt-map__save"
-          onClick={() => mapRef.current && exportMapPng(mapRef.current, `praxisterkep-terkep-${kind}`)}>
-          ⤓ {t('eeszt.mapSavePng')}
-        </button>
-        <span className="eeszt-map__layers">
-          {LAYER_KEYS.map((key) => (
-            <button key={key} type="button" aria-pressed={layers[key]}
-              className={`map-layer${layers[key] ? ' is-on' : ''}`}
-              onClick={() => setLayer(key, !layers[key])}>
-              {layers[key] ? '◉' : '○'} {t(`map.layer.${key}`)}
-            </button>
-          ))}
-        </span>
-      </div>
-      {view === 'points' && (
-        <div className="map-controls">
-          <div className="seg" role="group">
-            {(['status', 'age'] as ColorMode[]).map((m) => (
-              <button key={m} aria-pressed={colorMode === m} onClick={() => setColorMode(m)}>
-                {m === 'status' ? t('map.colorStatus') : t('map.colorAge')}
-              </button>
-            ))}
-          </div>
-          <div className="seg" role="group">
-            {[0, 1, 5, 10].map((y2) => (
-              <button key={y2} aria-pressed={minYears === y2} onClick={() => setMinYears(y2)}>
-                {y2 === 0 ? t('map.durationAll') : t('map.durationYears', { n: y2 })}
-              </button>
-            ))}
+      {/* every switch in one panel, grouped by what it changes: how the map
+          is drawn, which districts it shows, what it is drawn over */}
+      <div className="map-panel">
+        <div className="map-panel__group">
+          <h3 className="map-panel__title">{t('map.groupView')}</h3>
+          <div className="map-panel__fields">
+            <Field label={t('map.fieldLevel')}>
+              <SegmentedControl<'county' | 'jaras'> size="sm" value={level} onChange={setLevel}
+                ariaLabel={t('map.fieldLevel')}
+                options={[{ value: 'county', label: t('map.levelCounty') }, { value: 'jaras', label: t('map.levelJaras') }]} />
+            </Field>
+            <Field label={t('map.fieldView')}>
+              <SegmentedControl<MapView> size="sm" value={view} onChange={setView}
+                ariaLabel={t('map.fieldView')}
+                options={[{ value: 'points', label: t('map.viewPoints') }, { value: 'columns', label: t('map.viewColumns') }]} />
+            </Field>
+            {level === 'county' && (
+              <Field label={t('map.fieldMetric')}>
+                <SegmentedControl<MapMetric> size="sm" value={mapMetric} onChange={setMapMetric}
+                  ariaLabel={t('map.fieldMetric')}
+                  options={(['rate', 'population', 'popshare'] as MapMetric[]).map((m) => (
+                    { value: m, label: t(METRIC_LABEL_KEYS[m]) }))} />
+              </Field>
+            )}
           </div>
         </div>
-      )}
 
-      <div className="map-wrap">
+        <div className="map-panel__group">
+          <h3 className="map-panel__title">{t('map.groupFilters')}</h3>
+          <div className="map-panel__fields">
+            <Field label={t('map.fieldType')}>
+              <SegmentedControl<TypeFilter> size="sm" value={typeFilter} onChange={setTypeFilter}
+                ariaLabel={t('map.fieldType')} options={typeOptions(snapshot)} />
+            </Field>
+            {view === 'points' && (
+              <Field label={t('map.fieldColor')}>
+                <SegmentedControl<ColorMode> size="sm" value={colorMode} onChange={setColorMode}
+                  ariaLabel={t('map.fieldColor')}
+                  options={[{ value: 'status', label: t('map.colorStatus') }, { value: 'age', label: t('map.colorAge') }]} />
+              </Field>
+            )}
+            {view === 'points' && (
+              <Field label={t('map.fieldDuration')}>
+                <SegmentedControl<string> size="sm" value={String(minYears)}
+                  onChange={(v) => setMinYears(Number(v))} ariaLabel={t('map.fieldDuration')}
+                  options={[0, 1, 5, 10].map((y2) => ({
+                    value: String(y2),
+                    label: y2 === 0 ? t('map.durationAll') : t('map.durationYears', { n: y2 }),
+                  }))} />
+              </Field>
+            )}
+            {snapshot.national.dissolved > 0 && view === 'points' && (
+              <label className="map-check map-panel__check">
+                <input type="checkbox" checked={showDissolved}
+                  onChange={(e) => setShowDissolved(e.target.checked)} />
+                {t('map.toggleDissolved')}
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div className="map-panel__group">
+          <h3 className="map-panel__title">{t('map.groupLayers')}</h3>
+          <div className="map-panel__fields">
+            {LAYER_GROUPS.map((g) => (
+              <Field key={g.key} label={t(`map.layer${g.key[0].toUpperCase()}${g.key.slice(1)}`)}>
+                <div className="map-chips">
+                  {g.layers.map((key) => (
+                    <button key={key} type="button" aria-pressed={layers[key]}
+                      className={`map-chip map-chip--${key}${layers[key] ? ' is-on' : ''}`}
+                      onClick={() => setLayer(key, !layers[key])}>
+                      <span className="map-chip__box" aria-hidden="true">
+                        <svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.4 2.4 4.6-5" /></svg>
+                      </span>
+                      {t(`map.layer.${key}`)}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={`map-wrap${playing ? ' is-playing' : ''}`}>
         <div ref={containerRef} className="map-canvas" />
-        {hover && level === 'county' && hoverCounty && !county && (
+        {unsupported && <MapUnsupported />}
+        <button type="button" className="map-save" title={t('map.savePng')}
+          onClick={() => mapRef.current && exportMapPng(mapRef.current, `praxisterkep-terkep-${kind}`)}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+          </svg>
+          <span>{t('map.savePng')}</span>
+        </button>
+        {!playing && hover && level === 'county' && hoverCounty && !county && (
           <div className="map-tooltip" style={{ left: hover.x, top: hover.y }}>
             <strong>{hoverCounty.name}</strong>
             <span>
@@ -815,7 +883,7 @@ export function MapSection() {
             </span>
           </div>
         )}
-        {hover && level === 'jaras' && (
+        {!playing && hover && level === 'jaras' && (
           <div className="map-tooltip" style={{ left: hover.x, top: hover.y }}>
             <strong>{hover.name}</strong>
             <span>
@@ -825,7 +893,8 @@ export function MapSection() {
             </span>
           </div>
         )}
-        {isArchive && (
+        {playing && <div className="map-archive"><strong>{displayedMonth}</strong></div>}
+        {isArchive && !playing && (
           <div className="map-archive">
             {t('map.archiveMonth')}: <strong>{formatMonth(snapshot.month)}</strong>
             {snapshot.national.totalDistricts === null && (
@@ -833,7 +902,7 @@ export function MapSection() {
             )}
           </div>
         )}
-        <div className="map-legend">
+        {!playing && <div className="map-legend">
           <div>{t(level === 'jaras' ? 'map.jarasLegend' : METRIC_LABEL_KEYS[mapMetric])}</div>
           <div className="map-legend__ramp">
             {RAMP.map((c) => (
@@ -853,6 +922,12 @@ export function MapSection() {
               <div><span className="map-legend__dot" style={{ background: colors.approx, opacity: 0.55 }} />{t('map.pointApprox')}</div>
             </div>
           )}
+          {view === 'points' && layers.benefit && (
+            <div style={{ marginTop: colorMode === 'age' ? 0 : 2 }}>
+              <span className="map-legend__dot map-legend__ring" style={{ borderColor: colors.benefit }} />
+              {t('map.pointBenefit')}
+            </div>
+          )}
           {view === 'points' && colorMode === 'age' && (
             <div style={{ marginTop: 8 }}>
               {[t('map.ageFresh'), t('map.age1'), t('map.age5'), t('map.age10')].map((label, i) => (
@@ -863,56 +938,61 @@ export function MapSection() {
               ))}
             </div>
           )}
-        </div>
-        {county && (
+        </div>}
+        {county && !playing && (
           <aside className="county-panel">
-            <button className="county-panel__close" onClick={() => setSelectedCounty(null)}>×</button>
+            <button className="county-panel__close" aria-label={t('map.backNational')} onClick={() => setSelectedCounty(null)}>×</button>
             <h3>{county.name}</h3>
             <dl>
-              <dt>{t('map.countyDistricts')}</dt>
-              <dd>{county.total !== null ? formatNumber(county.total) : '–'}</dd>
               <dt>{t('map.countyVacant')}</dt>
               <dd>{formatNumber(county.vacant)}</dd>
-              {county.dissolved > 0 && (
-                <>
-                  <dt>{t('map.countyDissolved')}</dt>
-                  <dd>{formatNumber(county.dissolved)}</dd>
-                </>
-              )}
               <dt>{t('map.metricRate')}</dt>
               <dd>{county.vacancyRate !== null ? formatPercent(county.vacancyRate) : '–'}</dd>
               <dt>{t('map.metricPopulation')}</dt>
               <dd>
                 {formatNumber(county.populationVacant + county.populationDissolved)} {t('map.fő')}
               </dd>
-              {county.populationShare !== undefined && (
-                <>
-                  <dt>{t('map.countyPopShare')}</dt>
-                  <dd>{formatPercent(county.populationShare)}</dd>
-                </>
-              )}
-              {county.praxesPer10k != null && (
-                <>
-                  <dt>{t('map.countyPer10k')}</dt>
-                  <dd>{String(county.praxesPer10k).replace('.', ',')}</dd>
-                </>
-              )}
-              {countyRank !== null && (
-                <>
-                  <dt>{t('map.countyRank')}</dt>
-                  <dd>{countyRank}. / {snapshot.counties.length}</dd>
-                </>
-              )}
-              {countyHistory && entries.length > 1 && (
-                <>
-                  <dt>{t('map.countyChangeSince', { month: formatMonth(entries[0].month) })}</dt>
-                  <dd>
-                    {countyHistory[0]} → {countyHistory[countyHistory.length - 1]}
-                  </dd>
-                </>
-              )}
             </dl>
-            {countyHistory && <PanelSpark values={countyHistory} color="var(--accent)" />}
+            <details className="landing-details">
+              <summary>{t('map.countyDetails')}</summary>
+              <dl>
+                <dt>{t('map.countyDistricts')}</dt>
+                <dd>{county.total !== null ? formatNumber(county.total) : '–'}</dd>
+                {county.dissolved > 0 && (
+                  <>
+                    <dt>{t('map.countyDissolved')}</dt>
+                    <dd>{formatNumber(county.dissolved)}</dd>
+                  </>
+                )}
+                {county.populationShare !== undefined && (
+                  <>
+                    <dt>{t('map.countyPopShare')}</dt>
+                    <dd>{formatPercent(county.populationShare)}</dd>
+                  </>
+                )}
+                {county.praxesPer10k != null && (
+                  <>
+                    <dt>{t('map.countyPer10k')}</dt>
+                    <dd>{formatDecimal(county.praxesPer10k)}</dd>
+                  </>
+                )}
+                {countyRank !== null && (
+                  <>
+                    <dt>{t('map.countyRank')}</dt>
+                    <dd>{countyRank}. / {snapshot.counties.length}</dd>
+                  </>
+                )}
+                {countyHistory && entries.length > 1 && (
+                  <>
+                    <dt>{t('map.countyChangeSince', { month: formatMonth(entries[0].month) })}</dt>
+                    <dd>
+                      {countyHistory[0]} → {countyHistory[countyHistory.length - 1]}
+                    </dd>
+                  </>
+                )}
+              </dl>
+              {countyHistory && <PanelSpark values={countyHistory} color="var(--accent)" />}
+            </details>
             <button className="county-panel__back" onClick={() => setSelectedCounty(null)}>
               {t('map.backNational')}
             </button>
@@ -931,21 +1011,16 @@ export function MapSection() {
               <svg viewBox="0 0 16 16"><path d="M4.5 2.5l9 5.5-9 5.5z" fill="currentColor" /></svg>
             )}
           </button>
-          <span className="timeline__title">{t('map.timeTravel')}</span>
+          {!playing && <span className="timeline__title">{t('map.timeTravel')}</span>}
           <input type="range" min={0} max={months.length - 1} value={Math.max(0, monthIdx)}
             onChange={(e) => {
               setPlaying(false);
               const i = Number(e.target.value);
               void selectMonth(i >= months.length - 1 ? null : months[i]);
             }}
-            aria-label={t('map.timeTravel')} />
+            aria-label={t('map.timeTravel')} aria-valuetext={formatMonth(months[Math.max(0, monthIdx)])} />
           <span className="timeline__month">
-            {monthLoading
-              ? t('map.loadingMonth')
-              : formatMonth(selectedMonth ?? latestMonth)}
-            {!selectedMonth && !monthLoading && (
-              <em> · {t('map.live')}</em>
-            )}
+            {displayedMonth}
           </span>
         </div>
       )}

@@ -1,7 +1,7 @@
 # Praxistérkép
 
 [![Monthly ETL](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml/badge.svg)](https://github.com/ZoliQua/Praxisterkep/actions/workflows/monthly-etl.yml)
-[![Version](https://img.shields.io/badge/version-1.58.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.60.1-blue)](CHANGELOG.md)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23460426.svg)](https://doi.org/10.5281/zenodo.23460426)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776ab?logo=python&logoColor=white)](etl/)
@@ -52,7 +52,7 @@ each, and the program, its address and version in the footer.
 
 | Page | What it does |
 |---|---|
-| [Map](https://praxisterkep.hu/) | Vacant and dissolved districts as points and bars, county and district choropleths, a time slider, shareable URLs, a settlement search, the prevention chain explained, two headline findings |
+| [Map](https://praxisterkep.hu/) | The settlement search on the first screen, then vacant and dissolved districts as points and bars, county and district choropleths (map panel grouped into view, filters and layers), a time slider, shareable URLs, the district stock as a stacked chart (with the practices without a district obligation) or a table, the prevention chain explained, headline findings |
 | [County](https://praxisterkep.hu/megye.html) | A county among the other nineteen: vacancy, its districts and settlements, nine rankings (avoidable mortality, income, jobseekers, natural change, migration, education, digital inactivity, emergency drive time, expected vacancy), a 12-month forecast path, settlement grants by year, the four cross-sections |
 | [District](https://praxisterkep.hu/jaras.html) | Each of the 197 units (174 járás + the capital's 23 kerület): districts, on-call care, yardstick cards among the 174 rural járás, mortality by cause, census, emergency access, forecast, grants, the four cross-sections — and a ranking of **the most vulnerable districts** by access |
 | [Settlement](https://praxisterkep.hu/en/telepules/) | 3,177 static pages in Hungarian and English, readable without JavaScript: is there a doctor (named only for staffed districts, from NEAK), how long a district has been vacant, how far care is by car and bus, pharmacies, health visitors, age structure, how people live (income, jobseekers, births and deaths, migration, census), grants, a one-year chance that a serving district falls vacant, a year of change |
@@ -173,6 +173,16 @@ If you use the code or the processed data, please cite it as given in
 Every release is archived on Zenodo. To cite all versions, use the concept DOI
 [10.5281/zenodo.23460426](https://doi.org/10.5281/zenodo.23460426).
 
+### npm data package
+
+The monthly data is also released as the npm package
+[`hungarian-praxismap`](packages/data/): every archived month, dental since
+October 2017 and GP since March 2019, as JSON and CSV, without physician or provider names,
+with the SHA-256 of every file and a manifest pointing at the raw source
+files, plus a TypeScript client and a command-line tool. Its version is
+calendar-based (`2026.11.0`); every version gets its own `data-…` tag and
+Zenodo release. Details: [`packages/data/README.md`](packages/data/README.md).
+
 ### Contributing and licence
 
 Issues with data errors or new public sources are welcome — see
@@ -242,7 +252,7 @@ verziója, a végén kiemelve az adatállapot.
 
 | Oldal | Mit tud |
 |---|---|
-| [Térkép](https://praxisterkep.hu/) (`index.html`) | Betöltetlen és megszűnt körzetek pont- és oszlopnézetben, megyei és járási kartogram több mutatóval, idősor-csúszka, megosztható URL; „Hol a háziorvos?” települési kereső; a prevenciós lánc magyarázata |
+| [Térkép](https://praxisterkep.hu/) (`index.html`) | „Mi a helyzet nálam?” települési kereső az első képernyőn; betöltetlen és megszűnt körzetek pont- és oszlopnézetben, megyei és járási kartogram több mutatóval (a térképpanel Nézet / Szűrők / Rétegek csoportokban), idősor-csúszka, megosztható URL; a körzetállomány halmozott diagramon (a TEK nélküli praxisokkal) vagy táblázatban; a prevenciós lánc magyarázata; kiemelt eredmények |
 | [Megye](https://praxisterkep.hu/megye.html) (`megye.html`) | Egy megye a többi tizenkilenc között: betöltetlenség, járásai, települései, és az **Egészség és életkörülmények** rész — kilenc rangsor (elkerülhető halálozás, jövedelem, álláskeresők, népmozgalom, vándorlás, végzettség, digitális inaktivitás, sürgősségi menetidő, várható betöltetlenség), 12 hónapos előrejelzési görbe, letelepedési támogatások évenként |
 | [Járás](https://praxisterkep.hu/jaras.html) (`jaras.html`) | A 197 egység (174 járás + 23 kerület) mindegyike: körzetek, ügyelet, rangsor, és mérőszalag-kártyák a 174 vidéki járás között (halálozás halálokonként, jövedelem, álláskeresők, népszámlálás, sürgősségi elérés, előrejelzés), a járásban elnyert támogatások |
 | [Település](https://praxisterkep.hu/telepules/) (`/telepules/<slug>/`, angolul `/en/telepules/<slug>/`) | 3177 statikus oldal két nyelven, JavaScript nélkül is olvasható: van-e orvos és ki az (betöltött körzetnél), mióta üres, milyen messze az ellátás autóval és busszal, gyógyszertár, védőnő, korösszetétel, **Hogyan élnek itt?** (jövedelem, álláskeresők idősorral, születés és halálozás, vándorlás, betegforgalom, népszámlálási pontdiagram, támogatással betöltött körzet, a járás előrejelzése és elkerülhető halálozása), egy év változása |
@@ -296,6 +306,10 @@ audit-nyomvonal**.
 | P | [NEAK — letelepedési és praxisjog-pályázatok](https://neak.gov.hu/felso_menu/szakmai_oldalak/gyogyito_megeleozo_ellatas/alapellatas/haziorvosi_ellatas/archivum) | a nyertesek helye és éve (név nélkül) | PDF | évi | `neak_grants.py` |
 | Q | [Eurostat](https://ec.europa.eu/eurostat/web/health/database) egészségügyi és regionális adatbázis, [GISCO](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) határok | kezelhető és megelőzhető halálozás; az európai összevetés mutatói és térképei | JSON-stat, GeoJSON | évi | `eurostat_avoidable.py`, `eu_compare.py` |
 | R | [OECD Health Statistics](https://data-explorer.oecd.org/) (CC BY 4.0) | elkerülhető kórházi felvételek, orvosi jövedelmek, az Egyesült Királyság 2019 után | SDMX CSV | évi | `eu_compare.py` |
+| S | [NEAK — Országos várólista nyilvántartás](https://jogviszony.neak.gov.hu/varolista_pub/) | műtéti várakozási idők beavatkozásonként és intézményenként (csak összesített) | HTML | havi | `waitlist.py` |
+| T | [OKFŐ — kollegiális praxisközösségek területi beosztása](https://alapellatas.okfo.gov.hu/a-kollegialis-praxiskozossegek-teruleti-beosztasa) | mely járások alkotnak egy praxisközösséget (nem taglista) | HTML | havi | `communities.py` |
+| U | [Eurostat GISCO — Geographic accessibility](https://ec.europa.eu/eurostat/web/gisco/geodata/geographic-accessibility) | autós menetidő kórházig, ország és NUTS 3 | CSV | háromévente, kézzel | `hospital_access.py` |
+| V | [ÚDZS](https://www.udzs-sk.sk/urad/udaje-o-vyhodnoteni-sieti-poskytovatelov-ambulantnej-starostlivosti-podla-zakona-c-578-2004-z-z/) | a szlovák optimális alapellátási hálózathoz hiányzó rendelők járásonként | XLSX, PDF | évi, kézzel | `neighbours.py` |
 
 További nyilvános források, amelyeket egy-egy kiegészítő épít: a NEAK
 [gyógyszertári partnerlistája](https://www.neak.gov.hu/felso_menu/lakossagnak/)
@@ -544,6 +558,16 @@ Ha a kódot vagy a feldolgozott adatokat felhasználod, kérlek, hivatkozz rá a
 [`CITATION.cff`](CITATION.cff) szerint (a GitHub „Cite this repository”
 gombja ebből dolgozik). Minden kiadás archiválva van a Zenodón; az összes
 verzióra együtt a [10.5281/zenodo.23460426](https://doi.org/10.5281/zenodo.23460426) DOI-val lehet hivatkozni.
+
+### NPM-adatcsomag
+
+A havi adatokat npm-csomagként is kiadjuk,
+[`hungarian-praxismap`](packages/data/) néven: minden archivált hónap, a
+fogorvosi ág 2017 októberétől, a háziorvosi 2019 márciusától, JSON-ban és CSV-ben, orvos- és
+szolgáltatónevek nélkül, minden fájl SHA-256-jával és a nyers forrásfájlokra
+mutató jegyzékkel, mellette egy TypeScript-kliens és parancssori eszköz. A
+csomag verziója naptári (`2026.11.0`), minden verzió saját `data-…` címkét és
+Zenodo-kiadást kap. Részletek: [`packages/data/README.md`](packages/data/README.md).
 
 ### Közreműködés
 

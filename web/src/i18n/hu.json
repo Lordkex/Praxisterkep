@@ -12,13 +12,15 @@
       "label": "Fogorvosi",
       "adj": "fogorvosi",
       "question": "Hol a fogorvos?",
-      "doctor": "fogorvos"
+      "doctor": "fogorvos",
+      "switch": "Fogorvos"
     },
     "gp": {
       "label": "Háziorvosi",
       "adj": "háziorvosi",
       "question": "Hol a háziorvos?",
-      "doctor": "háziorvos"
+      "doctor": "háziorvos",
+      "switch": "Háziorvos"
     }
   },
   "nav": {
@@ -83,6 +85,23 @@
     "caveatLabel": "Fontos:"
   },
   "map": {
+    "unsupported": "A böngésződ itt nem tud térképet rajzolni, mert a WebGL nem érhető el. A számok és a táblázatok térkép nélkül is elérhetők.",
+    "groupView": "Nézet",
+    "groupFilters": "Szűrők",
+    "groupLayers": "Rétegek",
+    "fieldLevel": "Szint",
+    "fieldView": "Ábrázolás",
+    "fieldMetric": "Színezés",
+    "fieldType": "Körzettípus",
+    "fieldColor": "Pontok színe",
+    "fieldDuration": "Üres legalább",
+    "layerLabels": "Feliratok",
+    "layerBorders": "Határok",
+    "layerHighlight": "Kiemelés",
+    "savePng": "Mentés PNG-be",
+    "pointBenefit": "kedvezményezett településen",
+    "countyDetails": "Részletes megyei adatok",
+    "filters": "További szűrők és térképrétegek",
     "heading": "Betöltetlenség a térképen",
     "explain": "A színezés a megye betöltetlenségi arányát mutatja (betöltetlen — és fogorvosi ágon a megszűnt szerződésű — körzetek az összes körzet arányában). A pontok az egyes betöltetlen körzetek rendelőit jelölik. Körzethatár-poligonok hivatalosan nem érhetők el, ezért a körzeteket pontként ábrázoljuk.",
     "metricRate": "Betöltetlenségi arány",
@@ -156,8 +175,9 @@
     }
   },
   "search": {
+    "toMap": "Megnézem a térképen ↓",
     "heading": "Mi a helyzet nálam?",
-    "explain": "Írd be a településed nevét: megmutatjuk az ott elérhető és a betöltetlen {kind} körzeteket.",
+    "explain": "Írj be legalább két betűt, majd válassz települést a találatok közül.",
     "placeholder": "Település neve…",
     "noResult": "Nincs találat. A lista azokat a településeket tartalmazza, amelyekhez a nyilvántartás szerint {kind} körzet tartozik.",
     "filledSeat": "működő, betöltött körzet rendel a településen",
@@ -181,7 +201,9 @@
     "vacantCount": "betöltetlen vagy megszűnt {kind} körzet tartozik a településhez",
     "vacantCountOnly": "betöltetlen {kind} körzet tartozik a településhez",
     "unlisted": "Ez a település egyetlen közzétett {kind} körzet listáján sem szerepel. Ez nem azt jelenti, hogy nincs ellátás — azt jelenti, hogy a NEAK nyilvános adataiból nem derül ki, melyik körzet az illetékes. A település saját lapja megmutatja a legközelebbi rendelőt és a menetidőt.",
-    "dissolvedCount": "megszűnt szerződésű {kind} körzet tartozott a településhez"
+    "dissolvedCount": "megszűnt szerződésű {kind} körzet tartozott a településhez",
+    "kindLabel": "Ellátási ág",
+    "tableView": "Táblázat nézet"
   },
   "ranking": {
     "heading": "Megyei rangsor",
@@ -257,6 +279,8 @@
     "authorBy": "Készítette:",
     "authorName": "Dr. Dul Zoltán",
     "authorTitle": ", országos kollegiális szakmai vezető fogorvos",
+    "contributors": "+ Közreműködők",
+    "contributorsTitle": "Akik kóddal, ötlettel vagy hibajelzéssel hozzájárultak (GitHub)",
     "license": "Kód: MIT licenc · Feldolgozott adatok: CC BY 4.0 · A forrásadatok az eredeti kibocsátó feltételei szerint használhatók",
     "updated": "Adatállapot",
     "src": {
@@ -272,12 +296,14 @@
         "outpatient": "Járóbeteg-szakellátó intézmények",
         "listing": "mind egy helyen: NEAK letöltőoldal",
         "grantsGp": "háziorvosi letelepedési és praxisjog-vásárlási pályázatok nyertesei",
-        "grantsDental": "fogorvosi letelepedési pályázatok nyertesei"
+        "grantsDental": "fogorvosi letelepedési pályázatok nyertesei",
+        "waitlist": "Országos várólista nyilvántartás (műtéti várakozási idők)"
       },
       "okfo": {
         "title": "OKFŐ Alapellátási Igazgatóság — tartósan betöltetlen körzetek:",
         "dental": "fogorvosi",
-        "gp": "háziorvosi"
+        "gp": "háziorvosi",
+        "communities": "Kollegiális praxisközösségek területi beosztása"
       },
       "eeszt": {
         "title": "EESZT törzspublikáció:",
@@ -323,7 +349,9 @@
         "eurostatHealth": "Eurostat — egészségügyi adatbázis (munkaerő, felmérések, szűrés, kiadások, halálozás)",
         "eurostatRegional": "Eurostat — regionális adatbázis (NUTS 2: orvosok, halálozás, várható élettartam, GDP)",
         "oecd": "OECD Health Statistics — elkerülhető kórházi felvételek, orvosi jövedelmek, Egyesült Királyság (CC BY 4.0)",
-        "gisco": "GISCO — NUTS 2024 régióhatárok (© EuroGeographics a közigazgatási határokért)"
+        "gisco": "GISCO — NUTS 2024 régióhatárok (© EuroGeographics a közigazgatási határokért)",
+        "giscoAccess": "GISCO: kórházak elérési ideje",
+        "udzs": "ÚDZS: a szlovák alapellátási hálózat értékelése"
       }
     },
     "sourcesNote": "Minden szám alá linkeltük a forrását: ezek mind nyilvános, bárki által letölthető fájlok és oldalak. A NEAK-állományok mindig az aktuális hónapot adják vissza; a korábbi hónapokat mi archiváljuk, azok is letölthetők.",
@@ -440,7 +468,6 @@
       "text": "A szuvasodás és a fogágybetegség megelőzhető, a szájüregi daganat korai felismerése életet menthet — mindez a rendszeres fogorvosi szűrésen múlik. Betöltetlen körzetben a lakosság jellemzően csak sürgősségi ellátást ér el helyben: a megelőzés marad el legelőször."
     },
     "chainTitle": "A prevenciós lánc",
-    "chainIntro": "Kapcsold át, mi történik ugyanazzal a beteggel, ha van, és ha nincs betöltött körzet:",
     "chainOk": [
       "Elérhető orvos",
       "Szűrés, korai felismerés",
@@ -495,20 +522,14 @@
       "A szuvasodás csendben terjed, és fájdalommal, duzzanattal jelentkezik.",
       "A menthetetlen fogat húzni kell — a pótlás hosszabb, fájdalmasabb és sokkal drágább."
     ],
-    "storyTieBroken": "Ma {count} {kind} körzetben szakad meg ez a lánc — {people} embert érint.",
-    "storyTieOk": "Ez a lánc ma {count} {kind} körzetben működik az ország {total} körzetéből."
-  },
-  "showcase": {
-    "sparkNote": "az archivált hónapok alapján ({first} – {last})",
-    "dissolvedNote": "minden pont egy megszűnt szerződésű körzet",
-    "rateNote": "a {total} nyilvántartott körzetből",
-    "cityNote": "egy piktogram ≈ egy Szombathelynyi (75 ezer) ember",
-    "longestNote": "{settlement} ({county}) — {type} körzet",
-    "sinceYear": "óta",
-    "popShare": "Ez az ország lakosságának {pct}-a.",
-    "longTermNote": "A 313/2011. Korm. rendelet szerinti jogi kategória: a finanszírozási szerződés megszűnése óta legalább 6 hónap telt el. Forrás: OKFŐ, {asOf} állapot."
+    "tieOk": "{kind} körzetben működik ma ez a lánc",
+    "tieBroken": "{kind} körzetben szakad meg ma ez a lánc, ahol {people} ember él"
   },
   "intro": {
+    "trendLabelUp": "betöltetlen {kind} körzet, {year} óta",
+    "trendLabelDown": "betöltetlen {kind} körzet, {year} óta",
+    "trendText": "Az első archivált NEAK-listán ({first}) {from}, a legfrissebben ({last}) {to} betöltetlen {kind} körzet szerepel.",
+    "trendNoDissolved": "A megszűnt szerződésű körzetek nélkül.",
     "aria": "Országos helyzetkép görgetésre",
     "step1Label": "betöltetlen {kind} körzet van ma Magyarországon",
     "step2Label": "ember él betöltetlen {kind} körzetben",
@@ -518,7 +539,6 @@
     "text2": "Ez nem statisztikai absztrakció: minden körzet mögött egy település vagy városrész lakói állnak, akikhez nem jut el a megelőzés.",
     "text3": "A terhelés nem egyenletes — van megye, ahol több mint minden harmadik körzet üres.",
     "text4": "És a betöltetlenség nem átmeneti állapot: van körzet, amely évtizedek óta vár orvosra. Nézd meg a térképen, mi a helyzet nálad.",
-    "cta": "Ugrás a térképre ↓",
     "popLabel": "a lakosság {pct}-a",
     "step1LabelWith": "betöltetlen vagy megszűnt szerződésű {kind} körzet van ma Magyarországon",
     "step2LabelWith": "ember él betöltetlen vagy megszűnt szerződésű {kind} körzetben"
@@ -1261,7 +1281,8 @@
       "tamogatasok": "Támogatások",
       "elorejelzes": "Egy év múlva",
       "valtozas-ev": "Évről évre",
-      "valtozas-ho": "Hónapról hónapra"
+      "valtozas-ho": "Hónapról hónapra",
+      "praxiskozossegek": "Praxisközösségek"
     },
     "sideNav": "Tartalom",
     "groupKicker": "Elemző",
@@ -1916,7 +1937,7 @@
     "settlements": "település",
     "gpVacantOnly": "település, ahol csak betöltetlen háziorvosi körzet van",
     "oncall": "medián menetidő a legközelebbi ügyeletig",
-    "rank": "{rank}. a {of} megyéből",
+    "rank": "{rank}. a {of} megyéből (1. = a legrosszabb)",
     "minutes": "{n} perc",
     "gpLine": "Háziorvosi ellátás",
     "dentalLine": "Fogászati ellátás",
@@ -2059,6 +2080,26 @@
     "cellNone": "{county}, {year}: nincs használható pillanatkép"
   },
   "balance": {
+    "view": "Nézet",
+    "byType": "Körzettípusonként",
+    "viewChart": "Diagram",
+    "viewTable": "Táblázat",
+    "chartAria": "Körzetek típusonként: betöltött és betöltetlen körzetek száma",
+    "legendFilled": "betöltött körzet",
+    "legendVacant": "betöltetlen körzet",
+    "legendTn": "TEK nélküli praxis (nem körzet)",
+    "rowCount": "{vacant} betöltetlen / {total} körzet",
+    "rowTn": "+ {n} TEK nélküli praxis",
+    "rateShortWith": "betöltetlen vagy megszűnt",
+    "legendDissolved": "megszűnt körzet",
+    "rateShort": "betöltetlen",
+    "axisUnit": "körzet",
+    "chartScale": "A sávok hossza a körzetek számával arányos, a százalék a típus betöltetlenségi aránya. A lila szakasz praxis, nem körzet: nincs kijelölt területe, ezért nem lehet betöltetlen.",
+    "chartScaleDental": "A sávok hossza a körzetek számával arányos, a százalék a típus betöltetlenségi aránya.",
+    "tekLinkTitle": "TEK nélküli háziorvosi praxisok",
+    "tekLinkText": "Ki működteti őket, és hogyan fogytak 2019 óta",
+    "shareWith": "{count} betöltetlen vagy megszűnt az összesen {total} körzetből",
+    "shareLabel": "{count} betöltetlen az összesen {total} körzetből",
     "thNon": "TEK nélküli praxis",
     "thAllPractices": "Összes praxis",
     "totalRow": "Összesen",
@@ -2072,7 +2113,7 @@
     "thType": "Körzettípus",
     "thTotal": "Körzet",
     "thRate": "Betöltetlenség",
-    "note": "A vegyes körzet felnőtteket és gyerekeket együtt lát el — a kisebb településeken jellemzően ez az egyetlen körzet. A sávok hossza a legrosszabb típushoz van arányosítva, hogy a típusok egymáshoz képest legyenek olvashatók.",
+    "note": "A vegyes körzet felnőtteket és gyerekeket együtt lát el; a kisebb településeken jellemzően ez az egyetlen körzet.",
     "type": {
       "gp": {
         "adult": "felnőtt háziorvosi",
@@ -2153,7 +2194,7 @@
     "unplaced": "További {n} fogorvosi szolgálat címében csak „Budapest” szerepel kerület nélkül; ezek egyik kerületi sorban sem szerepelnek.",
     "verdict": {
       "worse": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — ezzel {art} {rank}. legrosszabb a {of} mérhető járás között, az országos medián ({median}) fölött.",
-      "better": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — {art} {rank}. a {of} mérhető járás rangsorában, az országos medián ({median}) alatt.",
+      "better": "{name} járásban a {branch} körzetek {rate}-a betöltetlen — {art} {rank}. a {of} mérhető járás rangsorában a legrosszabbtól számolva, az országos medián ({median}) alatt.",
       "county": "A megyén belül ({county}) a {of} járásból {art} {rank}.",
       "travel": "A települések medián menetideje a legközelebbi háziorvosi rendelőig {n}, ami {art} {rank}. leghosszabb a {of} járás között."
     },
@@ -2177,7 +2218,7 @@
     "distExplain": "Minden oszlop egy sáv: hány járás esik bele. A kiválasztott járás oszlopa kiemelve, alatta a pálcika mutatja a pontos értékét. A rangsorszám önmagában félrevezet: a 103. lehet hajszálnyira a mediántól és félúton a mélypontig is. Válts mértéket, vagy vigyéd rá az egeret egy oszlopra — alatta megjelennek a járások, és át lehet kattintani rájuk.",
     "distMedian": "medián: {n}",
     "distWorse": "ez a rosszabb vég",
-    "distRank": "{rank}. a {of} mérhető járás között",
+    "distRank": "{rank}. a {of} mérhető járás között (1. = a legrosszabb)",
     "distHint": "Vidd rá az egeret egy pontra.",
     "devSource": "Forrás: {source}; illetve {benefit}. A komplex mutató álló besorolás, nem a mai állapot mérése.",
     "measure": {
@@ -2855,15 +2896,16 @@
   "highlights": {
     "heading": "Amit eddig senki nem számolt ki",
     "vs": "vs.",
+    "tenYears": "üres 10 éve",
     "more": "Hogyan számoltuk? →",
-    "gp": "A letelepedési támogatással betöltött háziorvosi körzetek {a}%-ában ma is van orvos — a hozzájuk illesztett, ugyanannyi ideje üres, hasonló méretű településen lévő, támogatás nélküli körzetekben csak {b}%-ban ({pairs} pár).",
-    "dental": "A ma betöltetlen {vacant} fogorvosi körzet közül {n} már legalább tíz éve üres ({share}) — egy évtizede nincs saját fogorvosuk.",
+    "gp": "Az állam egyszeri letelepedési támogatást ad annak az orvosnak, aki elvállal egy betöltetlen háziorvosi körzetet. Az így betöltött körzetek **{a}%-ában ma is van orvos**. A hasonló méretű településeken lévő, ugyanannyi ideje üres, de támogatás nélküli körzetekben csak {b}%-ban ({pairs} körzetpár összevetése alapján).",
+    "dental": "**{n} fogorvosi körzet** már legalább tíz éve üres, a ma betöltetlen {vacant} körzet közül ({share}). Egy évtizede nincs saját fogorvosuk.",
     "europe": {
       "heading": "Európai összevetésben",
       "kicker": "Európa",
-      "gp": "Magyarországon {value} praktizáló háziorvos jut 100 ezer lakosra ({year}), a régió mediánja {median}. A régió {of} adatot közlő országa közül ez a {rank}. hely; a legtöbb: {best}, {bestValue}.",
-      "dental": "Az egy év alatt fogorvosnál járt felnőttek aránya Magyarországon {value} ({year}), vidéken csak {rural} — az EU-ban {eu}. A régió {of} országa közül ez a {rank}. hely.",
-      "dentalMedian": "Az egy év alatt fogorvosnál járt felnőttek aránya Magyarországon {value} ({year}), vidéken csak {rural} — a régió mediánja {median}. A régió {of} országa közül ez a {rank}. hely.",
+      "gp": "Magyarországon 100 ezer lakosra **{value} praktizáló háziorvos** jut ({year}), a régió mediánja {median}. A régió {of} adatot közlő országa közül ez a {rank}. hely; a legtöbb: {best}, {bestValue}.",
+      "dental": "Magyarországon a **felnőttek {value}-a járt fogorvosnál** egy év alatt ({year}), vidéken csak {rural}, az EU-ban {eu}. A régió {of} országa közül ez a {rank}. hely.",
+      "dentalMedian": "Magyarországon a **felnőttek {value}-a járt fogorvosnál** egy év alatt ({year}), vidéken csak {rural}, a régió mediánja {median}. A régió {of} országa közül ez a {rank}. hely.",
       "more": "Az európai összevetés →"
     }
   },
@@ -3174,7 +3216,7 @@
       "bandTitle": "{label} sáv",
       "best": "0 — a legjobb helyzetű település",
       "worst": "100 — a legrosszabb",
-      "place": "{name} a {of} településből a <strong>{rank}.</strong> helyen áll{better}.",
+      "place": "{name} a {of} településből a <strong>{rank}.</strong> helyen áll, a legrosszabb helyzetűtől számolva{better}.",
       "better": " — az ország {share}-ánál kedvezőbb a helyzete",
       "heading": "Összetett ellátási kockázati index",
       "help": "Nyolc nyilvános mutató súlyozott átlaga, mindegyik országos rangsorszázalékra váltva: betöltetlenség, menetidő háziorvoshoz, fogorvoshoz, ügyelethez, járóbeteg- és fekvőbeteg-ellátáshoz, buszelérés, korösszetétel, kockázati előrejelzés és a kedvezményezett települési besorolás. A 100 a legrosszabb helyzetű települést jelenti, nem azt, hogy ott nincs ellátás.",
@@ -3322,7 +3364,9 @@
       "regiok": "Régiók térképe",
       "hatar": "A határ két oldalán",
       "igeny": "Kinek kell az ellátás?",
-      "vandorlas": "Honnan jönnek, hová mennek az orvosok?"
+      "vandorlas": "Honnan jönnek, hová mennek az orvosok?",
+      "korhaz-eleres": "Kórház elérése",
+      "szomszedok": "Orvoshiány a szomszédban"
     },
     "groupLabel": "Összevetés:",
     "group": {
@@ -3736,6 +3780,14 @@
       "migration": {
         "title": "Orvosvándorlás",
         "text": "Az OECD egészségügyi munkaerő-migrációs táblája (R forrás) a fogadó országok jelentéséből számolja, hány orvos dolgozik ott külföldi diplomával, és melyik országban szerezte. A kiáramlás tehát csak azokban az országokban látszik, amelyek jelentenek; az országok évei eltérnek, és a képzés helye nem azonos az állampolgársággal — a külföldi hallgatóként végzettek hazatérése a táblában kivándorlásnak látszik. Ezért nettó veszteséget nem számolunk."
+      },
+      "hospital": {
+        "title": "Kórházak elérése",
+        "text": "Az Eurostat GISCO 2023-as referenciaévű menetidejét mutatjuk, népességgel súlyozva. A 2026-os kiadás előzetes, a 2020-as más úthálózaton készült, ezért változást nem számolunk. A kórház fogalma országonként eltér, ezért nincs helyezés. A magyar értékek mellé külső ellenőrzésként a saját, sürgősségi osztályokra számolt menetidőnk kerül; egyik sem javítja a másikat."
+      },
+      "neighbours": {
+        "title": "Orvoshiány a szomszédos országokban",
+        "text": "Országonként egy hivatalos kibocsátó, és csak akkor, ha a táblája letölthető és felhasználható. A szlovák ÚDZS az optimális kapacitáshoz képest hiányzó rendelőket közli; a járások összege meg kell egyezzen a hatóság kiírt országos számával. Ez nem betöltetlenségi arány, ezért magyar számmal nem kerül közös táblába vagy rangsorba. A kimaradó országokat az oka megnevezésével soroljuk fel."
       }
     },
     "country": {
@@ -3843,7 +3895,8 @@
       "vedono": "Védőnői ellátás",
       "szakellatas": "Szakellátás",
       "gyogyszertar": "Gyógyszertárak",
-      "segedeszkoz": "Gyógyászati segédeszköz"
+      "segedeszkoz": "Gyógyászati segédeszköz",
+      "varolistak": "Várólisták"
     },
     "settlements": {
       "label": "Megyék",
@@ -4575,6 +4628,25 @@
     }
   },
   "story": {
+    "landing": {
+      "title": "{label} körzetek fél percben",
+      "total": "{month}: a NEAK {total} {kind} körzetet tart nyilván.",
+      "totalLabel": "{kind} körzet",
+      "vacant": "Ebből {vacant} betöltetlen, arányuk {rate}.",
+      "vacantWith": "Megszűnt szerződésűekkel együtt {vacant} körzetnek nincs szerződött orvosa, arányuk {rate}.",
+      "dissolvedOut": "Mellettük {n} körzet szerződése megszűnt; ezek nincsenek benne a fenti számban.",
+      "dissolvedIn": "A fenti számban {n} megszűnt szerződésű körzet is benne van.",
+      "people": "Ezekhez a körzetekhez {people} lakos tartozik.",
+      "peopleLabel": "lakos",
+      "caveat": "Betöltetlen ≠ ellátatlan: a lakosok többségét helyettesítő {doctor} látja el, korlátozott rendelési időben.",
+      "longTerm": "Jogilag tartósan betöltetlen: {n} körzet (OKFŐ, {month}).",
+      "longTermShare": "a betöltetlen körzetek közül",
+      "duration": "A ma betöltetlen körzetek felében legalább {dur} telt el az üresedés óta.",
+      "durationLabel": "az üresedés óta (medián)",
+      "trend": "{from}: {a} betöltetlen körzet. {to}: {b}.",
+      "trendWith": "{from}: {a} betöltetlen vagy megszűnt körzet. {to}: {b}.",
+      "counties": "A legmagasabb arány: {c1} ({r1}), {c2} ({r2}), {c3} ({r3})."
+    },
     "ui": {
       "region": "Animáció: {title}",
       "aria": "{title} — animált összefoglaló, {n} jelenet. A jelenetek szövege az ábra alatt olvasható.",
@@ -4598,25 +4670,6 @@
       "gp": "háziorvos",
       "dentist": "fogorvos",
       "hospital": "kórház"
-    },
-    "landing": {
-      "title": "{label} körzetek fél percben",
-      "total": "{month}: a NEAK {total} {kind} körzetet tart nyilván.",
-      "totalLabel": "{kind} körzet",
-      "vacant": "Ebből {vacant} betöltetlen, arányuk {rate}.",
-      "vacantWith": "Megszűnt szerződésűekkel együtt {vacant} körzetnek nincs szerződött orvosa, arányuk {rate}.",
-      "dissolvedOut": "Mellettük {n} körzet szerződése megszűnt; ezek nincsenek benne a fenti számban.",
-      "dissolvedIn": "A fenti számban {n} megszűnt szerződésű körzet is benne van.",
-      "people": "Ezekhez a körzetekhez {people} lakos tartozik.",
-      "peopleLabel": "lakos",
-      "caveat": "Betöltetlen ≠ ellátatlan: a lakosok többségét helyettesítő {doctor} látja el, korlátozott rendelési időben.",
-      "longTerm": "Jogilag tartósan betöltetlen: {n} körzet (OKFŐ, {month}).",
-      "longTermShare": "a betöltetlen körzetek közül",
-      "duration": "A ma betöltetlen körzetek felében legalább {dur} telt el az üresedés óta.",
-      "durationLabel": "az üresedés óta (medián)",
-      "trend": "{from}: {a} betöltetlen körzet. {to}: {b}.",
-      "trendWith": "{from}: {a} betöltetlen vagy megszűnt körzet. {to}: {b}.",
-      "counties": "A legmagasabb arány: {c1} ({r1}), {c2} ({r2}), {c3} ({r3})."
     },
     "highlights": {
       "title": "{heading}, fél percben",
@@ -4903,5 +4956,126 @@
     "byCounty": "Megyénként",
     "bySeat": "Budapesten kívül, településenként",
     "tableHeading": "Az idősor számokban"
+  },
+  "waitlist": {
+    "heading": "Mennyit kell várni egy műtétre?",
+    "lead": "A NEAK nyilvános várólista-nyilvántartása beavatkozásonként: mennyit vártak azok, akiket az elmúlt hat hónapban megműtöttek, és hányan várnak most több mint 60 napja.",
+    "pick": "Beavatkozás",
+    "days": "{n} nap",
+    "group": {
+      "mandatory": "Kötelező vezetésű várólisták",
+      "capacity": "Kapacitáshiány miatt vezetett várólisták"
+    },
+    "national": "Országosan, a NEAK közlése szerint",
+    "noNational": "Ennél a beavatkozásnál a NEAK nem közöl országos adatot: csak azok a szolgáltatók vezetnek listát, ahol kapacitáshiány miatt tartósan 60 napnál többet kell várni. Ahol hamarabb sorra lehet kerülni, az nincs a listán.",
+    "median": "medián várakozás",
+    "mean": "átlagos várakozás",
+    "over60": "60 napnál régebben vár",
+    "served": "ellátott eset fél év alatt",
+    "institutions": "Várólistát közlő intézmények: {n}",
+    "subset": "Ez nem az összes kórház, amely a beavatkozást végzi, csak a nyilvántartásban listával szereplők. Ezért térségi vagy országos kép nem számolható belőlük.",
+    "institution": "Intézmény",
+    "region": "Ellátási térség",
+    "note": "A várakozási idő a már ellátott betegek tényleges várakozása, nem ígéret annak, aki most kerül listára. A 0 napos medián a NEAK közölt értéke: az ellátottak legalább fele várakozás nélkül került sorra, miközben az átlag ettől magas lehet. Személyes adatot és esetszintű listát az oldal nem tölt le.",
+    "source": "Forrás: NEAK Országos várólista nyilvántartás, lekérdezve: {date}."
+  },
+  "communities": {
+    "heading": "Praxisközösségek területi beosztása",
+    "lead": "Az OKFŐ, mint praxiskezelő, kijelölte, mely járások alkotnak együtt egy kollegiális praxisközösséget. Itt az látszik, hogy az egyes közösségek területén a körzetek mekkora része betöltetlen.",
+    "notMembership": "Ez területi beosztás, nem taglista. Nem derül ki belőle, melyik praxis lépett be, és nincsenek benne a szoros és a járási fogorvosi praxisközösségek. Arra ezért nem alkalmas, hogy a praxisközösség hatását mérje. A betöltetlen körzet nem jelent ellátatlanságot.",
+    "kindLabel": "Ellátási ág",
+    "kind": {
+      "gp": "Háziorvos",
+      "dental": "Fogorvos"
+    },
+    "kpi": {
+      "all": "területi praxisközösség",
+      "single": "áll egyetlen járásból vagy kerületből",
+      "quarter": {
+        "gp": "területén a háziorvosi körzetek legalább negyede betöltetlen",
+        "dental": "területén a fogorvosi körzetek legalább negyede betöltetlen vagy megszűnt"
+      }
+    },
+    "county": "Megye",
+    "allCounties": "Mind",
+    "members": "Járások",
+    "total": "Körzet",
+    "vacant": {
+      "gp": "Betöltetlen",
+      "dental": "Betöltetlen vagy megszűnt"
+    },
+    "longTerm": "Ebből tartósan",
+    "rate": "Arány",
+    "source": "Forrás: OKFŐ Alapellátási Igazgatóság, a kollegiális praxisközösségek területi beosztása (lekérdezve: {date}); körzetek: NEAK, {month}."
+  },
+  "hospital": {
+    "heading": "Milyen messze van a kórház?",
+    "lead": "Az Eurostat autós menetideje a legközelebbi kórházig, a 2021-es népszámlálás népességrácsával súlyozva. A szolgáltatások és az úthálózat referenciaéve: {year}.",
+    "measure": {
+      "median": "Medián menetidő",
+      "over20": "20 percnél messzebb él",
+      "over45": "45 percnél messzebb él"
+    },
+    "minutes": "{n} perc",
+    "definition": "Hogy mi számít kórháznak, azt minden ország a saját nyilvántartása szerint adja meg, ezért az oldal nem ad helyezést az országoknak. Alacsonyabb érték: közelebbi kórház.",
+    "pairsHeading": "Megyék és a határ túloldala",
+    "megye": "Megye",
+    "across": "Szomszédos régió",
+    "pairsNote": "A menetidő országon belüli és határon túli kórházra is vonatkozhat az Eurostat úthálózatán, és semmit nem mond arról, hogy a beteget ott ellátják-e. Szerbiára és Ukrajnára nincs adat.",
+    "checkHeading": "Külső ellenőrzés: az Eurostat és a Praxistérkép menetideje",
+    "checkText": "A magyar medián az Eurostatnál {gisco} perc, a Praxistérkép sürgősségi osztályokra számolt menetidejében {own} perc. Megyénként nagyobb az eltérés: az Eurostat népességrácsból és TomTom-úthálózaton számol, mi településközéppontból és OpenStreetMapen, ami a nagyvárosokban rövidebb utat mutathat.",
+    "gisco": "Eurostat",
+    "own": "Praxistérkép, sürgősségi osztály",
+    "source": "Forrás: Eurostat GISCO, Geographic accessibility ({version}), © Európai Unió, TomTom-úthálózat alapján; letöltve: {date}."
+  },
+  "neighbours": {
+    "heading": "Orvoshiány a szomszédban",
+    "lead": "Országonként egy hivatalos forrás, a saját fogalmaival. Jelenleg Szlovákiáról van járási szintű, letölthető hatósági adat.",
+    "notVacancy": "A szlovák „hiányzó rendelő” nem betöltetlen körzet: azt méri, mennyi heti 35 órás rendelő hiányzik a jogszabályi optimális kapacitáshoz. A magyar betöltetlen körzet meglévő körzet szerződött orvos nélkül. A kettő nem vethető össze arányként.",
+    "kindLabel": "Ellátási ág",
+    "kind": {
+      "adult": "Felnőtt háziorvos",
+      "child": "Gyermekorvos"
+    },
+    "kpi": {
+      "missing": "rendelő hiányzik az optimális hálózathoz",
+      "short": "járásban hiányzik legalább egy teljes rendelő",
+      "border": "ebből a Magyarországgal határos kerületekben"
+    },
+    "onlyBorder": "Csak a Magyarországgal határos kerületek",
+    "okres": "Járás (okres)",
+    "kraj": "Kerület (kraj)",
+    "optimal": "Optimális",
+    "present": "Működő",
+    "missing": "Hiányzik",
+    "fill": "Teljesülés",
+    "krajName": {
+      "BA": "Pozsonyi",
+      "TT": "Nagyszombati",
+      "TN": "Trencséni",
+      "NR": "Nyitrai",
+      "ZA": "Zsolnai",
+      "BB": "Besztercebányai",
+      "PO": "Eperjesi",
+      "KE": "Kassai"
+    },
+    "source": "Forrás: Úrad pre dohľad nad zdravotnou starostlivosťou (ÚDZS), az optimális hálózat értékelése; letöltve: {date}.",
+    "othersHeading": "Ami hiányzik, és miért",
+    "country": {
+      "AT": "Ausztria",
+      "SI": "Szlovénia",
+      "HR": "Horvátország",
+      "RO": "Románia",
+      "RS": "Szerbia",
+      "UA": "Ukrajna"
+    },
+    "status": {
+      "AT": "Nem találtunk friss, tartományonként és áganként bontott, letölthető hivatalos táblát; a sajtóban közölt számokat nem vesszük át.",
+      "SI": "A ZZZS közöl adatot, de a fájljai gépi letöltését az oldal robots.txt szabálya nem engedi.",
+      "HR": "A nyílt adatportálon talált hálózati táblát 2023 márciusában frissítették utoljára; frisset nem találtunk.",
+      "RO": "A CNAS közöl listát az orvos nélküli településekről, de az oldala korlátozza a gépi felhasználást, ezért nem töltöttük le.",
+      "RS": "Nem találtunk községi szintű, friss hivatalos hiánytáblát.",
+      "UA": "Nem találtunk községi szintű, friss hivatalos hiánytáblát."
+    }
   }
 }

@@ -22,6 +22,8 @@ import { SideNav, type SideGroup } from '../SideNav';
 import { EuOverview } from './EuOverview';
 import { IndicatorSection, type EuView } from './IndicatorSection';
 import { EuTwoMeasures } from './EuTwoMeasures';
+import { HospitalAccess } from './HospitalAccess';
+import { NeighbourVacancies } from './NeighbourVacancies';
 import { EuRegions } from './EuRegions';
 import { EuMigration } from './EuMigration';
 import { EuropeStory } from '../story/PageStories';
@@ -113,6 +115,8 @@ export function EuropePage() {
       ))}
       <EuTwoMeasures key={kind} view={view} />
       <EuRegions view={view} />
+      <HospitalAccess view={view} />
+      <NeighbourVacancies nameOf={nameOf} />
       <div className="section container">
         <NextSteps items={[
           { href: '/elemzo.html', titleKey: 'next.analysis.title', textKey: 'next.analysis.text' },

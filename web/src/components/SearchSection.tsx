@@ -6,9 +6,11 @@ import { useSettlementIndex, useSettlementLinks } from '../lib/settlementLink';
 import { useContextStore } from '../lib/context';
 import { useAppStore, useSnapshot } from '../store/useAppStore';
 import { DirectoryTableModal } from './DirectoryTableModal';
+import { SegmentedControl } from './SegmentedControl';
+import { IconStethoscope, IconTooth } from './icons';
 import { SettlementTimeline } from './SettlementTimeline';
 import { EesztLine, EesztSettlementList } from './EesztBits';
-import type { FilledPraxis, Praxis, SettlementEntry } from '../types';
+import type { FilledPraxis, Praxis, PraxisKind, SettlementEntry } from '../types';
 
 const FILLED_LIMIT = 10;
 
@@ -62,6 +64,7 @@ function PraxisRow({ praxis, month }: { praxis: Praxis; month: string }) {
 export function SearchSection() {
   const snapshot = useSnapshot()!;
   const kind = useAppStore((s) => s.kind);
+  const setKind = useAppStore((s) => s.setKind);
   // selection/query belong to one kind's snapshot; reset derives on toggle
   const [state, setState] = useState<{
     kind: string; query: string; selected: SettlementEntry | null;
@@ -153,11 +156,48 @@ export function SearchSection() {
   }, [snapshot, selected, kind]);
 
   return (
-    <section className="section container" id="nalam">
-      <div className="section__heading-row">
-        <h2 className="section__heading">{t('search.heading')}</h2>
-        <button className="icon-button" title={t('search.openDirectory')}
-          aria-label={t('search.openDirectory')}
+    <section className="search-panel" id="nalam" aria-labelledby="nalam-heading">
+      <h2 className="search-panel__title" id="nalam-heading">{t('search.heading')}</h2>
+      <div className="search-panel__row">
+        {/* the branch decides what the search, and every number on the
+            page, counts — so it is chosen where the question is asked */}
+        <SegmentedControl<PraxisKind> size="md" className="search-panel__kind"
+          ariaLabel={t('search.kindLabel')}
+          value={kind} onChange={setKind}
+          options={(['gp', 'dental'] as PraxisKind[]).map((k) => ({
+            value: k,
+            label: <>{k === 'gp' ? <IconStethoscope /> : <IconTooth />}<span>{t(`kinds.${k}.switch`)}</span></>,
+          }))} />
+        <div className="search-box">
+          <svg className="search-box__icon" viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M12.7 12.7 17 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            value={selected ? selected.name : query}
+            placeholder={t('search.placeholder')}
+            onChange={(e) => {
+              setSelected(null);
+              setQuery(e.target.value);
+            }}
+            aria-label={t('search.placeholder')}
+            aria-describedby="nalam-hint"
+          />
+          {hits.length > 0 && (
+            <ul className="search-box__list">
+              {hits.map((s) => (
+                <li key={`${s.name}|${s.county}`}>
+                  <button onClick={() => setSelected(s)}>
+                    <span>{s.name}</span>
+                    <span className="muted">{s.county} {t('search.county')}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <button type="button" className="search-panel__table" title={t('search.openDirectory')}
           onClick={() => setDirectoryOpen(true)}>
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <rect x="2.5" y="3.5" width="15" height="13" rx="1.5" fill="none"
@@ -165,39 +205,14 @@ export function SearchSection() {
             <path d="M2.5 8h15M8 8v8.5M13 8v8.5" stroke="currentColor"
               strokeWidth="1.6" />
           </svg>
+          <span>{t('search.tableView')}</span>
         </button>
       </div>
-      <p className="section__explain">{tKind('search.explain', kind)}</p>
-
-      <div className="search-box">
-        <input
-          type="search"
-          value={selected ? selected.name : query}
-          placeholder={t('search.placeholder')}
-          onChange={(e) => {
-            setSelected(null);
-            setQuery(e.target.value);
-          }}
-          aria-label={t('search.placeholder')}
-        />
-        {hits.length > 0 && (
-          <ul className="search-box__list">
-            {hits.map((s) => (
-              <li key={`${s.name}|${s.county}`}>
-                <button onClick={() => setSelected(s)}>
-                  <span>{s.name}</span>
-                  <span className="muted">{s.county} {t('search.county')}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {query.length >= 2 && hits.length === 0 && !selected && (
-          <p className="section__explain" style={{ marginTop: 12 }}>
-            {tKind('search.noResult', kind)}
-          </p>
-        )}
-      </div>
+      {query.length >= 2 && hits.length === 0 && !selected ? (
+        <p className="search-panel__hint" id="nalam-hint">{tKind('search.noResult', kind)}</p>
+      ) : (
+        <p className="search-panel__hint" id="nalam-hint">{tKind('search.explain', kind)}</p>
+      )}
 
       {selected && (
         <div className="settlement-card">
@@ -209,6 +224,7 @@ export function SearchSection() {
                 && ` · ${formatNumber(selected.population)} ${t('search.populationLine')}`}
             </small>
           </h3>
+          <a href="#terkep">{t('search.toMap')}</a>
           {settlementHref && (
             <p className="settlement-card__link">
               <a href={settlementHref}>{t('search.openProfile', {

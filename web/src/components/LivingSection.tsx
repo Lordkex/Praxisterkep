@@ -17,6 +17,7 @@ import { formatDecimal, formatMonth, formatNumber } from '../lib/format';
 import {
   districtHref, metaOf, pairOf, ruralMedian, useOutcomes, valueOf, type OutcomesRaw,
 } from '../lib/outcomes';
+import { competitionRank } from '../lib/rank';
 import { DistrictMap } from './charts/DistrictMap';
 import { OutcomeScatter, type ScatterPoint } from './charts/OutcomeScatter';
 import { TrendLines, type TrendSeries } from './charts/TrendLines';
@@ -52,6 +53,9 @@ export function MapAndList({ o, measure, picked, onPick, scale, top = 'worst' }:
       const d = (valueOf(b, measure) as number) - (valueOf(a, measure) as number);
       return meta.direction === 'higherWorse' ? d : -d;
     });
+  const rankedValues = ranked.map((r) => valueOf(r, measure) as number);
+  // from whichever end the list starts at; equal values share the number
+  const order = (meta.direction === 'higherWorse') === (top === 'worst') ? 'higherFirst' : 'lowerFirst';
   const list = top === 'worst' ? ranked.slice(0, 8) : ranked.slice(-8).reverse();
   return (
     <div className="outcome__pair">
@@ -62,7 +66,7 @@ export function MapAndList({ o, measure, picked, onPick, scale, top = 'worst' }:
         <h4>{t('outcomes.living.worstHeading')}</h4>
         <ol>
           {list.map((r) => (
-            <li key={r.slug}>
+            <li key={r.slug} data-rank={competitionRank(rankedValues, valueOf(r, measure) as number, order)}>
               <a href={districtHref(r.name)}>{r.name}</a>
               <span>{meta.format(valueOf(r, measure) as number)}</span>
             </li>

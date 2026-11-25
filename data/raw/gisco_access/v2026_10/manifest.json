@@ -1,0 +1,187 @@
+{
+ "url": "https://ec.europa.eu/eurostat/cache/GISCO/pub/accessibility/services/euro_access_healthcare_NUTS_2024_CAR_MN_v2026_10.csv",
+ "sha256": "9cced1699e139c8b9b43b5e22349a4da3a8000230841ce1594796c81890902bf",
+ "shapes": "https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_3.geojson",
+ "fetched": "2026-11-22",
+ "year": "2023",
+ "names": {
+  "AT111": "Mittelburgenland",
+  "AT112": "Nordburgenland",
+  "AT113": "Südburgenland",
+  "HR022": "Virovitičko-podravska županija",
+  "HR025": "Osječko-baranjska županija",
+  "HR061": "Međimurska županija",
+  "HR063": "Koprivničko-križevačka županija",
+  "HU110": "Budapest",
+  "HU120": "Pest",
+  "HU211": "Fejér",
+  "HU212": "Komárom-Esztergom",
+  "HU213": "Veszprém",
+  "HU221": "Győr-Moson-Sopron",
+  "HU222": "Vas",
+  "HU223": "Zala",
+  "HU231": "Baranya",
+  "HU232": "Somogy",
+  "HU233": "Tolna",
+  "HU311": "Borsod-Abaúj-Zemplén",
+  "HU312": "Heves",
+  "HU313": "Nógrád",
+  "HU321": "Hajdú-Bihar",
+  "HU322": "Jász-Nagykun-Szolnok",
+  "HU323": "Szabolcs-Szatmár-Bereg",
+  "HU331": "Bács-Kiskun",
+  "HU332": "Békés",
+  "HU333": "Csongrád-Csanád",
+  "RO111": "Bihor",
+  "RO115": "Satu Mare",
+  "RO421": "Arad",
+  "RO424": "Timiş",
+  "RS121": "Zapadnobačka oblast ",
+  "RS124": "Severnobanatska oblast",
+  "RS125": "Severnobačka oblast",
+  "SI031": "Pomurska",
+  "SK010": "Bratislavský kraj",
+  "SK021": "Trnavský kraj",
+  "SK023": "Nitriansky kraj",
+  "SK032": "Banskobystrický kraj",
+  "SK042": "Košický kraj"
+ },
+ "pairs": [
+  [
+   "HU120",
+   "SK023"
+  ],
+  [
+   "HU212",
+   "SK023"
+  ],
+  [
+   "HU221",
+   "AT111"
+  ],
+  [
+   "HU221",
+   "AT112"
+  ],
+  [
+   "HU221",
+   "SK010"
+  ],
+  [
+   "HU221",
+   "SK021"
+  ],
+  [
+   "HU221",
+   "SK023"
+  ],
+  [
+   "HU222",
+   "AT111"
+  ],
+  [
+   "HU222",
+   "AT113"
+  ],
+  [
+   "HU222",
+   "SI031"
+  ],
+  [
+   "HU223",
+   "HR061"
+  ],
+  [
+   "HU223",
+   "HR063"
+  ],
+  [
+   "HU223",
+   "SI031"
+  ],
+  [
+   "HU231",
+   "HR022"
+  ],
+  [
+   "HU231",
+   "HR025"
+  ],
+  [
+   "HU232",
+   "HR022"
+  ],
+  [
+   "HU232",
+   "HR063"
+  ],
+  [
+   "HU311",
+   "SK032"
+  ],
+  [
+   "HU311",
+   "SK042"
+  ],
+  [
+   "HU313",
+   "SK023"
+  ],
+  [
+   "HU313",
+   "SK032"
+  ],
+  [
+   "HU321",
+   "RO111"
+  ],
+  [
+   "HU323",
+   "RO111"
+  ],
+  [
+   "HU323",
+   "RO115"
+  ],
+  [
+   "HU323",
+   "SK042"
+  ],
+  [
+   "HU331",
+   "HR025"
+  ],
+  [
+   "HU331",
+   "RS121"
+  ],
+  [
+   "HU331",
+   "RS125"
+  ],
+  [
+   "HU332",
+   "RO111"
+  ],
+  [
+   "HU332",
+   "RO421"
+  ],
+  [
+   "HU333",
+   "RO421"
+  ],
+  [
+   "HU333",
+   "RO424"
+  ],
+  [
+   "HU333",
+   "RS124"
+  ],
+  [
+   "HU333",
+   "RS125"
+  ]
+ ]
+}

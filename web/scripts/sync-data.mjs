@@ -61,6 +61,11 @@ const optional = [
   // small enough to offer for download on their own: the census shares, the
   // grant follow-up and the forecast that outcomes.json is cut from
   [join(repo, 'data', 'census.json'), join(out, 'census.json')],
+  // sources S-V: waiting lists, praxis communities, hospitals, next door
+  [join(repo, 'data', 'waitlist.json'), join(out, 'waitlist.json')],
+  [join(repo, 'data', 'communities.json'), join(out, 'communities.json')],
+  [join(repo, 'data', 'hospital_access.json'), join(out, 'hospital_access.json')],
+  [join(repo, 'data', 'neighbours.json'), join(out, 'neighbours.json')],
   // the European comparison (europa.html) and its outlines
   [join(repo, 'data', 'europe.json'), join(out, 'europe.json')],
   [join(repo, 'data', 'geo', 'europe.json'), join(out, 'europe_geo.json')],

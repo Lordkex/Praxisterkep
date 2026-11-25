@@ -126,3 +126,9 @@ def test_the_landing_facts_are_computed_from_the_file():
     assert gp["key"] == "gpDensity"
     assert gp["value"] == out["indicators"]["gpDensity"]["values"]["HU"][gp["year"]]
     assert 1 <= gp["rank"] <= gp["of"] <= len(e.GROUPS["cee"])
+
+
+def test_equal_values_share_one_place():
+    from eu_compare import shared_rank
+    assert [shared_rank([9, 5, 5, 1], v, "higher") for v in (9, 5, 5, 1)] == [1, 2, 2, 4]
+    assert [shared_rank([9, 5, 5, 1], v, "lower") for v in (9, 5, 5, 1)] == [4, 2, 2, 1]

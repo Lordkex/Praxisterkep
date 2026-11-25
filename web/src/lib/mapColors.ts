@@ -23,6 +23,8 @@ export interface MapColors {
   mismatch: string;
   jaras: string;
   budapest: string;
+  /** the halo around a point in a beneficiary settlement: off the warm ramp */
+  benefit: string;
 }
 
 /** `tick` only ties a memo to the theme (useThemeTick); the colours come from the page. */
@@ -52,5 +54,6 @@ export function mapColors(tick = 0): MapColors {
     mismatch: cssColor('--violet-soft', '#b8b0f5'),
     jaras: light ? '#9fb0c4' : '#2f4059',
     budapest: light ? '#8697ad' : '#46597a',
+    benefit: cssColor('--violet', light ? '#8767e6' : '#a78bfa'),
   };
 }

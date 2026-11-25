@@ -1,0 +1,23 @@
+{
+  "name": "hungarian-praxismap",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Hungarian GP and dental district vacancies, monthly since 2017, without names",
+  "author": "Dul Zoltán",
+  "license": "(MIT AND CC-BY-4.0 AND ODbL-1.0)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZoliQua/Praxisterkep.git",
+    "directory": "packages/data"
+  },
+  "homepage": "https://praxisterkep.hu",
+  "bin": { "hungarian-praxismap": "lib/cli.js" },
+  "exports": {
+    ".": { "types": "./lib/index.d.ts", "node": "./lib/node.js", "default": "./lib/index.js" },
+    "./manifest.json": "./manifest.json",
+    "./months/*": "./months/*",
+    "./schema/*": "./schema/*"
+  },
+  "engines": { "node": ">=22.18" },
+  "keywords": ["hungary", "primary-care", "open-data", "neak"]
+}

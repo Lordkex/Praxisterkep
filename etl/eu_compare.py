@@ -486,6 +486,12 @@ def _pack(meta: dict, values: dict[str, dict[str, float]], source: str, dataset:
     }
 
 
+def shared_rank(values: list[float], value: float, better: str) -> int:
+    """1 + how many are strictly better: equal values share one place."""
+    ahead = [v for v in values if (v > value if better == "higher" else v < value)]
+    return len(ahead) + 1
+
+
 def build_countries(refresh: bool) -> tuple[dict, dict]:
     indicators: dict[str, dict] = {}
     fetched: dict[str, str] = {}
@@ -747,7 +753,7 @@ def summary_facts(out: dict) -> dict:
         median = vals[int(mid)] if len(vals) % 2 else (vals[int(mid) - 1] + vals[int(mid)]) / 2
         eu = last_value(ind["eu"])
         facts[kind] = {"key": key, "unit": ind["unit"], "year": hu[1], "value": hu[2],
-                       "rank": [r[0] for r in live].index("HU") + 1, "of": len(live),
+                       "rank": shared_rank([r[2] for r in live], hu[2], ind["better"]), "of": len(live),
                        "median": round(median, 2),
                        "eu": {"year": eu[0], "value": eu[1]} if eu else None,
                        "best": {"geo": live[0][0], "value": live[0][2], "year": live[0][1]}}

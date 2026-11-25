@@ -6,6 +6,7 @@
 // the page hands the reader down a level instead of averaging it away.
 import { t } from '../lib/i18n';
 import { formatDecimal } from '../lib/format';
+import { competitionRank } from '../lib/rank';
 import { districtHref, metaOf, useOutcomes, valueOf, type OutcomeCounty } from '../lib/outcomes';
 import { TrendLines } from './charts/TrendLines';
 import { ForecastPath } from './charts/ForecastPath';
@@ -26,11 +27,13 @@ function Ranking({ counties, k, selected }: {
   const vals = rows.map((r) => r[k] as number);
   const lo = Math.min(0, ...vals); const hi = Math.max(0, ...vals);
   const pos = (v: number) => ((v - lo) / (hi - lo || 1)) * 100;
-  const rank = rows.findIndex((r) => r.name === selected) + 1;
+  const here = rows.find((r) => r.name === selected);
+  const rank = here ? competitionRank(vals, here[k] as number,
+    meta.direction === 'higherWorse' ? 'higherFirst' : 'lowerFirst') : null;
   return (
     <article className="county-rank">
       <h3>{t(`outcomes.measure.${k}`)}</h3>
-      {rank > 0 && <p className="county-rank__place">{t('outcomes.county.place', { rank, of: rows.length })}</p>}
+      {rank !== null && <p className="county-rank__place">{t('outcomes.county.place', { rank, of: rows.length })}</p>}
       <ol>
         {rows.map((r) => {
           const v = r[k] as number;

@@ -6,7 +6,7 @@
 import {
   Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore,
 } from 'react';
-import { Map as MLMap, Marker, NavigationControl } from 'maplibre-gl';
+import { type Map as MLMap, Marker, NavigationControl } from 'maplibre-gl';
 import type { GeoJSONSource, MapLayerMouseEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { t } from '../lib/i18n';
@@ -15,6 +15,8 @@ import { cellText, type Row } from '../lib/eesztTable';
 import { eesztLink } from '../lib/eeszt';
 import { useAppStore } from '../store/useAppStore';
 import { useContextStore } from '../lib/context';
+import { createMap } from '../lib/safeMap';
+import { MapUnsupported } from './MapUnsupported';
 import { exportMapPng } from '../lib/mapExport';
 import { LAYER_KEYS, setLayer, type LayerChoice } from '../lib/mapLayers';
 import { useOrientationLayers } from './useOrientationLayers';
@@ -148,6 +150,7 @@ export function EesztMap({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
+  const [unsupported, setUnsupported] = useState(false);
   const readyRef = useRef(false);
   // the county filter is the site-wide context: a county picked here is the
   // one the analyses and the county page open on, and the other way round
@@ -205,7 +208,7 @@ export function EesztMap({
   // create the map once
   useEffect(() => {
     if (!containerRef.current) return;
-    const map = new MLMap({
+    const map = createMap({
       container: containerRef.current,
       style: {
         version: 8,
@@ -219,6 +222,10 @@ export function EesztMap({
       // the PNG export reads the canvas back after the frame
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    if (!map) {
+      setUnsupported(true);
+      return;
+    }
     mapRef.current = map;
     map.addControl(new NavigationControl({ showCompass: false }), 'top-left');
 
@@ -488,6 +495,7 @@ export function EesztMap({
       </div>
       <div className="eeszt-map__stage" style={{ height }}>
         <div ref={containerRef} className="eeszt-map__canvas" />
+        {unsupported && <MapUnsupported />}
         {selected && (
           <aside className="eeszt-map__panel">
             <button className="county-panel__close" onClick={() => setSelected(null)}

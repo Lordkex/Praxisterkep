@@ -1,0 +1,17 @@
+{
+  "name": "hungarian-praxismap-dev",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "vitest run",
+    "build": "node build/build.ts",
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.11"
+  }
+}

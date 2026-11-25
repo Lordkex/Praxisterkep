@@ -37,7 +37,9 @@ ROOT = Path(__file__).resolve().parent.parent
 OSM_DIR = ROOT / "data" / "raw" / "osm"
 GEO_DIR = ROOT / "data" / "geo"
 OUT = GEO_DIR / "road_graph.npz"
-EXTRACT_URL = "https://download.geofabrik.de/europe/hungary-latest.osm.pbf"
+# Geofabrik moved the country files one folder down in 2026-11; the old
+# address answered GitHub's runners with a redirect loop
+EXTRACT_URL = "https://download.geofabrik.de/europe/hungary/hungary-latest.osm.pbf"
 HEADERS = {"User-Agent": "Praxisterkep/1.0 (+https://github.com/ZoliQua/Praxisterkep)"}
 
 # free-flow speed in km/h when the way carries no usable maxspeed tag
@@ -124,19 +126,33 @@ def parse_speed(value: str | None, highway: str) -> float:
         return default
 
 
+def dated_url() -> str:
+    """The dated file "latest" points at (hungary-YYMMDD.osm.pbf), resolved by
+    one redirect, so the download itself is a plain GET with none."""
+    head = requests.head(EXTRACT_URL, headers=HEADERS, timeout=60, allow_redirects=False)
+    head.raise_for_status()  # a 3xx passes; only an error status raises
+    location = head.headers.get("Location")
+    if not location:
+        return EXTRACT_URL
+    url = requests.compat.urljoin(EXTRACT_URL, location)
+    if not url.rsplit("/", 1)[-1].startswith("hungary-") or not url.endswith(".osm.pbf"):
+        raise RuntimeError(f"Geofabrik pointed {EXTRACT_URL} at an unexpected {url}")
+    return url
+
+
 def fetch(force: bool = False) -> Path:
     """The extract, cached under data/raw/osm/ (not committed — it is huge)."""
     OSM_DIR.mkdir(parents=True, exist_ok=True)
     existing = sorted(OSM_DIR.glob("hungary-*.osm.pbf"))
     if existing and not force:
         return existing[-1]
-    head = requests.head(EXTRACT_URL, headers=HEADERS, timeout=60, allow_redirects=False)
-    name = head.headers.get("Location", EXTRACT_URL).rsplit("/", 1)[-1]
+    url = dated_url()
+    name = url.rsplit("/", 1)[-1]
     target = OSM_DIR / name
     if target.exists() and not force:
         return target
     print(f"downloading {name} (about 310 MB)…")
-    with requests.get(EXTRACT_URL, headers=HEADERS, timeout=1800, stream=True) as resp:
+    with requests.get(url, headers=HEADERS, timeout=1800, stream=True) as resp:
         resp.raise_for_status()
         with target.open("wb") as fh:
             for chunk in resp.iter_content(chunk_size=1 << 20):

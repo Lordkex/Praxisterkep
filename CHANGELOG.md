@@ -5,6 +5,76 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.60.1] - 2026-11-22
+
+### Javítva
+- **WebGL nélküli böngésző** — ahol a böngésző nem tud térképet rajzolni, az
+  oldal eddig teljesen kiürült, amint térképhez ért (főoldal, Továbbiak, az
+  Elemző térképes részei, a beágyazható térkép). Mostantól csak a térkép
+  helyén jelenik meg egy rövid üzenet, minden más működik tovább.
+
+## [1.60.0] - 2026-11-22
+
+### Új
+- **Várólisták** (Továbbiak, `#varolistak`) — a NEAK nyilvántartásából
+  beavatkozásonként az országos várakozás és a listát közlő intézmények.
+  Személyes és esetszintű adat nélkül.
+- **Praxisközösségek** (Elemző › Járások és megyék, `#praxiskozossegek`) — az
+  OKFŐ területi beosztása a járások betöltetlenségével. Nem taglista: a NEAK
+  ilyet nem közöl.
+- **Kórház elérése** (Európa, `#korhaz-eleres`) — Eurostat GISCO-menetidők
+  országonként és a határ két oldalán, külső ellenőrzésként a saját
+  sürgősségi menetidőnk mellett.
+- **Orvoshiány a szomszédban** (Európa, `#szomszedok`) — Szlovákia járási
+  adatai az ÚDZS-től; a többi szomszédnál kiírjuk, miért nincs adat.
+
+### Javítva
+- **Holtverseny minden kiírt helyezésnél** — a megyei kimeneti rangsorok, a
+  térkép megyei helyezése, az európai rangsorok, a nehezen elérhető járások
+  és a legrosszabb nyolc járás listája sorszám helyett közös helyet ad az
+  egyenlő értékeknek.
+
+## [1.59.1] - 2026-11-21
+
+### Javítva
+- **Települési oldalak, „Hol áll ez a település?”** — a mondat fordított
+  százalékot írt: a rangsorban az 1. a legmagasabb indexű, legrosszabb
+  helyzetű település, a képlet viszont fordítva számolt, így Budakalász
+  (3046./3177) „az ország 4,1%-ánál” kedvezőbb helyzetűnek tűnt 95,8% helyett.
+  Pfening András jelezte, köszönjük.
+- **Holtverseny a rangsorokban** — az egy tizedesre kerekített indexen a
+  3177 településből 3057 osztozik valakivel egy értéken, és eddig az egyformák
+  is eltérő helyet kaptak. Most azonos helyen állnak (1 + ahány magasabb), így
+  a „rosszabb helyzetűek” száma pontosan helyezés − 1. Ugyanígy a járási és
+  megyei rangsorok a megyei és járási oldalakon.
+- **Rangsorok iránya** — a megyei oldal helyezései, a járási eloszlásdiagram
+  és a járási összegző mondat kiírja, hogy az 1. a legrosszabb (a PDF-ben az
+  1. a legkedvezőbb, ezt eddig is jelezte).
+
+### Új
+- **„+ Közreműködők” gomb** a lábléc „Készítette” sorában, a GitHubon lévő
+  [CONTRIBUTORS.md](CONTRIBUTORS.md)-re mutat — az alkalmazásban és a
+  statikus településoldalakon is. A listába új szakasz került a
+  hibabejelentőknek.
+
+## [1.59.0] - 2026-11-20
+
+### Változott
+- **Főoldal** — Dr. Tyukodi Levente ([@Lordkex](https://github.com/Lordkex))
+  második közreműködése ([#6](https://github.com/ZoliQua/Praxisterkep/issues/6)):
+  a települési kereső az első képernyőn, a körzetállomány halmozott
+  diagramon (TEK nélküli praxisokkal, táblázat-váltóval), a térképpanel
+  Nézet / Szűrők / Rétegek csoportokban, egységes váltók, átdolgozott
+  kiemelő kártyák és görgetős bevezető. A főoldali animáció, a bevezető
+  szöveg, a lábléc sorrendje és a menü változatlan maradt.
+
+### Javítva
+- **KSH TIMEA** ([#4](https://github.com/ZoliQua/Praxisterkep/issues/4)): a
+  KSH kivette katalógusából a háziorvosi mutatókat (TYWJ001, 011, 012, 013),
+  miközben az adatok továbbra is lekérhetők; a havi futás emiatt leállt. Az
+  évlista és a megnevezés most az utolsó archivált katalógusból jön, külön
+  fájlban, a nyers katalógus érintetlen marad.
+
 ## [1.58.0] - 2026-11-18
 
 ### Változott

@@ -5,6 +5,7 @@
 // every indicator through lib/vacancy.
 import { t } from '../lib/i18n';
 import { useContextStore, type DissolvedMode } from '../lib/context';
+import { SegmentedControl } from './SegmentedControl';
 
 const MODES: DissolvedMode[] = ['with', 'without'];
 
@@ -14,13 +15,9 @@ export function DissolvedSwitch({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`dsw${compact ? ' dsw--compact' : ''}`}>
       <span className="dsw__label">{t('dissolved.label')}</span>
-      <div className="seg seg--small" role="group" aria-label={t('dissolved.label')}>
-        {MODES.map((m) => (
-          <button key={m} aria-pressed={mode === m} onClick={() => setDissolved(m)}>
-            {t(`dissolved.${m}`)}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl<DissolvedMode> size="xs" ariaLabel={t('dissolved.label')}
+        value={mode} onChange={setDissolved}
+        options={MODES.map((m) => ({ value: m, label: t(`dissolved.${m}`) }))} />
     </div>
   );
 }

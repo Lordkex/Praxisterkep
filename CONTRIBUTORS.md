@@ -20,6 +20,26 @@ adatkezelésért Dr. Dul Zoltán felel (lásd az
   egész oldalon; az oldalsó menü nem ugrál és nem tördel, az aktív pont
   látható marad; a beágyazási kód a letöltésekhez került; a havi
   adatkönyvtár sorában közvetlen link a legutóbbi hónap fájljaira.
+  A főoldal átdolgozása
+  ([#6](https://github.com/ZoliQua/Praxisterkep/issues/6)): a települési
+  kereső az első képernyőn, a háziorvos/fogorvos váltóval és látható
+  táblázatnézet-gombbal; a körzetállomány halmozott oszlopdiagramon, saját
+  színnel a TEK nélküli praxisoknak, diagram/táblázat váltóval és a TEK
+  nélküli oldalra vezető kártyával; a térkép szűrőpanelje Nézet / Szűrők /
+  Rétegek csoportokba rendezve, a PNG-mentés a térkép sarkában, a
+  kedvezményezett települések rétegének kirajzolása, egymást nem takaró
+  városfeliratok; a kiemelő kártyák ági címkével és érthetőbb szövegekkel;
+  egységes szegmentált váltók az egész főoldalon; nyugodtabb, öt lépésből
+  álló görgetős bevezető idősorral.
+
+## Hibabejelentők
+
+- **Pfening András** — a települési oldalak „Hol áll ez a település?”
+  mondata fordított százalékot írt: a 3177 településből a 3047. helyen álló
+  Budakalászról azt, hogy az ország 4,1%-ánál kedvezőbb a helyzete, holott
+  közel 96%-ánál az (2026-11). A jelzés nyomán a rangsor a holtversenyben álló
+  településeknek azonos helyet ad, és a megyei, járási rangsorok is kiírják,
+  honnan számolnak (1.59.1).
 
 ## Adatközlők
 

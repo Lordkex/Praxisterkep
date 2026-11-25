@@ -72,13 +72,13 @@ export function LandingStory(): ReactElement | null {
 }
 
 /** Under "Amit eddig senki nem számolt ki": the same four facts as the cards. */
-export function HighlightsStory({ data }: { data: HighlightsInput }): ReactElement | null {
+export function HighlightsStory({ data, script = true }: { data: HighlightsInput; script?: boolean }): ReactElement | null {
   const eu = useJson<EuropeSummaryInput>('europe_summary.json');
   const scenes = useMemo(() => safe(() => highlightsScenes(data, eu)), [data, eu]);
   // wait for the European half, so the story does not change length mid-play
-  if (!eu) return <StoryPending />;
+  if (!eu) return <StoryPending script={script} />;
   return (
-    <Story mascot="house" scenes={scenes}
+    <Story mascot="house" scenes={scenes} script={script}
       title={t('story.highlights.title', { heading: t('highlights.heading') })} />
   );
 }

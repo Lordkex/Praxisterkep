@@ -18,6 +18,7 @@ import { EesztMap, type MapRow } from './EesztMap';
 import { CountyChoropleth } from './charts/CountyChoropleth';
 import { GyseSection } from './GyseSection';
 import { PharmacySection } from './PharmacySection';
+import { WaitlistSection } from './WaitlistSection';
 import { Deferred } from './Deferred';
 import { PageNav } from './PageNav';
 import { SideNav } from './SideNav';
@@ -245,6 +246,7 @@ export function SpecialistPage() {
       </section>
 
       {/* each loads its own register: only once the reader comes near */}
+      <Deferred ids={['varolistak']}><WaitlistSection /></Deferred>
       <Deferred ids={['gyogyszertar']}><PharmacySection /></Deferred>
       <Deferred ids={['segedeszkoz']}><GyseSection /></Deferred>
 

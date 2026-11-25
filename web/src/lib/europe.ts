@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { locale } from './i18n';
 import { formatDecimal, formatNumber } from './format';
 import { dataUrl } from './dataUrl';
+import { competitionRank } from './rank';
 
 export type Better = 'higher' | 'lower' | 'neutral';
 export type Branch = 'gp' | 'dental' | 'both';
@@ -152,8 +153,10 @@ export function ranking(ind: EuIndicator, members: string[]): RankRow[] {
   const sign = ind.better === 'lower' ? 1 : -1;
   rows.sort((a, b) => Number(a.stale) - Number(b.stale) || sign * (a.value - b.value));
   if (ind.better !== 'neutral') {
-    let n = 0;
-    for (const r of rows) if (!r.stale) r.rank = ++n;
+    const live = rows.filter((r) => !r.stale);
+    const values = live.map((r) => r.value);
+    const order = ind.better === 'lower' ? 'lowerFirst' : 'higherFirst';
+    for (const r of live) r.rank = competitionRank(values, r.value, order);
   }
   return rows;
 }
