@@ -5,7 +5,7 @@
 import { useMemo } from 'react';
 import { t } from '../lib/i18n';
 import { formatDecimal, formatDuration, formatNumber } from '../lib/format';
-import { contextHref, currentContext } from '../lib/context';
+import { linkHref, currentContext } from '../lib/context';
 import { useOutcomes } from '../lib/outcomes';
 import { OutcomeScatter, type ScatterPoint } from './charts/OutcomeScatter';
 
@@ -18,7 +18,7 @@ function median(v: number[]): number | null {
 }
 
 function settlementHref(slug: string): string {
-  return contextHref(`/telepules/${slug}/`, currentContext());
+  return linkHref(`/telepules/${slug}/`, currentContext());
 }
 
 /** The four readings for the whole country, or — on a county or a járás

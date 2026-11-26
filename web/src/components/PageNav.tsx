@@ -2,7 +2,7 @@
 // entries as the landing (lib/siteNav.ts) in the order of the zooms they
 // offer, and every link carries the branch and the area on.
 import { t } from '../lib/i18n';
-import { contextHref } from '../lib/context';
+import { linkHref } from '../lib/context';
 import { ContextBar } from './ContextBar';
 import { NavMenu } from './NavMenu';
 import { LangToggle } from './LangToggle';
@@ -22,7 +22,7 @@ export function PageNav({ kind = null, onKind }: Props) {
     <>
     <nav className="topnav">
       <div className="topnav__inner">
-        <a className="topnav__brand" href={contextHref(home)}>{t('site.title')}</a>
+        <a className="topnav__brand" href={linkHref(home)}>{t('site.title')}</a>
         {kind && onKind && (
           <div className="topnav__kind" role="group">
             <button aria-pressed={kind === 'dental'}

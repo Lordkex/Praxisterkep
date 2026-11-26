@@ -10,6 +10,11 @@
 // page reacts to a change without a reload.
 import { create } from 'zustand';
 import type { PraxisKind } from '../types';
+import {
+  CONTEXT_KEYS, crawlHref, installLinkContext, isContextTarget, staticTarget, CTX_ATTR,
+} from './linkContext';
+
+export { CONTEXT_KEYS };
 
 export interface SiteContext {
   kind: PraxisKind;
@@ -38,12 +43,6 @@ export interface SiteContext {
 
 /** 'with' counts the dissolved districts as vacant, 'without' leaves them out. */
 export type DissolvedMode = 'with' | 'without';
-
-// 'k' and 'm' are what the map has always written, so old links keep working;
-// 't' was already taken by the praxis-type filter, hence 'tel'.
-export const CONTEXT_KEYS = {
-  kind: 'k', county: 'm', settlement: 'tel', dissolved: 'msz', district: 'jar',
-} as const;
 
 // GP is what a visitor arriving cold is most likely to be looking for: nearly
 // everyone has a háziorvos, far fewer think about which dental district they
@@ -149,10 +148,18 @@ export function contextHref(
   // a link that names its own county ("/megye.html?m=Pest" in the menu)
   // goes there: the reader's settlement and járás belong to another county
   const [path, own = ''] = full.split('?');
-  const ownCounty = new URLSearchParams(own).get(CONTEXT_KEYS.county);
-  const target = ownCounty && ownCounty !== ctx.county
+  const ownQ = new URLSearchParams(own);
+  const ownCounty = ownQ.get(CONTEXT_KEYS.county);
+  let target: SiteContext = ownCounty && ownCounty !== ctx.county
     ? { ...ctx, county: ownCounty, settlement: null, district: null }
     : ctx;
+  // the rest of the link's own place wins too: "jaras.html?jar=Pápai" is that
+  // járás, whichever one the reader was looking at
+  const ownCtx = readContext(own);
+  if (ownCtx.district) target = { ...target, district: ownCtx.district };
+  if (ownCtx.settlement) target = { ...target, settlement: ownCtx.settlement };
+  if (ownQ.has(CONTEXT_KEYS.kind)) target = { ...target, kind: ownCtx.kind };
+  if (ownQ.has(CONTEXT_KEYS.dissolved)) target = { ...target, dissolved: ownCtx.dissolved };
   // a link that stays on this page keeps its query: the map's month, filters
   // and colouring live there, and a menu click must not wipe them
   const q = writeContext(path === '' || samePage(path) ? search : own, target);
@@ -174,6 +181,38 @@ function splitHash(href: string): [string, string] {
   return i < 0 ? [href, ''] : [href.slice(0, i), href.slice(i)];
 }
 
+/**
+ * The href to render: the page the link goes to, without the reader's place
+ * (lib/linkContext.ts). The place is added when the reader acts on the link,
+ * by the listener below, so a crawler only ever sees canonical addresses.
+ */
+export function linkHref(
+  href: string,
+  ctx: SiteContext = currentContext(),
+  search: string = typeof window === 'undefined' ? '' : window.location.search,
+): string {
+  return crawlHref(contextHref(href, ctx, search));
+}
+
+/**
+ * The full address for a link at the moment it is used. The href React
+ * rendered is remembered beside the one written here, so a later context
+ * change (or a new href from React) is never mixed with an old one.
+ */
+function appTarget(a: HTMLAnchorElement): string | null {
+  if (a.hasAttribute(CTX_ATTR)) return staticTarget(a);
+  const current = a.getAttribute('href') ?? '';
+  const base = a.dataset.ctxOut === current && a.dataset.ctxBase !== undefined
+    ? a.dataset.ctxBase : current;
+  if (!isContextTarget(base, window.location.href)) return null;
+  const out = contextHref(base);
+  a.dataset.ctxBase = base;
+  a.dataset.ctxOut = out;
+  return out;
+}
+
+if (typeof document !== 'undefined') installLinkContext(appTarget);
+
 /** React-facing version: re-renders the caller when the context changes. */
 export function useContextHref(): (href: string) => string {
   // field by field: a selector returning a fresh object would hand the store
@@ -184,5 +223,5 @@ export function useContextHref(): (href: string) => string {
   const dissolved = useContextStore((s) => s.dissolved);
   const district = useContextStore((s) => s.district);
   return (href: string) =>
-    contextHref(href, { kind, county, settlement, dissolved, district });
+    linkHref(href, { kind, county, settlement, dissolved, district });
 }

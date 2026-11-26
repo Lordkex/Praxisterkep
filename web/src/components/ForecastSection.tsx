@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { t } from '../lib/i18n';
 import { formatDecimal, formatMonth, formatNumber, formatPercent } from '../lib/format';
 import { districtHref, useOutcomes } from '../lib/outcomes';
-import { contextHref, currentContext } from '../lib/context';
+import { linkHref, currentContext } from '../lib/context';
 import { DistrictMap } from './charts/DistrictMap';
 import { settlementHref } from '../lib/settlementLink';
 import { Dumbbell } from './charts/Dumbbell';
@@ -94,7 +94,7 @@ export function ForecastSection({ kind: initial }: { kind: Kind }) {
             rows={Object.entries(f.counties).filter(([, x]) => x.rateNow !== null && x.rateIn12 !== null)
               .map(([name, x]) => ({ key: name, label: name, from: x.rateNow as number,
                 to: x.rateIn12 as number,
-                href: contextHref('megye.html', { ...currentContext(), county: name }) }))
+                href: linkHref('megye.html', { ...currentContext(), county: name }) }))
               .sort((a, b) => b.to - a.to)}
             format={(v) => formatPercent(v)} fromLabel={t('outcomes.forecast.now')}
             toLabel={t('outcomes.forecast.later')} selected={county} onPick={setCounty} />

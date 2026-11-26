@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { locale } from './i18n';
 import { formatDecimal } from './format';
-import { contextHref, currentContext } from './context';
+import { linkHref, currentContext } from './context';
 import { dataUrl } from './dataUrl';
 
 export interface OutcomeDistrict {
@@ -418,7 +418,7 @@ export function partialOf(o: OutcomesRaw, x: string, y: string, control = 'incom
 export const GROUP_COLORS = ['var(--bad)', 'var(--amber)', 'var(--calm)'];
 
 export function districtHref(name: string): string {
-  return contextHref('jaras.html', { ...currentContext(), district: name });
+  return linkHref('jaras.html', { ...currentContext(), district: name });
 }
 
 /** income thirds of the rural járás: 0 poorest, 2 richest */

@@ -15,6 +15,7 @@ import { dirname, join } from 'node:path';
 import { loadEnv } from 'vite';
 import { countyMap, countyThumb } from './county-map.mjs';
 import { settlementStory } from './settlement-story.mjs';
+import { splitContextLinks } from './crawl-links.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = join(here, '..', 'dist');
@@ -341,7 +342,9 @@ function streetBlock(profile, opts = {}) {
 }
 
 // the site-wide context (lib/context.ts) written into a static link: ?tel=
-// is the settlement slug, ?m= its county, and the SPA picks both up on load
+// is the settlement slug, ?m= its county, and the SPA picks both up on load.
+// splitContextLinks (crawl-links.mjs) moves it from the href into data-ctx
+// when the page is written, so crawlers only see the canonical address
 // the one menu (src/lib/siteNav.json) and its Hungarian labels, so these
 // 3177 static pages cannot disagree with the app about which pages exist
 const nav = JSON.parse(readFileSync(join(here, '..', 'src', 'lib', 'siteNav.json'), 'utf8'));
@@ -2040,7 +2043,7 @@ for (const lang of ['hu', 'en']) {
   for (const profile of profiles.settlements) {
     const dir = join(root, profile.slug);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, 'index.html'), page(profile), 'utf8');
+    writeFileSync(join(dir, 'index.html'), splitContextLinks(page(profile)), 'utf8');
     written += 1;
   }
   writeIndex(root);

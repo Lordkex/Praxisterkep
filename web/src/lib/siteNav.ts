@@ -7,7 +7,7 @@
 // single definition; the static generator reads the same labels out of the
 // Hungarian locale file, so the two cannot drift apart again.
 import type { NavEntry } from '../components/NavMenu';
-import { contextHref } from './context';
+import { linkHref } from './context';
 import { entries } from './siteNav.json';
 
 /**
@@ -35,8 +35,8 @@ export function resolve(href: string): string {
 export function withContext(entries: readonly NavEntry[]): NavEntry[] {
   return entries.map((e) => ({
     ...e,
-    href: contextHref(resolve(e.href)),
-    children: e.children?.map((c) => [contextHref(resolve(c[0])), ...c.slice(1)] as
+    href: linkHref(resolve(e.href)),
+    children: e.children?.map((c) => [linkHref(resolve(c[0])), ...c.slice(1)] as
       unknown as readonly [string, string, string]),
   }));
 }

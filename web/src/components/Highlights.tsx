@@ -3,7 +3,7 @@
 // to the section that shows how it was made.
 import { t } from '../lib/i18n';
 import { formatNumber, formatPercent } from '../lib/format';
-import { contextHref } from '../lib/context';
+import { linkHref } from '../lib/context';
 import { EuropeHighlights } from './EuropeHighlights';
 import { useHighlights } from '../lib/highlights';
 import { Emph } from './Emph';
@@ -18,7 +18,7 @@ export function Highlights() {
     <section className="section container highlights" aria-label={t('highlights.heading')}>
       <h2 className="section__heading">{t('highlights.heading')}</h2>
       <div className="highlights__grid">
-        <a className="highlight" href={contextHref('/elemzo.html#tamogatasok')}>
+        <a className="highlight" href={linkHref('/elemzo.html#tamogatasok')}>
           <span className="highlight__kind"><IconStethoscope />{t('kinds.gp.label')}</span>
           <span className="highlight__numbers">
             <b>{formatPercent(gp.grantsFilled, 0)}</b>
@@ -33,7 +33,7 @@ export function Highlights() {
             pairs: formatNumber(gp.pairs) })} /></span>
           <span className="highlight__more">{t('highlights.more')}</span>
         </a>
-        <a className="highlight" href={contextHref('/elemzo.html#tulel')}>
+        <a className="highlight" href={linkHref('/elemzo.html#tulel')}>
           <span className="highlight__kind"><IconTooth />{t('kinds.dental.label')}</span>
           <span className="highlight__numbers">
             <b>{formatNumber(dental.tenYears)}</b>

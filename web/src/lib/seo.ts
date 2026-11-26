@@ -9,7 +9,9 @@
 // It is an inline <head> script, like THEME_BOOT (lib/theme.ts), because the
 // county and the járás live in the query string, which a static tag cannot
 // read; Google takes a canonical added by script as long as it is the only
-// one. Kept free of imports — the html entries carry it verbatim, and
+// one. Since 2026-11 the links themselves no longer carry the place either
+// (lib/linkContext.ts), so a crawler rarely meets those addresses at all.
+// Kept free of imports — the html entries carry it verbatim, and
 // seo.test.ts checks that they do and what it writes.
 export const SITE_URL = 'https://praxisterkep.hu';
 

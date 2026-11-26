@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  contextHref, readContext, writeContext, EMPTY, type SiteContext,
+  contextHref, linkHref, readContext, writeContext, EMPTY, type SiteContext,
 } from './context';
 
 const ctx = (over: Partial<SiteContext> = {}): SiteContext =>
@@ -78,5 +78,25 @@ describe('site context', () => {
   it('survives a round trip', () => {
     const c = ctx({ kind: 'dental', county: 'Zala', settlement: 'zalaegerszeg' });
     expect(readContext(writeContext('', c))).toEqual(c);
+  });
+});
+
+describe('links that carry the context', () => {
+  it('lets the link\'s own járás win over the reader\'s', () => {
+    const c = ctx({ county: 'Veszprém', district: 'Zirci', settlement: 'zirc' });
+    expect(contextHref('jaras.html?jar=P%C3%A1pai', c))
+      .toBe('jaras.html?jar=P%C3%A1pai&m=Veszpr%C3%A9m&tel=zirc');
+  });
+
+  it('renders only the canonical part; the rest is added on use', () => {
+    const c = ctx({ kind: 'dental', county: 'Heves', settlement: 'abasar', district: 'Gyöngyösi' });
+    expect(linkHref('/megye.html', c, '')).toBe('/megye.html?m=Heves');
+    expect(linkHref('/jaras.html', c, '')).toBe('/jaras.html?jar=Gy%C3%B6ngy%C3%B6si');
+    expect(linkHref('/elemzo.html#index', c, '')).toBe('/elemzo.html#index');
+    // and using it gives back what the old link carried
+    expect(contextHref(linkHref('/elemzo.html', c, ''), c, ''))
+      .toBe(contextHref('/elemzo.html', c, ''));
+    expect(contextHref(linkHref('/jaras.html', c, ''), c, ''))
+      .toBe('/jaras.html?jar=Gy%C3%B6ngy%C3%B6si&k=dental&m=Heves&tel=abasar');
   });
 });

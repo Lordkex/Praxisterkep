@@ -7,7 +7,7 @@ import { ScrollyIntro } from './components/ScrollyIntro';
 import { ContextBar } from './components/ContextBar';
 import { NextSteps } from './components/NextSteps';
 import { SITE_NAV, withContext } from './lib/siteNav';
-import { contextHref } from './lib/context';
+import { contextHref, linkHref } from './lib/context';
 import { useHashScroll } from './lib/useHashScroll';
 import { Deferred } from './components/Deferred';
 import { WhySection } from './components/WhySection';
@@ -81,7 +81,7 @@ export default function App() {
         <div className="topnav__inner">
           {/* the landing too: every page's brand leads home, and here it is the
               way back to the top with the reader's place kept */}
-          <a className="topnav__brand" href={contextHref(import.meta.env.BASE_URL)}>{t('site.title')}</a>
+          <a className="topnav__brand" href={linkHref(import.meta.env.BASE_URL)}>{t('site.title')}</a>
           <SegmentedControl<PraxisKind> size="xs" className="topnav__kind"
             ariaLabel={t('search.kindLabel')} value={kind} onChange={setKind}
             options={[

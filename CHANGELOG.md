@@ -5,6 +5,17 @@ A projekt nevezetes változásai. A formátum a
 verziószámozás a [Semantic Versioning](https://semver.org/lang/hu/) szerint
 történik. Minden verzióhoz git-címke (`vX.Y.Z`) tartozik.
 
+## [1.60.2] - 2026-11-26
+
+### Javítva
+- **Keresőmotorok** — a település-, megye- és járásoldalak linkjei eddig a
+  címben vitték tovább az olvasó helyét (`?m=…&tel=…`), így a Google a
+  nagyjából harminc app-oldalt kb. 30 000 külön címen találta meg; a Search
+  Console 12 840-et „duplikátum, kanonikus nélkül” jelölt meg. A linkek
+  címében mostantól csak az áll, ami az oldalt meghatározza (a megyeoldalon
+  a megye, a járásoldalon a járás); a hely kattintáskor kerül hozzá, így az
+  olvasó ugyanoda érkezik, mint eddig. A régi címek továbbra is működnek.
+
 ## [1.60.1] - 2026-11-22
 
 ### Javítva

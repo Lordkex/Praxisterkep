@@ -3,7 +3,7 @@
 // from europe.json (europe_summary.json), never typed into the copy.
 import { useEffect, useState } from 'react';
 import { t } from '../lib/i18n';
-import { contextHref } from '../lib/context';
+import { linkHref } from '../lib/context';
 import { formatValue, type EuUnit } from '../lib/europe';
 import { dataUrl } from '../lib/dataUrl';
 import { Emph } from './Emph';
@@ -34,7 +34,7 @@ export function EuropeHighlights() {
     <div className="highlights__europe">
       <h3 className="highlights__subheading">{t('highlights.europe.heading')}</h3>
       <div className="highlights__grid">
-        <a className="highlight highlight--europe" href={contextHref('/europa.html?orszagok=cee#munkaero')}>
+        <a className="highlight highlight--europe" href={linkHref('/europa.html?orszagok=cee#munkaero')}>
           <span className="highlight__kind"><IconStethoscope />{t('kinds.gp.label')} · {t('highlights.europe.kicker')}</span>
           <span className="highlight__numbers">
             <b>{f(gp, gp.value)}</b>
@@ -46,7 +46,7 @@ export function EuropeHighlights() {
             best: t(`europe.country.${gp.best.geo}`), bestValue: f(gp, gp.best.value) })} /></span>
           <span className="highlight__more">{t('highlights.europe.more')}</span>
         </a>
-        <a className="highlight highlight--europe" href={contextHref('/europa.html?orszagok=cee#hozzaferes')}>
+        <a className="highlight highlight--europe" href={linkHref('/europa.html?orszagok=cee#hozzaferes')}>
           <span className="highlight__kind"><IconTooth />{t('kinds.dental.label')} · {t('highlights.europe.kicker')}</span>
           <span className="highlight__numbers">
             <b>{f(dental, dental.value)}</b>
