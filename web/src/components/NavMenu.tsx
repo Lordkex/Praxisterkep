@@ -1,7 +1,9 @@
 // The top bar, grouped. Ten flat links had stopped fitting on a laptop and
 // were scrolling sideways; now five entries carry their sections in a
-// dropdown, "Térkép" with the zooms under it (highlights, the twenty counties,
-// the járás, the settlements of each county). A group whose label is itself a
+// dropdown. The dropdowns stay short: "Térkép" offers its three zooms (each
+// page has its own picker), "Elemző" its six parts with a line on what each
+// holds (the sections are on the part itself), "Európa" its sections under
+// the same headings as the page's side menu. A group whose label is itself a
 // destination stays clickable — "Térkép" goes to the map whether or not you
 // open its submenu.
 import { Fragment, useEffect, useRef, useState } from 'react';
@@ -13,16 +15,19 @@ export interface NavEntry {
   /** href of the group itself: an anchor on this page or another page */
   href: string;
   labelKey: string;
-  /** [href, labelKey] links; a third element "group" makes the row a
-   *  heading of the links under it (the analysis page's 22 sections), and
-   *  "name" marks a label that is a proper name, not a key (the counties) */
-  children?: readonly (readonly [string, string] | readonly [string, string, string])[];
+  /** [href, labelKey] links. A third element changes the row: "group" makes
+   *  it a heading of the links under it (Európa's five groups), "desc" adds
+   *  the line under the label whose key is the fourth element (Elemző's
+   *  parts), and "all" is the closing link to the whole page */
+  children?: readonly NavChild[];
 }
 
-type Child = NonNullable<NavEntry['children']>[number];
+export type NavChild =
+  | readonly [string, string]
+  | readonly [string, string, 'group' | 'all']
+  | readonly [string, string, 'desc', string];
 
-/** A row's text: a county is its own name in every language. */
-const childLabel = (c: Child) => (c[2] === 'name' ? c[1] : t(c[1]));
+type Child = NavChild;
 
 /** Split a submenu at its group headings; an ungrouped one is one column. */
 function columns(children: readonly Child[]): Child[][] {
@@ -33,6 +38,8 @@ function columns(children: readonly Child[]): Child[][] {
   }
   return out;
 }
+
+const ROW_CLASS: Partial<Record<string, string>> = { group: 'topnav__subhead', all: 'topnav__all' };
 
 export function NavMenu({ entries }: { entries: readonly NavEntry[] }) {
   const [open, setOpen] = useState<string | null>(null);
@@ -88,7 +95,7 @@ export function NavMenu({ entries }: { entries: readonly NavEntry[] }) {
     {/* one nav per page: the button's aria-controls and the CSS sibling
         selector both assume this id is unique on the page */}
     <div className={`topnav__links${folded ? '' : ' is-open'}`} id="topnav-links" ref={navRef}>
-      {entries.map((entry, i) => (
+      {entries.map((entry) => (
         <Fragment key={entry.href}>
         {/* only for a reader who came from the private analysis site
             (?belso=true, see THEME_BOOT in lib/theme.ts): the way back, in
@@ -101,8 +108,7 @@ export function NavMenu({ entries }: { entries: readonly NavEntry[] }) {
           </div>
         )}
         <div
-          className={`topnav__group${/modszertan\.html/.test(entry.href) ? ' no-internal' : ''}${
-            i === 0 ? ' topnav__group--first' : ''}`}
+          className={`topnav__group${/modszertan\.html/.test(entry.href) ? ' no-internal' : ''}`}
           // hover opens it for a mouse only: on a touch screen the tap would
           // open the panel and the click that follows would close it again
           onPointerEnter={(event) => {
@@ -134,11 +140,17 @@ export function NavMenu({ entries }: { entries: readonly NavEntry[] }) {
                 ? ' is-grouped' : ''}`} hidden={open !== entry.href}>
                 {/* a heading and its links stay together in one column */}
                 {columns(entry.children).map((col) => (
-                  <div key={col[0][0]}
-                    className={`topnav__subcol${col.some((c) => c[2] === 'name') ? ' topnav__subcol--names' : ''}`}>
+                  <div key={col[0][0]} className="topnav__subcol">
                     {col.map((c, j) => (
-                      <a key={j} href={c[0]} className={c[2] === 'group' ? 'topnav__subhead' : undefined}
-                        onClick={done}>{childLabel(c)}</a>
+                      <a key={j} href={c[0]} className={c[2] ? ROW_CLASS[c[2]] : undefined}
+                        onClick={done}>
+                        {c[3] === undefined ? t(c[1]) : (
+                          <>
+                            <span className="topnav__label">{t(c[1])}</span>
+                            <span className="topnav__desc">{t(c[3])}</span>
+                          </>
+                        )}
+                      </a>
                     ))}
                   </div>
                 ))}

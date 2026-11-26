@@ -4,25 +4,37 @@
 // settlements; a county was only ever a filter on the map. This page answers
 // the same questions one zoom level up, and hands the reader on to the
 // settlements it is made of.
+//
+// It follows the járás page: the pick and a guess first (before any number
+// shows), a summary of three rings, then theme by theme — care, access,
+// people, economy, health — each with the same cards (value, a strip of the
+// twenty counties, the median, the place from the worst end), the county's
+// járás and settlements, and last the national blocks.
 import { useMemo, useState } from 'react';
 import { t } from '../lib/i18n';
-import { CountyOutcomes } from './CountyOutcomes';
+import {
+  CountyCards, CountyDistricts, CountyForecastGrants, CountyMeasureRanking, CountyTrends,
+} from './CountyOutcomes';
 import { formatDecimal, formatNumber, formatPercent } from '../lib/format';
 import { useContextStore } from '../lib/context';
 import { useHashScroll } from '../lib/useHashScroll';
 import {
   countyOf, rankOf, settlementRows, useCounties, vacantShare,
-  type Band, type SettlementRow, type State,
+  type Band, type CountyAggregateRow, type SettlementRow, type State,
 } from '../lib/counties';
 import { settlementHref } from '../lib/settlementLink';
 import { CountyRanking } from './CountyRanking';
 import { CountyPicker } from './CountyPicker';
 import { CountyChurn } from './CountyChurn';
-import { AgeLegend, AgePie, type AgeKey } from './charts/AgePie';
+import { GuessGame } from './GuessGame';
+import { AGE_COLORS, type AgeKey } from './charts/AgePie';
 import { Donut, DonutLegend } from './charts/Donut';
-import { CompareBars } from './charts/DistrictFigures';
+import { CompareBars, ShareDots } from './charts/DistrictFigures';
+import { IconBusOff } from './icons';
 import { PointGrid } from './charts/PointGrid';
-import { IconTooth } from './icons';
+import { CrossSection } from './CrossSection';
+import { Headline } from './Headline';
+import { SegmentedControl } from './SegmentedControl';
 import { vacancyOf } from '../lib/vacancy';
 import { PageNav } from './PageNav';
 import { SideNav } from './SideNav';
@@ -45,6 +57,13 @@ type SortKey = 'name' | 'population' | 'band' | 'gpMin' | 'oncallMin';
 const BAND_ORDER: Record<Band, number> = {
   kiemelt: 0, magas: 1, kozepes: 2, alacsony: 3, '': 4,
 };
+const AGE_KEYS: readonly AgeKey[] = ['young', 'working', 'old'];
+// the three rings of the summary: one size, one ring width (as on the járás page)
+const RING = 130;
+const RING_W = 20;
+// a county has up to 400 settlements; the first ones in the chosen order
+// show, the rest on request
+const FIRST_ROWS = 30;
 
 function minutes(value: number | null): string {
   // Hungarian decimals take a comma; formatDecimal is where that lives
@@ -58,6 +77,52 @@ function StateDot({ state }: { state: State }) {
   );
 }
 
+/**
+ * The drive times, the bus and the emergency points, as cards beside the
+ * outcome ones. They come from the counties file, which carries no strip for
+ * them; the emergency card is wide, with the points themselves.
+ */
+function AccessCards({ c, which, rank }: {
+  c: CountyAggregateRow; which: 'drive' | 'places'; rank: { rank: number; of: number } | null;
+}) {
+  if (which === 'drive') {
+    const drive = [['gp', c.medianGpMinutes], ['dental', c.medianDentalMinutes],
+      ['inpatient', c.medianInpatientMinutes]] as const;
+    return drive.map(([k, v]) => (
+      <article key={k} className="yard-card">
+        <h3>{t(`county.access.${k}`)}</h3>
+        <div className="yard-card__value">{minutes(v)}</div>
+        <p className="yard-card__rank">{t('county.access.driveNote')}</p>
+      </article>
+    ));
+  }
+  return (
+    <>
+      <article className="yard-card">
+        <h3>{t('county.access.bus')}</h3>
+        {/* the struck-through bus beside the count, and every settlement as a
+            dot under it, the ones without a direct bus lit */}
+        <div className="yard-card__iconvalue">
+          <span className="yard-card__icon" aria-hidden="true"><IconBusOff /></span>
+          <div className="yard-card__value">{formatNumber(c.withoutDirectBus)}</div>
+        </div>
+        <p className="yard-card__rank">{t('county.access.busNote', {
+          n: formatNumber(c.settlements), share: formatPercent(c.withoutDirectBus / c.settlements) })}</p>
+        <ShareDots total={c.settlements} marked={c.withoutDirectBus} max={500} dense={c.settlements > 300}
+          title={t('county.access.busDots', { n: formatNumber(c.withoutDirectBus), of: formatNumber(c.settlements) })} />
+      </article>
+      <article className="yard-card yard-card--wide yard-card--points">
+        <h3>{t('county.pointsTitle')}</h3>
+        <PointGrid points={c.emergency ?? []} base={import.meta.env.BASE_URL} />
+        <p className="yard-card__rank">
+          {c.medianOncallMinutes !== null && t('county.oncallMedian', { m: minutes(c.medianOncallMinutes) })}
+          {rank && ` · ${t('county.rank', { rank: rank.rank, of: rank.of })}`}
+        </p>
+      </article>
+    </>
+  );
+}
+
 export function CountyPage() {
   useHashScroll();
   const data = useCounties();
@@ -66,9 +131,10 @@ export function CountyPage() {
   const kind = useContextStore((s) => s.kind);
   const setKind = useContextStore((s) => s.setKind);
   const [sort, setSort] = useState<SortKey>('band');
-  // what the pointer is on, in each of the two charts: the card says what it
+  const [showAll, setShowAll] = useState(false);
+  // what the pointer is on, in each of the three rings: the card says what it
   // is rather than leaving the colour to be decoded against a legend
-  const [ageOn, setAgeOn] = useState<AgeKey | null>(null);
+  const [ageOn, setAgeOn] = useState<string | null>(null);
   const [stateOn, setStateOn] = useState<string | null>(null);
   const [dentalOn, setDentalOn] = useState<string | null>(null);
   /** the settlement table below follows whichever slice was clicked */
@@ -88,6 +154,7 @@ export function CountyPage() {
     };
     return [...list].sort(by[sort]);
   }, [data, county, sort, filter]);
+  const shownRows = showAll ? rows : rows.slice(0, FIRST_ROWS);
 
   // the settlements of the county by what their GP care looks like
   const stateSlices = agg ? [
@@ -98,13 +165,10 @@ export function CountyPage() {
     { value: agg.settlements - agg.gpVacantOnly - agg.gpPartial,
       color: 'var(--good)', label: t('county.state.filled'), state: 'filled' as State },
   ] : [];
-  const active = stateSlices.find((s2) => s2.label === stateOn) ?? null;
 
-  // the county's dental districts, as NEAK counts them
-  // the county card always counts the dissolved districts: this ring is the
-  // county's own stock, and a contract that ended is part of what became of
-  // it. The ring says so with a slice of its own, which the dissolved never
-  // get inside a single number.
+  // the county's dental districts, as NEAK counts them. The ring always
+  // counts the dissolved districts: it is the county's own stock, and a
+  // contract that ended is part of what became of it.
   const dentalParts = vacancyOf(agg?.dentalDistricts, 'with');
   const dentalTotal = agg?.dentalDistricts?.total ?? 0;
   const dentalSlices = agg?.dentalDistricts ? [
@@ -115,8 +179,10 @@ export function CountyPage() {
     { value: Math.max(agg.dentalDistricts.total - agg.dentalDistricts.vacant
       - agg.dentalDistricts.dissolved, 0), color: 'var(--good)',
       label: t('stats.statusFilled'), state: 'filled' as State },
-  ] : [];
-  const dentalActive = dentalSlices.find((s2) => s2.label === dentalOn) ?? null;
+  ].filter((s) => s.value > 0) : [];
+  const ageSlices = agg?.age ? AGE_KEYS.map((key) => ({
+    key, value: agg.age![key], color: AGE_COLORS[key], label: t(`age.part.${key}`),
+  })) : [];
 
   /** A slice names a class of settlement; clicking one shows just those. */
   const pickState = (branch: 'gp' | 'dental', label: string,
@@ -125,15 +191,16 @@ export function CountyPage() {
     if (!state) return;
     setFilter((cur) => (cur && cur.branch === branch && cur.state === state
       ? null : { branch, state }));
+    setShowAll(false);
   };
 
-  // what an average county looks like, so the card can say how this one
+  // what an average county looks like, so the summary can say how this one
   // compares — twenty rows, cheap enough to sum in the browser
   const average = useMemo(() => {
-    const rows = data?.counties ?? [];
-    if (!rows.length) return null;
-    const mean = (f: (c: typeof rows[number]) => number) =>
-      rows.reduce((a, c) => a + f(c), 0) / rows.length;
+    const list = data?.counties ?? [];
+    if (!list.length) return null;
+    const mean = (f: (c: typeof list[number]) => number) =>
+      list.reduce((a, c) => a + f(c), 0) / list.length;
     return {
       population: mean((c) => c.population),
       settlements: mean((c) => c.settlements),
@@ -142,6 +209,9 @@ export function CountyPage() {
 
   const gpRank = rankOf(data, county, (c) => vacantShare(c, 'gp'));
   const oncallRank = rankOf(data, county, (c) => c.medianOncallMinutes);
+  const of = (n: number, total: number) => (
+    <>{formatNumber(n)}<span className="stat__of"> / {formatNumber(total)}</span></>
+  );
 
   return (
     <>
@@ -154,17 +224,21 @@ export function CountyPage() {
         </div>
         <p className="section__lead">{t('county.lead')}</p>
 
-        <CountyPicker />
+        {/* the map is the picker; the list is for the keyboard, in its corner */}
+        <CountyPicker side={(
+          <label className="county-picker">
+            <span>{t('county.pick')}</span>
+            <select value={county ?? ''} onChange={(e) => setCounty(e.target.value || null)}>
+              <option value="">{t('county.pickNone')}</option>
+              {(data?.counties ?? []).map((c) => (
+                <option key={c.name} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+          </label>
+        )} />
 
-        <label className="county-picker">
-          <span>{t('county.pick')}</span>
-          <select value={county ?? ''} onChange={(e) => setCounty(e.target.value || null)}>
-            <option value="">{t('county.pickNone')}</option>
-            {(data?.counties ?? []).map((c) => (
-              <option key={c.name} value={c.name}>{c.name}</option>
-            ))}
-          </select>
-        </label>
+        {/* a guess before any number of the county shows */}
+        <GuessGame key={county ?? ''} initial={county} lead />
 
         <CountyStory />
 
@@ -173,98 +247,94 @@ export function CountyPage() {
 
         {agg && (
           <>
-            <div className="county-cards" id="attekintes">
-              {/* who lives here */}
-              <article className="county-card">
-                <div className="county-card__figure">
+            {/* the heading and its sentence on the left, how big this county
+                is against an average one beside them */}
+            <div className="district-intro">
+              <div className="district-intro__text">
+                <h2 className="section__subheading" id="attekintes">
+                  {t('county.stateHeading', { name: agg.name })}
+                </h2>
+                <p className="section__explain">{t('county.introText')}</p>
+              </div>
+              {average && (
+                <div className="district-intro__bench">
+                  <CompareBars rows={[
+                    {
+                      key: 'settlements',
+                      label: t('county.benchSettlements'),
+                      value: agg.settlements,
+                      reference: average.settlements,
+                      referenceLabel: t('county.benchAverage'),
+                      format: (v) => formatDecimal(v.toFixed(v < 10 ? 1 : 0)),
+                    },
+                    {
+                      key: 'population',
+                      label: t('county.benchPopulation'),
+                      value: agg.population,
+                      reference: average.population,
+                      referenceLabel: t('county.benchAverage'),
+                      format: (v) => formatNumber(Math.round(v)),
+                    },
+                  ]} />
+                </div>
+              )}
+            </div>
+
+            <div className="county-cards county-cards--fill">
+              {/* three rings alike: the figure and its words beside the ring,
+                  the legend and the context under both */}
+              <article className="county-card county-card--stacked">
+                <div className="county-card__head">
                   {agg.age && (
-                    <AgePie split={agg.age} size={150} hole={44}
-                      active={ageOn} onActive={setAgeOn} />
+                    <div className="county-card__figure">
+                      <Donut size={RING} thickness={RING_W} slices={ageSlices}
+                        active={ageOn} onActive={setAgeOn}>
+                        <span className="donut__stack">
+                          <strong>{formatPercent(agg.age.old / agg.age.total)}</strong>
+                          <small>{t('age.part.old')}</small>
+                        </span>
+                      </Donut>
+                    </div>
                   )}
+                  <Headline on={ageOn ?? ''} variants={[
+                    { key: '', value: formatNumber(agg.population),
+                      label: t('county.populationIn', { n: formatNumber(agg.settlements) }) },
+                    ...ageSlices.map((s) => ({
+                      key: s.label, value: formatNumber(s.value),
+                      label: t('county.ageOf', {
+                        group: s.label, share: formatPercent(s.value / agg.age!.total),
+                      }),
+                    })),
+                  ]} />
                 </div>
                 <div className="county-card__body">
-                  {ageOn && agg.age ? (
-                    <>
-                      <div className="stat__value">
-                        {formatNumber(agg.age[ageOn])}
-                      </div>
-                      <div className="stat__label">{t('county.ageOf', {
-                        group: t(`age.part.${ageOn}`),
-                        share: formatPercent(agg.age[ageOn] / agg.age.total),
-                      })}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="stat__value">{formatNumber(agg.population)}</div>
-                      <div className="stat__label">{t('county.population')}</div>
-                    </>
-                  )}
-                  {agg.age && (
-                    <AgeLegend split={agg.age} active={ageOn} onActive={setAgeOn} />
-                  )}
+                  {agg.age && <DonutLegend slices={ageSlices} active={ageOn} onActive={setAgeOn} />}
                 </div>
               </article>
 
-              {/* how big a county this is, which a bare number never says */}
-              {agg && average && (
-                <article className="county-card county-card--wide">
-                  <div className="county-card__body">
-                    <div className="stat__value">{formatNumber(agg.settlements)}
-                      <span className="stat__of"> {t('county.settlementsOf')}</span>
-                    </div>
-                    <div className="stat__label">{t('county.sizeLabel')}</div>
-                    <CompareBars rows={[
-                      {
-                        key: 'settlements',
-                        label: t('county.benchSettlements'),
-                        value: agg.settlements,
-                        reference: average.settlements,
-                        referenceLabel: t('county.benchAverage'),
-                        format: (v) => formatDecimal(v.toFixed(v < 10 ? 1 : 0)),
-                      },
-                      {
-                        key: 'population',
-                        label: t('county.benchPopulation'),
-                        value: agg.population,
-                        reference: average.population,
-                        referenceLabel: t('county.benchAverage'),
-                        format: (v) => formatNumber(Math.round(v)),
-                      },
-                    ]} />
-                  </div>
-                </article>
-              )}
-
               {/* how many of its settlements have nobody under contract */}
-              <article className="county-card">
-                <div className="county-card__figure">
-                  <Donut size={150} thickness={20} slices={stateSlices}
-                    active={stateOn} onActive={setStateOn}
-                    onPick={(label: string) => pickState('gp', label, stateSlices)}>
-                    <strong>{formatPercent(agg.gpVacantOnly / agg.settlements)}</strong>
-                  </Donut>
+              <article className="county-card county-card--stacked">
+                <div className="county-card__head">
+                  <div className="county-card__figure">
+                    <Donut size={RING} thickness={RING_W} slices={stateSlices}
+                      active={stateOn} onActive={setStateOn}
+                      onPick={(label: string) => pickState('gp', label, stateSlices)}>
+                      <strong>{formatPercent(agg.gpVacantOnly / agg.settlements)}</strong>
+                    </Donut>
+                  </div>
+                  <Headline on={stateOn ?? ''} variants={[
+                    { key: '', value: of(agg.gpVacantOnly, agg.settlements),
+                      label: t('county.gpVacantOnlyOf') },
+                    ...stateSlices.map((s) => ({
+                      key: s.label, value: of(s.value, agg.settlements),
+                      label: t('county.stateOf', {
+                        state: s.label.toLowerCase(), share: formatPercent(s.value / agg.settlements),
+                      }),
+                    })),
+                  ]} />
                 </div>
                 <div className="county-card__body">
-                  {active ? (
-                    <>
-                      <div className="stat__value">{formatNumber(active.value)}
-                        <span className="stat__of"> / {formatNumber(agg.settlements)}</span>
-                      </div>
-                      <div className="stat__label">{t('county.stateOf', {
-                        state: active.label.toLowerCase(),
-                        share: formatPercent(active.value / agg.settlements),
-                      })}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="stat__value">{formatNumber(agg.gpVacantOnly)}
-                        <span className="stat__of"> / {formatNumber(agg.settlements)}</span>
-                      </div>
-                      <div className="stat__label">{t('county.gpVacantOnlyOf')}</div>
-                    </>
-                  )}
-                  <DonutLegend slices={stateSlices} active={stateOn}
-                    onActive={setStateOn}
+                  <DonutLegend slices={stateSlices} active={stateOn} onActive={setStateOn}
                     onPick={(label: string) => pickState('gp', label, stateSlices)} />
                   {gpRank && <div className="stat__context">
                     {t('county.rank', { rank: gpRank.rank, of: gpRank.of })}</div>}
@@ -272,37 +342,26 @@ export function CountyPage() {
               </article>
 
               {/* the dental districts themselves, not the settlements */}
-              <article className="county-card county-card--icon">
-                <div className="county-card__ghost" aria-hidden="true"><IconTooth /></div>
-                <div className="county-card__figure">
-                  <Donut size={150} thickness={20} slices={dentalSlices}
-                    active={dentalOn} onActive={setDentalOn}
-                    onPick={(label: string) => pickState('dental', label, dentalSlices)}>
-                    <strong>{formatPercent(
-                      dentalParts.count / (dentalTotal || 1))}</strong>
-                  </Donut>
+              <article className="county-card county-card--stacked">
+                <div className="county-card__head">
+                  <div className="county-card__figure">
+                    <Donut size={RING} thickness={RING_W} slices={dentalSlices}
+                      active={dentalOn} onActive={setDentalOn}
+                      onPick={(label: string) => pickState('dental', label, dentalSlices)}>
+                      <strong>{formatPercent(dentalParts.count / (dentalTotal || 1))}</strong>
+                    </Donut>
+                  </div>
+                  <Headline on={dentalOn ?? ''} variants={[
+                    { key: '', value: of(dentalParts.count, dentalTotal),
+                      label: t('county.dentalDistricts') },
+                    ...dentalSlices.map((s) => ({
+                      key: s.label, value: of(s.value, dentalTotal),
+                      label: t('county.dentalOf', { state: s.label.toLowerCase() }),
+                    })),
+                  ]} />
                 </div>
                 <div className="county-card__body">
-                  {dentalActive ? (
-                    <>
-                      <div className="stat__value">{formatNumber(dentalActive.value)}
-                        <span className="stat__of"> / {formatNumber(dentalTotal)}</span>
-                      </div>
-                      <div className="stat__label">{t('county.dentalOf', {
-                        state: dentalActive.label.toLowerCase(),
-                      })}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="stat__value">
-                        {formatNumber(dentalParts.count)}
-                        <span className="stat__of"> / {formatNumber(dentalTotal)}</span>
-                      </div>
-                      <div className="stat__label">{t('county.dentalDistricts')}</div>
-                    </>
-                  )}
-                  <DonutLegend slices={dentalSlices} active={dentalOn}
-                    onActive={setDentalOn}
+                  <DonutLegend slices={dentalSlices} active={dentalOn} onActive={setDentalOn}
                     onPick={(label: string) => pickState('dental', label, dentalSlices)} />
                   <div className="stat__context">{t('county.dentalLongTerm', {
                     n: formatNumber(agg.dentalDistricts?.longTerm ?? 0),
@@ -310,81 +369,54 @@ export function CountyPage() {
                   })}</div>
                 </div>
               </article>
-
-              {/* and what answers when the surgery is shut */}
-              <article className="county-card county-card--wide">
-                <div className="county-card__body">
-                  <div className="stat__value">{formatNumber(agg.oncallPoints ?? 0)}
-                    <span className="stat__of"> + {formatNumber(
-                      agg.ambulanceStations ?? 0)}</span>
-                  </div>
-                  <div className="stat__label">{t('county.oncallAndAmbulance')}</div>
-                  <PointGrid points={agg.emergency ?? []}
-                    base={import.meta.env.BASE_URL} />
-                  <div className="stat__context">
-                    {agg.medianOncallMinutes !== null && t('county.oncallMedian', {
-                      m: minutes(agg.medianOncallMinutes),
-                    })}
-                    {oncallRank && ` · ${t('county.rank', {
-                      rank: oncallRank.rank, of: oncallRank.of })}`}
-                  </div>
-                </div>
-              </article>
             </div>
+            {agg.dentalAbsent > 0 && (
+              <p className="outcome__hint">{t('county.dentalSeats', { n: formatNumber(agg.dentalAbsent) })}</p>
+            )}
 
-            <table className="info-table" id="ellatas">
-              <tbody>
-                <tr>
-                  <th>{t('county.gpLine')}</th>
-                  <td>{t('county.stateLine', {
-                    filled: formatNumber(agg.gpFilled),
-                    partial: formatNumber(agg.gpPartial),
-                    vacant: formatNumber(agg.gpVacantOnly),
-                  })}</td>
-                </tr>
-                <tr>
-                  <th>{t('county.dentalLine')}</th>
-                  <td>{t('county.stateLine', {
-                    filled: formatNumber(agg.dentalFilled),
-                    partial: formatNumber(agg.dentalPartial),
-                    vacant: formatNumber(agg.dentalVacantOnly),
-                  })}{' '}
-                    <span className="county-note">{t('county.dentalSeats', {
-                      n: formatNumber(agg.dentalAbsent),
-                    })}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>{t('county.travelLine')}</th>
-                  <td>{t('county.travelValues', {
-                    gp: minutes(agg.medianGpMinutes),
-                    dental: minutes(agg.medianDentalMinutes),
-                    inpatient: minutes(agg.medianInpatientMinutes),
-                  })}</td>
-                </tr>
-                <tr>
-                  <th>{t('county.busLine')}</th>
-                  <td>{t('county.busValue', {
-                    n: formatNumber(agg.withoutDirectBus),
-                    share: formatPercent(agg.withoutDirectBus / agg.settlements),
-                  })}</td>
-                </tr>
-                <tr>
-                  <th>{t('county.bandLine')}</th>
-                  <td>{t('county.bandValue', {
-                    kiemelt: formatNumber(agg.bands.kiemelt ?? 0),
-                    magas: formatNumber(agg.bands.magas ?? 0),
-                  })}</td>
-                </tr>
-              </tbody>
-            </table>
+            <h2 className="section__subheading" id="ellatas">{t('county.part.care')}</h2>
+            <p className="section__explain">{t('county.partLead.care')}</p>
+            <CountyCards county={agg.name} keys={['gpRateIn12']} trail={(
+              <article className="yard-card">
+                <h3>{t('county.bandCard')}</h3>
+                <div className="yard-card__value">{formatNumber(agg.bands.kiemelt ?? 0)}</div>
+                <p className="yard-card__rank">{t('county.bandCardNote', {
+                  magas: formatNumber(agg.bands.magas ?? 0), n: formatNumber(agg.settlements) })}</p>
+              </article>
+            )} />
+            <p className="outcome__hint">{t('county.stripNote')}</p>
+            <CountyForecastGrants county={agg.name} />
 
-            <CountyOutcomes county={agg.name} />
+            <h2 className="section__subheading" id="elerhetoseg">{t('county.part.access')}</h2>
+            <p className="section__explain">{t('county.partLead.access')}</p>
+            <CountyCards county={agg.name} keys={['sboMinutes']}
+              lead={<AccessCards c={agg} which="drive" rank={null} />}
+              trail={<AccessCards c={agg} which="places" rank={oncallRank} />} />
+            <CrossSection area={{ level: 'county', name: agg.name }} sub />
+
+            <h2 className="section__subheading" id="nepesseg">{t('county.part.people')}</h2>
+            <p className="section__explain">{t('county.partLead.people')}</p>
+            <CountyCards county={agg.name} keys={['elderlyOnly', 'naturalChange', 'migration']} />
+
+            <h2 className="section__subheading" id="gazdasag">{t('county.part.economy')}</h2>
+            <p className="section__explain">{t('county.partLead.economy')}</p>
+            <CountyCards county={agg.name} keys={['income', 'jobseekers', 'employed', 'degree', 'noDigital', 'poorHousing']} />
+            <CountyTrends county={agg.name} />
+
+            <h2 className="section__subheading" id="egeszseg">{t('county.part.health')}</h2>
+            <p className="section__explain">{t('county.partLead.health')}</p>
+            <CountyCards county={agg.name} keys={['avoidable', 'amenable', 'allCause']} />
+            <p className="section__source">{t('outcomes.district.source')}</p>
+
+            <h2 className="section__subheading" id="jarasai">{t(agg.name === 'Budapest'
+              ? 'outcomes.county.districtsHeadingCapital' : 'outcomes.county.districtsHeading', { county: agg.name })}</h2>
+            <p className="section__explain">{t(agg.name === 'Budapest' ? 'county.districtsExplainCapital' : 'county.districtsExplain')}</p>
+            <CountyDistricts county={agg.name} />
 
             <h2 className="section__subheading" id="telepulesek">
               {t('county.tableHeading', { county: agg.name })}
             </h2>
-            <p className="section__explain">{t('county.tableExplain')}</p>
+            <p className="section__explain">{t('county.tableExplain')} {t('county.caveat')}</p>
             {filter && (
               <p className="county-filter">
                 {t('county.filtered', {
@@ -397,51 +429,73 @@ export function CountyPage() {
                 </button>
               </p>
             )}
-            <div className="county-sort">
-              {(['band', 'population', 'name', 'gpMin', 'oncallMin'] as const).map((k) => (
-                <button key={k} className={sort === k ? 'is-on' : ''}
-                  onClick={() => setSort(k)}>{t(`county.sort.${k}`)}</button>
-              ))}
+            <div className="table-sort">
+              <SegmentedControl<SortKey> size="xs" className="segc--stack segc--full"
+                value={sort} onChange={(v) => { setSort(v); setShowAll(false); }}
+                options={(['band', 'population', 'name', 'gpMin', 'oncallMin'] as const).map((k) => ({
+                  value: k, label: t(`county.sort.${k}`) }))} />
             </div>
-            <table className="info-table county-table">
-              <thead>
-                <tr>
-                  <th>{t('county.thSettlement')}</th>
-                  <th className="is-num">{t('county.thPopulation')}</th>
-                  <th>{t('county.thGp')}</th>
-                  <th>{t('county.thDental')}</th>
-                  <th className="is-num">{t('county.thGpMin')}</th>
-                  <th className="is-num">{t('county.thOncall')}</th>
-                  <th>{t('county.thBand')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.slug}>
-                    <td><a href={settlementHref(r.slug)}>{r.name}</a></td>
-                    <td className="is-num">{formatNumber(r.population)}</td>
-                    <td><StateDot state={r.gp} /></td>
-                    <td><StateDot state={r.dental} /></td>
-                    <td className="is-num">{minutes(r.gpMin)}</td>
-                    <td className="is-num">{minutes(r.oncallMin)}</td>
-                    <td>{r.band ? t(`county.band.${r.band}`) : '–'}</td>
+            {/* how many rows show, and the button for the rest, at the
+                table's top right */}
+            <div className="table-tools">
+              <span>{t('county.rowsShown', { n: formatNumber(shownRows.length), of: formatNumber(rows.length) })}</span>
+              {rows.length > FIRST_ROWS && (
+                <button type="button" className="data-btn" onClick={() => setShowAll((v) => !v)}>
+                  {showAll ? t('county.showFirst', { n: FIRST_ROWS })
+                    : t('county.showAll', { n: formatNumber(rows.length) })}
+                </button>
+              )}
+            </div>
+            <div className="table-wrap">
+              <table className="info-table county-table">
+                <thead>
+                  <tr>
+                    <th>{t('county.thSettlement')}</th>
+                    <th className="is-num">{t('county.thPopulation')}</th>
+                    <th>{t('county.thGp')}</th>
+                    <th>{t('county.thDental')}</th>
+                    <th className="is-num">{t('county.thGpMin')}</th>
+                    <th className="is-num">{t('county.thOncall')}</th>
+                    <th>{t('county.thBand')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="extra-note">{t('county.caveat')}</p>
+                </thead>
+                <tbody>
+                  {shownRows.map((r) => (
+                    // the whole row leads to the settlement; the name stays a
+                    // real link for the keyboard and for a new tab
+                    <tr key={r.slug} className="is-link" onClick={(e) => {
+                      if ((e.target as HTMLElement).closest('a')) return;
+                      window.location.href = settlementHref(r.slug);
+                    }}>
+                      <td><a href={settlementHref(r.slug)}>{r.name}</a></td>
+                      <td className="is-num">{formatNumber(r.population)}</td>
+                      <td><StateDot state={r.gp} /></td>
+                      <td><StateDot state={r.dental} /></td>
+                      <td className="is-num">{minutes(r.gpMin)}</td>
+                      <td className="is-num">{minutes(r.oncallMin)}</td>
+                      <td>{r.band ? t(`county.band.${r.band}`) : '–'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* the county among the twenty, one measure at a time */}
+            <h2 className="section__subheading" id="osszehasonlitas">{t('county.part.compare')}</h2>
+            <p className="section__explain">{t('county.partLead.compare')}</p>
+            <CountyMeasureRanking county={agg.name} />
           </>
         )}
-
-        <NextSteps items={NEXT} />
       </section>
       {/* how often a district changes physician — the archive's own answer */}
       <CountyChurn county={county} />
       {/* where every county stands, which is the question this page answers
           one row at a time */}
       <CountyRanking />
+      <section className="section section--next container">
+        <NextSteps items={NEXT} />
+      </section>
       <Footer />
     </>
   );
 }
-

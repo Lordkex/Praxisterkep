@@ -7,7 +7,10 @@ import { useContextStore } from '../lib/context';
 import { vacancyOf } from '../lib/vacancy';
 import { useAppStore, useSnapshot } from '../store/useAppStore';
 
-export function GuessGame() {
+/** `initial` is the county the guess starts on (the one in view); `lead`
+ *  draws it as a panel, for the top of the county page, before any of the
+ *  county's numbers show. */
+export function GuessGame({ initial, lead = false }: { initial?: string | null; lead?: boolean } = {}) {
   const snapshot = useSnapshot()!;
   const kind = useAppStore((s) => s.kind);
   const counties = useMemo(
@@ -15,7 +18,8 @@ export function GuessGame() {
     [snapshot],
   );
   const mode = useContextStore((s2) => s2.dissolved);
-  const [county, setCounty] = useState(counties[0]?.name ?? '');
+  const [county, setCounty] = useState(
+    (initial && counties.some((c) => c.name === initial) ? initial : counties[0]?.name) ?? '');
   const [guess, setGuess] = useState('');
   const [revealed, setRevealed] = useState(false);
 
@@ -44,8 +48,9 @@ export function GuessGame() {
 
   const maxBar = Math.max(actual, valid ? g : 0, 1);
   return (
-    <div className="guess">
+    <div className={`guess${lead ? ' guess--lead' : ''}`}>
       <h3 className="why__chain-title">{t('ranking.guessTitle')}</h3>
+      {lead && <p className="guess__lead">{t('ranking.guessLead')}</p>}
       <div className="guess__row">
         <span>{t('ranking.guessQuestion1', { kind: t(`kinds.${kind}.adj`) })}</span>
         <select value={county}

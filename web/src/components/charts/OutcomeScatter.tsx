@@ -25,8 +25,10 @@ export interface ScatterPoint {
   group: number | null;
 }
 
-const W = 760;
-const H = 400;
+// the drawing size; `compact` draws it for half a card, so its labels come
+// out at the same size instead of a 760-wide drawing shrunk to fit
+const FULL = { W: 760, H: 400 };
+const COMPACT = { W: 480, H: 330 };
 const PAD = { top: 26, right: 20, bottom: 48, left: 60 };
 
 function niceTicks(lo: number, hi: number, count = 5): number[] {
@@ -54,6 +56,7 @@ function leastSquares(pts: ScatterPoint[]) {
 
 export function OutcomeScatter({
   points, xLabel, yLabel, xFormat, yFormat, groupLabels, selected, highlight, onPick, note,
+  compact = false,
 }: {
   points: ScatterPoint[];
   xLabel: string;
@@ -67,7 +70,10 @@ export function OutcomeScatter({
   onPick?: (id: string) => void;
   /** a sentence under the chart */
   note?: string;
+  /** drawn for half a card (a járás's cross-section) */
+  compact?: boolean;
 }) {
+  const { W, H } = compact ? COMPACT : FULL;
   const [hover, setHover] = useState<string | null>(null);
   const geom = useMemo(() => {
     if (points.length < 3) return null;
@@ -82,7 +88,7 @@ export function OutcomeScatter({
     const pr = (s: number) => 2.4 + Math.sqrt(s / maxS) * 8;
     return { dom, px, py, pr, fit: leastSquares(points),
       tx: niceTicks(dom.x0, dom.x1), ty: niceTicks(dom.y0, dom.y1) };
-  }, [points]);
+  }, [points, W, H]);
   if (!geom) return null;
   const { dom, px, py, pr, fit, tx, ty } = geom;
   const shown = points.find((p) => p.id === (hover ?? selected));

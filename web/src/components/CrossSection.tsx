@@ -8,6 +8,7 @@ import { formatDecimal, formatDuration, formatNumber } from '../lib/format';
 import { contextHref, currentContext } from '../lib/context';
 import { useOutcomes } from '../lib/outcomes';
 import { OutcomeScatter, type ScatterPoint } from './charts/OutcomeScatter';
+import { PageLink } from './PageLink';
 
 const BANDS = [[0, 24], [24, 60], [60, 120], [120, 10000]] as const;
 
@@ -23,7 +24,11 @@ function settlementHref(slug: string): string {
 
 /** The four readings for the whole country, or — on a county or a járás
  *  page — for that area's own settlements. */
-export function CrossSection({ area }: { area?: { level: 'county' | 'district'; name: string } }) {
+export function CrossSection({ area, sub }: {
+  area?: { level: 'county' | 'district'; name: string };
+  /** a part of a bigger section (the járás page's "Elérhetőség"): an h3 */
+  sub?: boolean;
+}) {
   const o = useOutcomes();
   const pts = useMemo(() => (o?.cross.durationTravel ?? [])
     .filter((p) => !area || p[area.level] === area.name), [o, area]);
@@ -49,12 +54,22 @@ export function CrossSection({ area }: { area?: { level: 'county' | 'district'; 
   const maxBand = Math.max(...bands.map((b) => b.minutes ?? 0), 1);
   const ageMax = Math.max(0.01, ...c.ageBands.map((b) => b.vacantOnly / b.settlements));
   const d = c.deserts.stats ?? {};
+  // on an area page a card with nothing in it is left out: a small járás drew
+  // three 0% columns and "0 settlements (0 people) of 0". The country view
+  // always has something to say, and the deserts card says "none" in words.
+  const showDuration = !local || pts.length > 0;
+  const showAge = !local || c.ageBands.some((b) => b.vacantOnly > 0);
+  const showBus = !local || c.bus.vacantOnly > 0;
+  const Heading = sub ? 'h3' : 'h2';
+  // the scatter draws from three settlements up; below that the bands stand alone
+  const split = !!area && scatter.length >= 3;
 
   return (
     <section className={area ? 'outcome cross-local' : 'section container outcome'} id="keresztmetszet">
       {area ? (
         <>
-          <h2 className="section__subheading">{t('outcomes.cross.localHeading', { name: area.name })}</h2>
+          <Heading className={sub ? 'why__chain-title' : 'section__subheading'}>
+            {t('outcomes.cross.localHeading', { name: area.name })}</Heading>
           <p className="section__explain">{t('outcomes.cross.localLead')}</p>
         </>
       ) : (
@@ -65,30 +80,34 @@ export function CrossSection({ area }: { area?: { level: 'county' | 'district'; 
       )}
 
       <div className="cross-grid">
-        <article className="cross-card cross-card--wide">
+        {showDuration && <article className="cross-card cross-card--wide">
           <h3>{t('outcomes.cross.durationHeading')}</h3>
           <p>{t('outcomes.cross.durationText', { n: formatNumber(pts.length) })}</p>
-          <div className="bandbars">
-            {bands.map((b, i) => (
-              <div key={i} className="bandbars__row">
-                <span className="bandbars__label">{t(`outcomes.cross.band${i}`)}</span>
-                <span className="bandbars__bar">
-                  <i style={{ width: `${(100 * (b.minutes ?? 0)) / maxBand}%` }} />
-                </span>
-                <b>{b.minutes === null ? '–' : `${formatDecimal(b.minutes.toFixed(1))} ${t('outcomes.min')}`}</b>
-                <small>{t('outcomes.cross.bandN', { n: b.n })}</small>
-              </div>
-            ))}
+          {/* on an area page the bands and the scatter stand side by side */}
+          <div className={split ? 'cross-split' : undefined}>
+            <div className="bandbars">
+              {bands.map((b, i) => (
+                <div key={i} className="bandbars__row">
+                  <span className="bandbars__label">{t(`outcomes.cross.band${i}`)}</span>
+                  <span className="bandbars__bar">
+                    <i style={{ width: `${(100 * (b.minutes ?? 0)) / maxBand}%` }} />
+                  </span>
+                  <b>{b.minutes === null ? '–' : `${formatDecimal(b.minutes.toFixed(1))} ${t('outcomes.min')}`}</b>
+                  <small>{t('outcomes.cross.bandN', { n: b.n })}</small>
+                </div>
+              ))}
+            </div>
+            <OutcomeScatter points={scatter}
+              xLabel={t('outcomes.cross.xYears')} yLabel={t('outcomes.cross.yMinutes')}
+              xFormat={(v) => `${Math.round(v)} ${t('outcomes.yr')}`}
+              yFormat={(v) => `${Math.round(v)} ${t('outcomes.min')}`}
+              groupLabels={[t('outcomes.cross.gNoBus'), t('outcomes.cross.gOnly'), t('outcomes.cross.gPartial')]}
+              compact={split}
+              onPick={(slug) => { window.location.href = settlementHref(slug); }} />
           </div>
-          <OutcomeScatter points={scatter}
-            xLabel={t('outcomes.cross.xYears')} yLabel={t('outcomes.cross.yMinutes')}
-            xFormat={(v) => `${Math.round(v)} ${t('outcomes.yr')}`}
-            yFormat={(v) => `${Math.round(v)} ${t('outcomes.min')}`}
-            groupLabels={[t('outcomes.cross.gNoBus'), t('outcomes.cross.gOnly'), t('outcomes.cross.gPartial')]}
-            onPick={(slug) => { window.location.href = settlementHref(slug); }} />
-        </article>
+        </article>}
 
-        <article className="cross-card">
+        {showAge && <article className="cross-card">
           <h3>{t('outcomes.cross.ageHeading')}</h3>
           <p>{t('outcomes.cross.ageText')}</p>
           <div className="agebars">
@@ -107,9 +126,9 @@ export function CrossSection({ area }: { area?: { level: 'county' | 'district'; 
             })}
           </div>
           <p className="outcome__hint">{t('outcomes.cross.ageNote')}</p>
-        </article>
+        </article>}
 
-        <article className="cross-card">
+        {showBus && <article className="cross-card">
           <h3>{t('outcomes.cross.busHeading')}</h3>
           <p className="cross-card__big">
             <b>{formatNumber(c.bus.noDirectBus)}</b>
@@ -118,16 +137,32 @@ export function CrossSection({ area }: { area?: { level: 'county' | 'district'; 
               of: formatNumber(c.bus.vacantOnly),
             })}</span>
           </p>
-          <ul className="cross-card__list">
-            {c.bus.stranded.slice(0, 10).map((s) => (
-              <li key={s.slug}>
-                <a href={settlementHref(s.slug)}>{s.name}</a>
-                <span>{formatNumber(s.population)} {t('outcomes.people')}</span>
-                <small>{formatDuration(s.months)}</small>
-              </li>
-            ))}
-          </ul>
-        </article>
+          {/* the settlements as a small table: who lives there, and a bar for
+              how long the district has been empty (the longest = full width) */}
+          <div className="bus-list">
+            <div className="bus-list__head">
+              <span>{t('outcomes.cross.busCols.name')}</span>
+              <span>{t('outcomes.cross.busCols.people')}</span>
+              <span>{t('outcomes.cross.busCols.since')}</span>
+            </div>
+            {(() => {
+              // longest empty first (then the larger place), so the bars fall
+              const shown = [...c.bus.stranded]
+                .sort((a, b) => b.months - a.months || b.population - a.population).slice(0, 10);
+              const longest = Math.max(1, ...shown.map((s) => s.months));
+              return shown.map((s) => (
+                <div key={s.slug} className="bus-list__row">
+                  <a href={settlementHref(s.slug)}>{s.name}</a>
+                  <span className="bus-list__people">{formatNumber(s.population)} {t('outcomes.people')}</span>
+                  <span className="bus-list__since">
+                    <i style={{ width: `${(s.months / longest) * 100}%` }} />
+                    <small>{formatDuration(s.months)}</small>
+                  </span>
+                </div>
+              ));
+            })()}
+          </div>
+        </article>}
 
         <article className="cross-card cross-card--wide cross-card--row">
           <h3>{t('outcomes.cross.desertHeading')}</h3>
@@ -155,8 +190,8 @@ export function CrossSection({ area }: { area?: { level: 'county' | 'district'; 
               })}</p>
             </>
           )}
-          <a className="cross-card__more" href={area ? '/elemzo.html#hianyteruletek' : '#hianyteruletek'}>
-            {t('outcomes.cross.desertMore')}</a>
+          <PageLink className="cross-card__more" href={area ? '/elemzo.html#hianyteruletek' : '#hianyteruletek'}>
+            {t('outcomes.cross.desertMore')}</PageLink>
         </article>
       </div>
     </section>

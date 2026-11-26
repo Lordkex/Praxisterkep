@@ -21,7 +21,11 @@ export function AgeBlock() {
 
   return (
     <div className="extra-block" id="korosszetetel">
-      <h4 className="extra-block__title">{t('age.title')}</h4>
+      {/* the table of all counties belongs to the block: its button at the top right */}
+      <div className="subhead-row">
+        <h4 className="extra-block__title">{t('age.title')}</h4>
+        <button className="data-btn" onClick={() => setOpen(true)}>{t('age.openTable')}</button>
+      </div>
       <p className="section__explain">{t('age.explain', {
         year: String(data.censusYear),
         young: formatPercent(country.youngShare ?? 0),
@@ -47,11 +51,6 @@ export function AgeBlock() {
         </span>
       </div>
 
-      <div className="eeszt-actions">
-        <button className="data-btn" onClick={() => setOpen(true)}>
-          {t('age.openTable')}
-        </button>
-      </div>
       <p className="extra-note">{t('age.note', {
         year: String(data.censusYear),
         population: String(data.populationYear),

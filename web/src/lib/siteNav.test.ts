@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import nav from './siteNav.json';
+import sections from './pageSections.json';
 import srcList from './sources.json';
 import hu from '../i18n/hu.json';
 import en from '../i18n/en.json';
@@ -17,10 +18,11 @@ const lookup = (dict: unknown, key: string): unknown =>
   );
 
 const allEntries = nav.entries;
-// a row marked "name" carries a proper name (a county), not an i18n key
+// every row's label is an i18n key, and so is a part's description line
 const allKeys = allEntries.flatMap((e) => [e.labelKey,
-  ...(e.children ?? []).filter((c) => c[2] !== 'name').map(([, k]) => k)]);
+  ...(e.children ?? []).flatMap(([, k, kind, desc]) => (kind === 'desc' ? [k, desc] : [k]))]);
 const allHrefs = allEntries.flatMap((e) => [e.href, ...(e.children ?? []).map(([h]) => h)]);
+const entry = (href: string) => allEntries.find((e) => e.href === href)!;
 
 describe('site navigation', () => {
   it('names every page the site has, in the order of the zooms', () => {
@@ -29,18 +31,45 @@ describe('site navigation', () => {
       // it from the landing used to look like nothing happened
       '/#terkep', '/elemzo.html', '/europa.html', '/szakellato.html', '/modszertan.html',
     ]);
-    // the zooms live under Térkép: highlights, county, járás, settlement
-    const heads = allEntries[0].children?.filter((c) => c[2] === 'group').map(([h]) => h);
-    expect(heads).toEqual(['/', '/megye.html', '/jaras.html', '/telepules/']);
   });
 
-  it('lists the twenty counties under Megye and under Település', () => {
-    const names = (prefix: string) => (allEntries[0].children ?? [])
-      .filter((c) => c[2] === 'name' && c[0].startsWith(prefix)).map(([, n]) => n);
-    const counties = new Set((JSON.parse(readFileSync(join(root, '..', 'data', 'counties.json'),
-      'utf8')).counties as { name: string }[]).map((c) => c.name));
-    expect(new Set(names('/megye.html?m='))).toEqual(counties);
-    expect(new Set(names('/telepules/#m-'))).toEqual(counties);
+  it('offers the three zooms under Térkép and nothing else', () => {
+    // each of the three pages has its own picker: the twenty counties listed
+    // twice over in the menu were a repeat of it
+    expect(entry('/#terkep').children).toEqual([
+      ['/megye.html', 'nav.countyPage'],
+      ['/jaras.html', 'nav.districtPage'],
+      ['/telepules/', 'nav.settlements'],
+    ]);
+  });
+
+  it('lists the six analysis parts, each with a line under it, then the overview', () => {
+    const rows = entry('/elemzo.html').children ?? [];
+    const parts = sections.analysis.map((p) => p.key);
+    expect(rows.filter((c) => c[2] === 'desc').map(([h]) => h))
+      .toEqual(parts.map((k) => `/elemzo.html#csoport-${k}`));
+    expect(rows.filter((c) => c[2] === 'desc').map(([, k]) => k))
+      .toEqual(parts.map((k) => `analysis.group.${k}`));
+    expect(rows[rows.length - 1]).toEqual(['/elemzo.html', 'nav.analysisAll', 'all']);
+    expect(rows).toHaveLength(parts.length + 1);
+  });
+
+  it('groups the Europe sections under the headings of the page\'s side menu', () => {
+    const rows = entry('/europa.html').children ?? [];
+    const heads = rows.filter((c) => c[2] === 'group').map(([, k]) => k);
+    expect(heads).toEqual(sections.europe.map((g) => `europe.side.${g.key}`));
+    // every section the menu names sits in the side-menu group of its heading
+    let group = '';
+    for (const [href, key, kind] of rows) {
+      const id = href.split('#')[1];
+      if (kind === 'group') { group = key.replace('europe.side.', ''); continue; }
+      expect(sections.europe.find((g) => g.key === group)?.items, href).toContain(id);
+    }
+  });
+
+  it('keeps the GPs without a district under Továbbiak', () => {
+    expect(allHrefs.filter((h) => h.startsWith('/tek-nelkul.html'))).toEqual(['/tek-nelkul.html']);
+    expect((entry('/szakellato.html').children ?? []).map(([h]) => h)).toContain('/tek-nelkul.html');
   });
 
   it('keeps the register comparison out of the menu', () => {

@@ -1,149 +1,122 @@
-# Menü egyszerűsítése – terv
+# Menü, járás- és megyeoldal – az átalakítás összefoglalója
 
-Branch: `ui/menu` (a `main`-ből, v1.58.0 után)
-Állapot: javaslat, még nincs megvalósítva
+Ág: `ui/menu` · Készítette: Claude Opus 5.5 (2026. november)
+
+> **Funkcióban, képletekben, számolásban nincs változás.** Az adatok, a mutatók számítása, a viszonyítási alapok és a rangsorolás logikája ugyanaz, mint korábban. A munka a megjelenítésre összpontosított: szerkezet, elrendezés, egységes vezérlők, olvashatóság. Ahol a felületen új dolog jelent meg (rendezhető táblázat, kattintható sor, animáció, néhány eddig nem mutatott mutató), az is a már meglévő adatokat jeleníti meg.
 
 ## Cél
 
-A felső menü ma 5 főpontból áll, a lenyílókban összesen kb. 90 sor van. Ezek többsége ugyanarra a néhány oldalra mutat, csak más horgonyra. A cél egy rövidebb, könnyebben átlátható menü, és hogy a háziorvosi kék és a fogorvosi zöld szín az egész oldalon ugyanazt jelentse.
+A menü legyen rövidebb és átláthatóbb, a háziorvosi kék és a fogorvosi zöld szín az egész oldalon ugyanazt jelentse. A járás- és a megyeoldal témánként, egységes kártyákkal mutassa meg, hol áll a terület. Legyen kevesebb ismétlés, olvashatóbb szám és felirat, és ne legyenek üres vagy egymásra csúszó részek.
 
-A menü egy helyen van leírva, a [web/src/lib/siteNav.json](web/src/lib/siteNav.json) fájlban. Ugyanezt olvassa a 3177 statikus településoldal is ([web/scripts/settlement-pages.mjs](web/scripts/settlement-pages.mjs)), így egy módosítás mindenhol érvényes lesz. A csoportfejléces lenyílót (`"group"`) mindkét megjelenítés már ma is kezeli.
+## 1. Mit módosítottunk és miért
 
----
+### Menü
 
-## 0. Már javítva: a mobilmenüben elérhetetlen almenük
-
-Ez hibajavítás, nem javaslat: a `ui/menu` ágon már megvan.
-
-**Hibák telefonon (≤ 720px):**
-- **A lenyitott Térkép eltakarta a menü többi részét.** A menüpanel oszlopa a felső sáv `flex-wrap: wrap` beállítását örökölte, és a magassága korlátozva volt. A képernyőnél magasabb Térkép almenü (927px) mellett az Elemző, Európa, Továbbiak, Módszertan, valamint a téma- és nyelvváltó egy második oszlopba tördelődött, a képernyőn kívülre. Az Elemző almenüvel ugyanez történt.
-- **A nyitott almenüt nem lehetett a nyíllal bezárni.** Ilyenkor csak a menügomb segített.
-- **A nyíl gombja rálógott az almenüre.** A gomb láthatatlan érintési felülete a nyitott almenü teljes magasságán végigfutott, és egy 26px-es sávban elkapta a linkekre szánt érintéseket.
-- **A 3177 statikus településoldalon az almenük egyáltalán nem nyíltak meg.** Ott nincs nyíl-gomb, csak az egér ráhúzása nyitja őket, ezt pedig mobilon a CSS szándékosan kikapcsolja. Telefonon így a megyék, a járás és az elemzések menüpontjai elérhetetlenek voltak.
-
-- **A „Térkép” felirat nem a térképre vitt** (ez volt a legszembetűnőbb). A `/` címre mutatott, vagyis a főoldal tetejére. A főoldalon ezért úgy tűnt, mintha semmi sem történne, más oldalról pedig a térkép helyett a nyitókép jött be. Ez asztali nézetben is így volt, de mobilon a legfeltűnőbb.
-
-**Javítás:**
-- A „Térkép” felirat a térképszakaszra visz (`/#terkep`, [web/src/lib/siteNav.json](web/src/lib/siteNav.json)), ugyanúgy, ahogy az Elemző vagy a Módszertan a saját oldalára.
-- A mobilmenü egyetlen görgethető oszlop. A görgetés a menüben marad, nem mozdítja el mögötte az oldalt.
-- Az almenü mindig a felirata alatt jelenik meg.
-- A nyíl érintési felülete csak a felirat sorát fedi.
-- Érintéssel a nyíl zárni is tud. Egérrel marad a mostani viselkedés.
-- A statikus oldalak ugyanazt a nyíl-gombot és egy kis szkriptet kapnak, ugyanazokkal a zárási szabályokkal: a mutató elhagyja, Escape, kattintás a menün kívül.
-
-Fájlok: [web/src/index.css](web/src/index.css), [web/src/components/NavMenu.tsx](web/src/components/NavMenu.tsx), [web/scripts/settlement-pages.mjs](web/scripts/settlement-pages.mjs).
-
-Ellenőrizve 390px-en az appban és a generált településoldalakon, valamint 1280px-en, ahol a ráhúzás továbbra is nyit. `tsc`, 219 teszt és a build hibátlan.
-
-Ha az 1. és 3. pont megvalósul, a lenyílók eleve rövidek lesznek, de a fenti javítás ettől függetlenül szükséges.
-
----
-
-## 1. Térkép: csak a három szint
-
-**Jelenleg:** A lenyíló négy csoportból áll, összesen 50 sorral:
-- *Kiemelések*: a főoldal szakaszai (Körzetállomány, TEK nélküli háziorvosok, Nálam, Miért fontos?);
-- *Megye*: a 20 megye egyenként;
-- *Járás*;
-- *Település*: ismét a 20 megye.
-
-**Javaslat:** A lenyílóban csak három sor maradjon:
-
-| Menüpont  | Cél             |
-| --------- | --------------- |
-| Megye     | `/megye.html`   |
-| Járás     | `/jaras.html`   |
-| Település | `/telepules/`   |
-
-Maga a „Térkép” felirat továbbra is a főoldalra visz.
-
-**Miért:** Mindhárom oldalon van saját választó (megye-, járás-, településkereső). A menüben felsorolt 20+20 megye ismétlés, a főoldal szakaszai görgetéssel úgyis elérhetők.
-
-A *TEK nélküli háziorvosok* oldalnak ([tek-nelkul.html](web/tek-nelkul.html)) 
-javaslat: kerüljön át a *Továbbiak* alá. A főoldali körzetállomány-blokkból továbbra is van rá link.
-
----
-
-## 2. Egységes ág-színek (kék = háziorvos, zöld = fogorvos)
-
-**Jelenleg:** Az Elemző oldalon a kiemelőszín (aktív fül, csoportcím, kártyakeret) mindig zöld, akkor is, ha háziorvosi nézet van kiválasztva. A főoldalon viszont a zöld a fogorvosi ág színe, így a két oldal mást mond ugyanazzal a színnel.
-
-**Ok:** Az [web/src/elemzo.tsx](web/src/elemzo.tsx) fixen `dataset.kind = 'dental'`-t állít be, ahelyett hogy a kiválasztott ágat követné. A `--accent` alapértéke a fogorvosi zöld, és csak a `data-kind='gp'` váltja kékre ([web/src/index.css](web/src/index.css), 21. és 65. sor). Ugyanez a fix érték szerepel még:
-
-| Oldal                       | Most                     | Javaslat                                    |
-| --------------------------- | ------------------------ | ------------------------------------------- |
-| Elemző (`elemzo.tsx`)       | mindig zöld              | a kiválasztott ágat követi, mint a Megye oldal |
-| Továbbiak (`szakellato.tsx`) | mindig zöld              | semleges kiemelőszín                        |
-| Adatkezelés (`adatkezeles.tsx`) | mindig zöld          | semleges kiemelőszín                        |
-| Sajtó (`media.tsx`)         | mindig kék               | semleges kiemelőszín                        |
-| Statikus településoldalak   | nincs `data-kind`, zöld  | semleges, mert mindkét ágat mutatják        |
-| TEK nélküli (`teknelkul.tsx`) | mindig kék             | marad, háziorvosi tartalom                  |
-
-**Javaslat:**
-- Az ágválasztóval rendelkező oldalak az ágat kövessék. Ez az Elemzőnél egysoros javítás a [web/src/megye.tsx](web/src/megye.tsx) mintájára.
-- Az ág nélküli oldalak kapjanak egy harmadik, semleges kiemelőszínt (pl. `data-kind='none'` → `--accent: var(--ink)` vagy egy külön token). Így a zöld és a kék csak az ágat jelenti.
-
----
-
-## 3. Elemző: a hat rész a menüben, a szakaszok az oldalon
-
-**Jelenleg:** A lenyíló 6 csoportfejlécből és 27 szakaszlinkből áll. Mind az [elemzo.html](web/elemzo.html) oldalra visz. Az oldal már részekre bontva töltődik be (`?resz=`), és minden részen van fül-sor, tartalomjegyzék és oldalmenü a szakaszokhoz.
-
-**Javaslat:** A lenyílóban csak a 6 rész szerepeljen, mindegyik alatt egy rövid sorral, ami elmondja, mit talál ott az olvasó. A szöveg az oldal meglévő `analysis.groupLead.*` mondataiból rövidítve készülne.
-
-| Rész               | Rövid leírás (vázlat)                              |
-| ------------------ | -------------------------------------------------- |
-| Országos kép       | trendek, háziorvos és fogorvos, lefedettség        |
-| Mi változott?      | évről évre, hónapról hónapra                        |
-| Mi várható?        | kockázat, túlélés, egy év múlva, támogatások        |
-| Járások és megyék  | halálozás, jövedelem, népesség, összefüggések       |
-| Elérhetőség        | ügyelet, távolság, menetidő, busz                   |
-| Települések        | összetett index, keresztmetszetek, hiányterületek   |
-
-Felül vagy alul egy „Összes elemzés” link vigyen az áttekintő oldalra.
+**Változások:**
+- A Térkép, Elemző és Európa lenyílók rövidebbek, csoportfejlécekkel és rövid leírásokkal. A „Továbbiak” alatt megjelent a TEK nélküli praxisok oldala.
+- Rövidebb menücímek: „Megyék”, „Járások”, „Település keresése”.
+- A háziorvos/fogorvos kapcsoló a kezdőoldaléval egyező stílusú.
+- Az ágfüggetlen oldalak semleges kiemelőszínt kapnak.
+- A statikus településoldalak menüje ugyanabból a forrásból készül.
 
 **Miért:**
-- A szakaszok így sem vesznek el: a részen belül a fülek és az oldalmenü ugyanazt tudják, és jobban, mert a többi szakasz is látszik mellettük.
-- A lenyíló 33 sorról 7-re csökken.
-- A régi `#szakasz` linkek továbbra is működnek, mert a [web/src/lib/analysisParts.ts](web/src/lib/analysisParts.ts) a horgonyból nyitja meg a megfelelő részt.
+- Kb. 90 menüsor mutatott ugyanarra a néhány oldalra.
+- Az ágszín korábban véletlenszerűen szürkült ki vagy váltott.
 
-**Technikailag:** A `NavEntry` children kap egy opcionális leírásmezőt, vagy egy negyedik elemet a tömbben. Ezt a [web/src/components/NavMenu.tsx](web/src/components/NavMenu.tsx) és a `settlement-pages.mjs` egyaránt kirajzolja.
+### Járásoldal
 
----
+**Változások:**
+- **Témánkénti szerkezet:** Összkép → Ellátás → Elérhetőség → Népesség → Gazdaság és társadalom → Egészség → Települések → Országos összehasonlítás → Legveszélyeztetettebb járások. Az oldalmenü ugyanezt követi.
+- **Összkép:** a cím mellett az átlagos járással való összevetés, alatta három egyforma gyűrű (korösszetétel, háziorvos, fogorvos), táblázatszerű jelmagyarázattal.
+- **Egységes kártyák:** érték, csík az összes vidéki járásról, medián, helyezés. Az ismétlődő számok kikerültek.
+- **„Milyen járás ez?”:** bal oldalon a szám és a skála, jobb oldalon olvasható lista a besorolásról és a csoportokról.
+- **Összehasonlítás:** csoportosított, egy sorba férő mérőszámválasztó. A szórásdiagramon a kiválasztott járás pulzál, a pontok átúsznak az új helyükre.
+- **Legveszélyeztetettebb járások:** rendezhető oszlopok, minden érték a saját sávja fölött.
+- **Táblázatok és apróságok:**
+  - a település- és járássorok kattinthatók;
+  - a hosszú táblázatok saját dobozban görgetnek;
+  - a hisztogram alatti lista nem tolja el az oldalt;
+  - a halálokok csökkenő sorrendben állnak.
 
-## 4. Európa: csoportosítás
+**Miért:**
+- Az oldal az adatfájlokat követte, nem a kérdéseket. Tizenöt kártya állt egy blokkban, és több szám kétszer-ötször is szerepelt.
 
-**Jelenleg:** A lenyíló 11 sorból áll, csoportok nélkül. Az oldal saját oldalmenüje csak két csoportot ismer (Országok, Régiók; [web/src/lib/pageSections.json](web/src/lib/pageSections.json)).
+### Megyeoldal
 
-**Javaslat:** Öt csoport, az oldal sorrendjében. Ugyanezek a csoportok kerüljenek az oldal oldalmenüjébe is, hogy a felső menü és az oldalmenü ugyanazt mutassa.
+**Változások:**
+- **Szerkezet:** ugyanaz a témánkénti felépítés, mint a járásoldalon, a végén az **Országosan** csoporttal (a megye a többi mellett, orvosváltások, megyei rangsor).
+- **Felül:** a térkép a választó, a legördülő lista a sarkában. A **tippjáték** az adatok előtt áll, hogy a válasz még ne látszódjon.
+- **Rangsorok:** kilenc 20 soros lista helyett témánként kártyák, és egyetlen rangsor mérőszámválasztóval, animált átrendeződéssel.
+- **Előrejelzés és támogatások:** két kártya, bal oldalon a „ma / egy év múlva” szám és egy tartományskála, jobb oldalon a részletek.
+- **Ügyeleti pontok és mentőállomások:** csoportosítva, az ismétlődő hely egyszer szerepel („×2”), rámutatásra látszik az ellátó neve.
+- **Járások és települések táblázata:**
+  - a járástáblázat rendezhető, a sorok kattinthatók;
+  - a településlista alapból 30 sort mutat, „Mind a … mutatása” gombbal.
+- **Megye-összehasonlító:** megye – diagram – megye elrendezés, csoportosított adatokkal.
+- **Kisebb javítások:**
+  - a megyenevek nem fedik egymást a térképen;
+  - a táblázatgombok a blokk jobb felső sarkában állnak;
+  - a nagy számok mérete az oldalhoz illik;
+  - a hőtérkép szélesebb.
+- **Oldalhossz:** a Baranya-oldal kb. 22 000 px-ről kb. 12 600 px-re rövidült.
 
-| Csoport (vázlat)          | Szakaszok                                                                 |
-| ------------------------- | ------------------------------------------------------------------------- |
-| Áttekintés                | Áttekintés                                                                |
-| Igény és orvosok          | Kinek kell az ellátás? · Ki van a rendelőben? · Honnan jönnek, hová mennek az orvosok? |
-| Hozzáférés és eredmény    | Eljut-e a beteg? · Mit ér el az ellátás?                                  |
-| Pénz                      | Mennyit költünk rá? · Mennyit keres az orvos?                             |
-| Összevetés és régiók      | Két mutató egymás mellett · Régiók térképe · A határ két oldalán          |
+**Miért:**
+- Az oldal egyetlen hosszú szakasz volt kis alcímekkel. A rangsorok kb. 1500 px-t, a településlista kb. 11 000 px-t foglalt el.
+- Több elem félig üres volt, átfedett vagy kilógott.
 
-**Miért:** Az olvasó a csoportcímek alapján egy pillantással eldöntheti, merre induljon. A szakaszok nem tűnnek el a menüből, és ehhez nem kell új komponens, mert a csoportfejléces megjelenítés már létezik.
+### Közös elemek
 
----
+**Változások:**
+- **Kapcsolók:** mindenhol a kezdőoldallal egyező stílusúak. A régi gombsorok lecserélődtek.
+- **Más oldalra mutató „tovább” linkek:** egységes gombok.
+- **Címek:** három jól elkülönülő címszint (témacím, alcím, diagramcím).
+- **Jövedelem:** mindenhol „éves, adózás előtti” jövedelemként szerepel, a táblázatok bevezetője is elmagyarázza.
+- **Az „Ahová busz sem visz” kártya:**
+  - a lista táblázat lett, sávval arra, mióta üres a körzet;
+  - csökkenő sorrendben áll;
+  - a kártya nem marad félig üres.
+- **Közvetlen busz nélküli települések:** áthúzott busz ikon és pontrács.
+- **Újrajátszás ikon:** minden animációban körbeforduló nyíl.
 
-## Ami nem változik
+**Miért:**
+- Egységes kép.
+- Ami ugyanazt jelenti, mindenhol ugyanúgy nézzen ki.
 
-- *Továbbiak* és *Módszertan*: marad. Ha az 1. pont szerint ide kerül a TEK nélküli oldal, a *Továbbiak* öt sorra nő.
-- Mobilnézet, belső oldalra visszavezető link (`?belso=true`), az ág és a terület továbbadása a linkekben (`withContext`): nem változik.
+### Fejlesztés
 
-## Érintett fájlok
+- A fejlesztői szerver a legutóbbi buildből kiszolgálja a statikus településoldalakat. Eddig ezek helyett a kezdőlap jött be.
+- A **[rules.md](rules.md)** összefoglalja a munka során kialakult szerkesztési és stílusszabályokat, egy ellenőrzőlistával. Ennek alapján egy hasonló átalakítás elsőre közel kész lehet.
 
-- [web/src/lib/siteNav.json](web/src/lib/siteNav.json): a menü tartalma (1., 3., 4. pont)
-- [web/src/components/NavMenu.tsx](web/src/components/NavMenu.tsx) és [web/scripts/settlement-pages.mjs](web/scripts/settlement-pages.mjs): leírássor a lenyílóban (3. pont)
-- [web/src/lib/pageSections.json](web/src/lib/pageSections.json) és `europe.side.*` a fordításokban: az Európa oldalmenü csoportjai (4. pont)
-- `web/src/{elemzo,szakellato,adatkezeles,media}.tsx` és [web/src/index.css](web/src/index.css): a kiemelőszín (2. pont)
-- [web/src/i18n/hu.json](web/src/i18n/hu.json), [web/src/i18n/en.json](web/src/i18n/en.json): új csoportnevek és rövid leírások
+## 2. Új komponensek és minták
 
-## Ellenőrzés
+| Elem | Mire |
+| --- | --- |
+| `PageLink.tsx` | Más oldalra mutató „tovább” gomb |
+| `Headline.tsx` | Szám és felirat a gyűrű mellett, ugrás nélkül |
+| `SegmentedControl` `fit` módja | A feliratuk szélességét kapó gombok (mérőszámválasztó) |
+| Ábra + lista kártya (`dev-card`) | Bal oldalon szám és grafikon, jobb oldalon olvasható lista, a gomb alul |
+| `IconBusOff`, sűrű `ShareDots` | Hiány ikonnal és pontráccsal |
+| Rendezhető fejléc (`th-sort`), `table-tools` | Rendezés, első N sor és „mind mutatása” |
 
-- Asztali és mobil nézet, magyar és angol, mindkét ág. Ugyanaz a menü a főoldalon, egy önálló oldalon és egy statikus településoldalon.
-- A régi Elemző-horgonyok (pl. `/elemzo.html#menetido`) továbbra is a jó részt nyitják.
-- `npm test`, `tsc`, `vite build`, és a statikus oldalak újragenerálása.
+## 3. Érintett fájlok
+
+| Terület | Fájlok |
+| --- | --- |
+| Menü | `lib/siteNav.json`, `lib/siteNav.ts`, `NavMenu.tsx`, `PageNav.tsx`, `scripts/settlement-pages.mjs` |
+| Oldalmenük | `lib/pageSections.json` |
+| Járásoldal | `DistrictPage.tsx`, `DistrictOutcomes.tsx`, `VulnerableDistricts.tsx`, `charts/District*.tsx` |
+| Megyeoldal | `CountyPage.tsx`, `CountyOutcomes.tsx`, `CountyPicker.tsx`, `CountyCompare.tsx`, `CountyChurn.tsx`, `CountyRanking.tsx`, `GuessGame.tsx`, `AgeBlock.tsx`, `charts/PointGrid.tsx` |
+| Közös | `CrossSection.tsx`, `SegmentedControl.tsx`, `PageLink.tsx` *(új)*, `Headline.tsx` *(új)*, `icons.tsx`, `charts/Donut.tsx`, `charts/AgePie.tsx`, `story/*` |
+| Megjelenés és szöveg | `web/src/index.css`, `web/src/i18n/hu.json`, `web/src/i18n/en.json` |
+| Fejlesztés | `web/vite.config.ts`, `rules.md` *(új)* |
+
+A komponensek a `web/src/components/` mappában vannak.
+
+## 4. Ellenőrzés
+
+- Típusellenőrzés, build, és mind a 230 teszt rendben lefutott.
+- Képernyőképes ellenőrzés és mérések:
+  - 1366 px-en, kb. 1100 px-en és telefonos (390 px) nézetben;
+  - több megyén és járáson (Baranya, Borsod-Abaúj-Zemplén, Szabolcs-Szatmár-Bereg, Edelényi, Szeghalmi);
+  - igazítás, kilógás, feliratátfedés, egy sorba férés, ugrásmentesség és animáció mérése.
+- Az interakciók végig vannak kattintva: rendezés, „mind mutatása”, mérőszámváltás, sorra kattintás, tippjáték, táblázat megnyitása.

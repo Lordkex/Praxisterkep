@@ -74,6 +74,11 @@ export function DistrictDistribution({ rows, measure, selected, format, onPick }
     ? null : Math.min(BINS - 1, Math.floor((hereValue - lo) / step));
   const shownBin = hover ?? hereBin;
   const shown = shownBin === null ? [] : bins[shownBin];
+  // what the hidden sizing copy under the chips holds: the fullest band's
+  // count and the longest names any band could show
+  const fullest = Math.max(...bins.map((b) => b.length));
+  const longest = bins.flat().map((r) => r.name)
+    .sort((a, b) => b.length - a.length).slice(0, Math.min(CHIPS, fullest));
   // 1 = the worst, whichever end that is for this measure
   const rank = hereValue === null || hereValue === undefined ? null
     : bins.flat().filter((r) => (measure.worseHigh
@@ -141,32 +146,44 @@ export function DistrictDistribution({ rows, measure, selected, format, onPick }
           </>
         ) : t('district.distNoValue', { name: selected })}
       </p>
-      {shown.length > 0 && (
-        <div className="district-dist__chips">
+      {/* the chips of the hovered band, over a hidden copy as tall as the
+          fullest list can get (the longest names, the most of them), so the
+          page below does not jump as the pointer moves along the bars */}
+      <div className="district-dist__chipstack">
+        <div className="district-dist__chips is-ghost" aria-hidden="true">
           <span className="district-dist__chips-label">
-            {t('district.distBinLabel', {
-              n: formatNumber(shown.length),
-              from: format(lo + (shownBin ?? 0) * step),
-              to: format(lo + ((shownBin ?? 0) + 1) * step),
-            })}
+            {t('district.distBinLabel', { n: formatNumber(fullest), from: format(hi), to: format(hi) })}
           </span>
-          {shown.slice(0, CHIPS).map((r) => (
-            <button key={r.name} type="button"
-              className={`district-dist__chip${
-                r.name === selected ? ' is-on' : ''}`}
-              onClick={onPick ? () => onPick(r.name) : undefined}>
-              {r.name}
-            </button>
-          ))}
-          {shown.length > CHIPS && (
+          {longest.map((name) => <span key={name} className="district-dist__chip">{name}</span>)}
+          <span className="district-dist__chips-label">{t('district.distMore', { n: formatNumber(fullest) })}</span>
+        </div>
+        {shown.length > 0 && (
+          <div className="district-dist__chips">
             <span className="district-dist__chips-label">
-              {t('district.distMore', {
-                n: formatNumber(shown.length - CHIPS),
+              {t('district.distBinLabel', {
+                n: formatNumber(shown.length),
+                from: format(lo + (shownBin ?? 0) * step),
+                to: format(lo + ((shownBin ?? 0) + 1) * step),
               })}
             </span>
-          )}
-        </div>
-      )}
+            {shown.slice(0, CHIPS).map((r) => (
+              <button key={r.name} type="button"
+                className={`district-dist__chip${
+                  r.name === selected ? ' is-on' : ''}`}
+                onClick={onPick ? () => onPick(r.name) : undefined}>
+                {r.name}
+              </button>
+            ))}
+            {shown.length > CHIPS && (
+              <span className="district-dist__chips-label">
+                {t('district.distMore', {
+                  n: formatNumber(shown.length - CHIPS),
+                })}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

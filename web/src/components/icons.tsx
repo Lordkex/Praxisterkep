@@ -76,3 +76,16 @@ export function IconAmbulance() {
     </svg>
   );
 }
+
+/** A bus, struck through: settlements with no direct bus to their doctor. */
+export function IconBusOff() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="3.5" width="14" height="14" rx="2.5" />
+      <path d="M5 10.5h14M8 17.5v2.5M16 17.5v2.5" />
+      <circle cx="8.5" cy="14" r=".9" fill="currentColor" /><circle cx="15.5" cy="14" r=".9" fill="currentColor" />
+      <path d="M3 3l18 18" />
+    </svg>
+  );
+}

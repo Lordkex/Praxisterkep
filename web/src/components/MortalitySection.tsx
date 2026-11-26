@@ -25,6 +25,7 @@ import { DistrictMap } from './charts/DistrictMap';
 import { OutcomeScatter, type ScatterPoint } from './charts/OutcomeScatter';
 import { TertileGrid } from './charts/TertileGrid';
 import { AvoidableBar } from './AvoidableBar';
+import { PageLink } from './PageLink';
 
 const MEASURES = ['avoidable', 'amenable', 'treatable', 'preventable', 'allCause'] as const;
 type Measure = (typeof MEASURES)[number];
@@ -209,7 +210,8 @@ export function MortalitySection() {
       <EuropeBlock o={data} />
       <p className="section__source">{t('outcomes.mortality.source', {
         year: data.sources.mortality.year,
-      })} <a href="modszertan.html#kimenetek">{t('outcomes.methodLink')}</a></p>
+      })}</p>
+      <PageLink href="modszertan.html#kimenetek">{t('outcomes.methodLink')}</PageLink>
     </section>
   );
 }

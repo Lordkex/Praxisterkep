@@ -24,14 +24,11 @@
     }
   },
   "nav": {
-    "highlights": "Highlights",
     "map": "Map",
-    "mine": "My town",
     "ranking": "Ranking",
     "methodology": "Methodology",
     "sources": "Sources",
     "stats": "Statistics",
-    "why": "Why it matters",
     "versus": "GP vs dentist",
     "eeszt": "EESZT",
     "access": "Distance",
@@ -40,19 +37,25 @@
     "specialist": "Specialist care",
     "home": "Home",
     "vedono": "Health visitors",
-    "countyPage": "County",
-    "settlements": "Settlements",
+    "countyPage": "Counties",
+    "settlements": "Find a settlement",
     "registry": "Registry",
     "whoElse": "More",
     "menu": "Menu",
-    "stock": "District stock",
     "nonTerritorial": "GPs without a district",
-    "districtPage": "District",
-    "districtChoose": "Choose a district",
-    "districtVulnerable": "The most vulnerable districts",
+    "districtPage": "Districts",
     "europe": "Europe",
     "internal": "Internal",
-    "internalTitle": "Back to the internal analysis site (belso.praxisterkep.hu)"
+    "internalTitle": "Back to the internal analysis site (belso.praxisterkep.hu)",
+    "analysisAll": "All analyses",
+    "part": {
+      "national": "trends, GPs and dentists, coverage",
+      "changes": "year on year, month on month",
+      "future": "risk, survival, a year from now, grants",
+      "districts": "mortality, income, population, correlations",
+      "access": "on-call care, distance, travel time, bus",
+      "settlements": "composite index, cross-sections, care deserts"
+    }
   },
   "theme": {
     "toLight": "Light mode",
@@ -213,10 +216,18 @@
     "filterYears": "{n}+ years",
     "filterNote": "Counting only districts vacant for at least {n} years.",
     "compareTitle": "County comparison",
-    "compareExplain": "Pick two counties: the cards show current indicators, the chart in the middle tracks the number of vacant districts across the archived months.",
-    "compareVacant": "Vacant (incl. terminated)",
-    "compareRate": "Vacancy rate (with dissolved)",
-    "comparePop": "Affected population",
+    "compareExplain": "Pick two counties: their current figures on either side, and in the middle the number of vacant districts over the archived months.",
+    "compareColumn": "Measure",
+    "compareGroup": {
+      "with": "Counting dissolved districts",
+      "without": "Without dissolved districts",
+      "other": "The county"
+    },
+    "compareShort": {
+      "vacant": "Vacant districts",
+      "rate": "Vacancy rate",
+      "pop": "Residents affected"
+    },
     "comparePopShare": "Population share",
     "comparePer10k": "Districts per 10,000 residents",
     "compareLongTerm": "Long-term vacant",
@@ -226,6 +237,7 @@
     "guessQuestion2": "?",
     "guessPlaceholder": "your guess",
     "guessShow": "Show me!",
+    "guessLead": "Before you look at anything about the county, take a guess — then the page shows the real number.",
     "guessYours": "Your guess",
     "guessReality": "Reality",
     "guessSpotOn": "Spot on — unfortunately.",
@@ -233,11 +245,7 @@
     "guessLow": "It is worse than that: {actual} instead of {n}.",
     "guessHigh": "It is somewhat better than that: {actual} instead of {n}.",
     "guessAgain": "New guess",
-    "guessTotal": "{n} districts in total",
-    "comparePopWith": "Population affected (with dissolved)",
-    "compareVacantOnly": "Vacant (without dissolved)",
-    "compareRateOnly": "Vacancy rate (without dissolved)",
-    "comparePopOnly": "Population affected (without dissolved)"
+    "guessTotal": "{n} districts in total"
   },
   "methodology": {
     "heading": "Methodology",
@@ -1579,7 +1587,7 @@
     "statYoung": "residents aged 0–14",
     "statOldest": "the oldest county ({share} over 65)",
     "statYoungest": "the youngest county ({share} aged 0–14)",
-    "openTable": "Age composition by county",
+    "openTable": "County age make-up as a table",
     "tableTitle": "Age composition by county",
     "tableSubtitle": "The {year} census shares carried onto today's population",
     "colYoungNow": "Aged 0–14",
@@ -1933,7 +1941,6 @@
     "pick": "County",
     "pickNone": "Choose a county…",
     "nothingPicked": "Choose a county — the choice is kept on the other pages too.",
-    "population": "residents",
     "settlements": "settlements",
     "gpVacantOnly": "settlements where every GP district is vacant",
     "oncall": "median driving time to the nearest on-call surgery",
@@ -1943,10 +1950,6 @@
     "dentalLine": "Dental care",
     "stateLine": "{filled} settlements have a filled district, {partial} have both filled and vacant ones, {vacant} have only vacant ones.",
     "dentalSeats": "A further {n} settlements are not the seat of any dental district — which does not mean they have no care, but that it comes from elsewhere.",
-    "travelLine": "Median driving time",
-    "travelValues": "GP {gp} · dentist {dental} · hospital {inpatient}",
-    "busLine": "By bus",
-    "busValue": "{n} settlements ({share}) have no direct service to the nearest GP surgery on the reference day.",
     "bandLine": "Composite care-risk index",
     "bandValue": "{kiemelt} settlements in the highest band, {magas} in the high band.",
     "tableHeading": "Settlements of {county}",
@@ -1981,7 +1984,6 @@
     "gpVacantOnlyOf": "settlements with no contracted GP",
     "dentalDistricts": "vacant dental districts of those in the county",
     "dentalLongTerm": "{n} of them long-term vacant · {dissolved} dissolved",
-    "oncallPoints": "publicly financed on-call points in the county",
     "ambulance": "{n} ambulance stations",
     "oncallMedian": "median {m} to the on-call point",
     "ageOf": "{group} — {share} of the county",
@@ -1997,11 +1999,83 @@
     "filtered": "Showing only settlements where {branch} care is: {state} ({n} settlements).",
     "clearFilter": "All",
     "pointUnknownShort": "no premises",
-    "settlementsOf": "settlements",
-    "sizeLabel": "how big a county is this?",
     "benchSettlements": "Settlements",
     "benchPopulation": "Population",
-    "benchAverage": "average county"
+    "benchAverage": "average county",
+    "stateHeading": "{name} at a glance",
+    "introText": "Who lives here, in how many settlements there is no contracted GP, and what became of the county's dental districts. Click a slice of a ring and the settlement list below shows only those settlements.",
+    "populationIn": "residents in {n} settlements",
+    "median": "county median",
+    "stripNote": "The strip marks each of the 20 counties with a tick, the median with a taller one, and this county with the dot; the bad end is always on the right. A card is red when the county is in the worst quarter and teal when it is in the best.",
+    "part": {
+      "care": "Care",
+      "access": "Access",
+      "people": "Population",
+      "economy": "Economy and society",
+      "health": "Health",
+      "compare": "The county among the others"
+    },
+    "partLead": {
+      "care": "How many districts may fall vacant within a year, how many settlements fall in the top bands of the risk index, and how the settlement grants fared. The cards show the county among the 20.",
+      "access": "How far by car the GP, the dentist, the hospital and the emergency department are, whether a bus gets there, and where the on-call points and ambulance stations are. Below, the four cross-sections for the county's settlements.",
+      "people": "Births and deaths, people moving in and out, and how many households are elderly only. The age make-up is shown above, on the first ring.",
+      "economy": "Income, work, education, digital activity and housing, with the course of jobseekers and income below.",
+      "health": "How many people die of avoidable causes, how much of that depends on care, and overall mortality in the county, beside the other nineteen.",
+      "compare": "The 20 counties on one measure, from the worst to the best; the highlighted row is this county. Switch measures by theme."
+    },
+    "measureGroup": {
+      "care": "Care and access",
+      "people": "Population and health",
+      "economy": "Economy"
+    },
+    "measureShort": {
+      "gpRateIn12": "Vacancy in a year",
+      "sboMinutes": "Drive to emergency",
+      "naturalChange": "Births minus deaths",
+      "migration": "Migration",
+      "income": "Income",
+      "jobseekers": "Jobseekers",
+      "degree": "Graduates",
+      "noDigital": "Digitally inactive",
+      "avoidable": "Avoidable deaths",
+      "gpRate": "Vacant GP districts"
+    },
+    "access": {
+      "gp": "Drive to the GP",
+      "dental": "Drive to the dentist",
+      "inpatient": "Drive to the hospital",
+      "driveNote": "median of the county's settlements, by car",
+      "bus": "Settlements without a direct bus",
+      "busNote": "of the county's {n} settlements ({share})",
+      "busDots": "{n} of {of} settlements without a direct bus"
+    },
+    "bandCard": "Settlements at highest risk",
+    "bandCardNote": "in the top band of the composite risk index; another {magas} in the high band, of {n} settlements",
+    "districtsExplain": "The county's districts on five measures. Income is yearly income per resident, before tax (the personal income tax base, counting children and pensioners too). Click a header to sort (again to reverse); click a row to open the district page.",
+    "districtsExplainCapital": "The capital's districts on five measures. Click a header to sort (again to reverse); click a row to open the district page.",
+    "sortBy": "Sort by {col}",
+    "showAll": "Show all {n} settlements",
+    "showFirst": "Show only the first {n}",
+    "rowsShown": "{n} of {of} settlements shown",
+    "pointsTitle": "On-call points and ambulance stations",
+    "pointGroup": {
+      "oncall": "On-call points",
+      "ambulance": "Ambulance stations"
+    },
+    "pointMany": "{n} × {what}",
+    "forecastValue": "vacant GP districts of the county's {n}",
+    "forecastLater": "expected in a year",
+    "forecastFacts": {
+      "new": "Expected new vacancies",
+      "refills": "Expected refills",
+      "band": "90% band in a year",
+      "rateNow": "Vacancy rate today",
+      "rateLater": "Vacancy rate in a year"
+    },
+    "grantsFacts": {
+      "total": "Winners with a contract, all years",
+      "filled": "A doctor in the district today"
+    }
   },
   "next": {
     "heading": "Where to next?",
@@ -2152,6 +2226,53 @@
     "withoutShort": "without dissolved"
   },
   "district": {
+    "measureShort": {
+      "gpVacancy": "GP vacancy",
+      "dentalVacancy": "Dental vacancy",
+      "index": "Risk index",
+      "gpMin": "To the GP",
+      "oncallMin": "To on-call care",
+      "development": "Development",
+      "lagging": "Lagging settlements",
+      "ageing": "Share 65+"
+    },
+    "measureGroup": {
+      "care": "Care",
+      "access": "Drive time",
+      "society": "Society"
+    },
+    "part": {
+      "care": "Care",
+      "access": "Access",
+      "people": "Population",
+      "economy": "Economy and society",
+      "economyCards": "Income, work, education, housing",
+      "health": "Health",
+      "compare": "National comparison"
+    },
+    "partLead": {
+      "economy": "How developed the district is by the official classification, and what income, work, education and housing show.",
+      "care": "How many patients a GP carries, and how many districts may fall vacant within a year. The cards show the district's value beside the median of the 174 rural districts and its county: the strip marks every rural district with a tick, the median with a taller one, and the dot is this district. The bad end is always on the right.",
+      "access": "How far the GP, the on-call service, the hospital and the emergency department are by car, whether a bus gets there, and how many places of care the district has.",
+      "people": "Births and deaths, people moving in and out, and how many households are older people alone. The age make-up is on the first ring above.",
+      "health": "How many people die of avoidable causes, how much of it care could prevent, and how the district's mortality differs from the national. Mortality is NNGYK's {year} data.",
+      "compare": "Where the district stands among the others: the distribution and the ranking show the same measure, at first the vacancy of the branch being looked at. Last, a scatter of whether vacancy goes with distance or development."
+    },
+    "rankingTitle": "The worst and best eight",
+    "rankingExplainMeasure": "The worst and best eight districts by the chosen measure ({measure}), with this one between them. The dashed line is the national median. The bars are clickable.",
+    "access": {
+      "gp": "Drive to a GP",
+      "oncall": "Drive to on-call care",
+      "inpatient": "Drive to a hospital",
+      "driveNote": "median of the district's settlements, by car",
+      "bus": "Settlements without a direct bus",
+      "busNote": "of the district's {n} settlements",
+      "busDots": "{n} of {of} settlements without a direct bus",
+      "sites": "Places of care in the district",
+      "oncallPoints": "on-call points",
+      "ambulance": "ambulance stations",
+      "pharmacies": "pharmacies"
+    },
     "heading": "Districts",
     "lead": "County figures are too general, and a settlement-level analysis is too fragmented. The járás is the unit where the real differences in access to dental care show clearly: where a dentist can be reached, how far the nearest provider is, and whether emergency care is available. So we look at Hungary's 174 járás and Budapest's 23 districts one by one.",
     "mapNote": "The map shows the vacancy of {kind} districts per district: the darker, the higher the share. The ramp tops out at the 90th percentile. Hover or click for the detail.",
@@ -2166,11 +2287,8 @@
     "sliceOf": "{state} {branch} districts here",
     "longTerm": "{n} long-term vacant",
     "per10k": "{n} filled districts per 10,000 residents",
-    "travelLabel": "median drive: GP · on-call · hospital",
-    "accessLine": "{bus} settlements without a direct bus · {oncall} on-call points · {ambulance} ambulance stations · {pharmacies} pharmacies",
     "medianIndex": "median care-risk index: {n}",
     "rankingHeading": "Where it stands",
-    "rankingExplain": "The worst and best eight districts by {branch} vacancy, with the selected one between them. The dashed line is the national median. The bars are clickable.",
     "medianLine": "national median: {n}",
     "scatterHeading": {
       "travel": "Does distance go with it?",
@@ -2214,6 +2332,20 @@
     "laggingLabel": "of its settlements are classed as lagging behind",
     "laggingParts": "{socio} socio-economic, {unemployment} hit by unemployment, {temporary} temporarily",
     "laggingPopulation": "{share} of the population lives in them",
+    "devFacts": {
+      "grade": "Classification",
+      "rank": "Place among the {of} districts",
+      "rankNote": "1 = the least developed",
+      "threshold": "Beneficiary threshold",
+      "thresholdNote": "below it the district is a beneficiary"
+    },
+    "laggingFacts": {
+      "socio": "Lagging socially, economically and in infrastructure",
+      "unemployment": "Hit by significant unemployment",
+      "temporary": "Temporarily a beneficiary",
+      "population": "Share of the district's residents living in them",
+      "overlap": "A settlement can belong to more than one group, so the counts can add up to more than the number of lagging settlements."
+    },
     "distHeading": "Where it stands among the 197",
     "distExplain": "Every column is a band: how many districts fall into it. The selected district's column is marked and the pin below shows its exact value. Switch the measure, or hover a column — the districts in it appear underneath and can be clicked.",
     "distMedian": "median: {n}",
@@ -2342,7 +2474,7 @@
       "preventable": "Preventable only",
       "both": "Treatable and preventable",
       "allCause": "All-cause mortality",
-      "income": "Income per resident",
+      "income": "Yearly income per resident, before tax",
       "incomeIndex": "Income, % of the median járás",
       "taxpayers": "Taxpayers per 1,000",
       "jobseekers": "Registered jobseekers",
@@ -2514,12 +2646,13 @@
       "ageText": "Settlements banded by the share aged 65+; each column is how many of them are served only by a vacant GP district.",
       "ageTitle": "{from}–{to}% aged: {n} settlements, {share}% vacant only",
       "ageNote": "U-shaped: the youngest and the oldest villages are the most exposed. The two end bands hold few settlements, so one or two villages move the share a lot.",
+      "busCols": { "name": "Settlement", "people": "Residents", "since": "District empty for" },
       "busHeading": "Where no bus goes either",
       "busBig": "settlements ({people} people) of the {of} served only by a vacant district cannot reach the nearest doctor by direct bus either.",
       "desertHeading": "Care deserts",
       "desertBig": "contiguous patches holding {settlements} settlements and {people} people",
       "desertText": "On top of that, {isolated} isolated settlements ({isolatedPeople} people) have no staffed GP district and no neighbour that helps.",
-      "desertMore": "The map and the method →",
+      "desertMore": "The map and the method",
       "localHeading": "Four cross-sections — {name}",
       "localLead": "The same four questions as on the analysis page, for this area's settlements only: how long the district has been vacant and how far the next doctor is, how old the village is, whether a bus gets there, and whether it lies in a contiguous care desert.",
       "desertLocal": "settlements lie in a contiguous care desert ({clusters} clusters, {people} residents) of the area's {of}.",
@@ -2529,14 +2662,11 @@
     "yr": "yrs",
     "people": "people",
     "district": {
-      "heading": "Health and living conditions",
-      "explain": "Avoidable mortality and the járás's circumstances, beside the median of the 174 rural járás and its county. The strip shows every rural járás as a tick, the median as a taller one; the dot is this járás. The bad end is always on the right. Mortality is NNGYK's {year} data.",
       "median": "rural median",
       "rank": "{rank}th worst of the {of} rural járás",
       "capitalWide": "for the whole capital",
       "capital": "Budapest as a whole",
       "stripNote": "A card turns red when the járás is in the worst quarter, teal in the best.",
-      "avoidHeading": "What is its avoidable mortality made of?",
       "avoidExplain": "The three NNGYK groups per 100,000; their sum is avoidable mortality. A large red part means missing care weighs more; a large violet one, prevention.",
       "causeHeading": "Mortality by cause",
       "shhNote": "Standardised mortality ratio (SHH): 100 is the deaths national rates would predict for the járás's age and sex structure. 140 = 40% more than expected.",
@@ -2544,7 +2674,7 @@
       "incomeHeading": "Income as % of the median járás",
       "source": "Sources: NNGYK mortality database; KSH TIMEA (NAV data); NFSZ settlement data.",
       "grantsHeading": "Districts filled with a state grant in this járás ({n})",
-      "grantsLink": "How did granted districts fare nationally? →"
+      "grantsLink": "How did granted districts fare nationally?"
     },
     "cause": {
       "all": "All causes",
@@ -2559,15 +2689,13 @@
       "mental": "Mental disorders"
     },
     "county": {
-      "heading": "Health and living conditions — {county}",
-      "explain": "The county beside the other nineteen in five measures, each ranking running from worst to best. Mortality is NNGYK's {year} data; the rest is the latest from KSH TIMEA and NFSZ.",
       "place": "{rank} of {of} counties (counting from the worst)",
       "jobsHeading": "Jobseekers — the county and the country",
       "incomeHeading": "Income as % of the median járás",
       "districtsHeading": "The járás of {county} side by side",
       "colDistrict": "Járás",
       "forecastHeading": "Vacant GP districts over the next 12 months",
-      "forecastLink": "How the forecast is made →",
+      "forecastLink": "How the forecast is made",
       "grantsHeading": "GP settlement grants by year",
       "grantsRow": "{n} winners, {filled} districts have a doctor today",
       "grantsNone": "No winner with a contract in this county.",
@@ -2580,7 +2708,7 @@
       "medianSettlement": "median settlement",
       "districtSuffix": "járás",
       "national": "country",
-      "incomeHeading": "Income per resident",
+      "incomeHeading": "Yearly income per resident, before tax",
       "perYear": "a year, {year}",
       "capitalWide": "KSH publishes the capital as one settlement, so this figure is Budapest's as a whole, not the kerület's.",
       "taxpayers": "{n} in every 1,000 residents pay personal income tax.",
@@ -2598,7 +2726,7 @@
       "loadText": "Surgery visits, home visits and telemedicine together. Where districts nearby are empty, the remaining doctors carry more.",
       "avoidable": "Avoidable mortality in {district}: {value} per 100,000 ({year}); the rural median is {median}.",
       "avoidableNote": "This is a járás figure: NNGYK publishes no settlement-level avoidable mortality, because so few deaths cannot give a reliable rate.",
-      "avoidableLink": "The járás's health data →",
+      "avoidableLink": "The járás's health data",
       "noise": "In a small settlement a few births or moves shift the rate a lot, so the vital statistics are four-year averages; for the smallest villages they still need reading with care.",
       "source": "Sources: KSH TIMEA (income from NAV data), KSH 2022 census, NFSZ settlement data, NNGYK mortality database, NEAK grant winners and monthly data; the forecast is our own calculation.",
       "sboLayer": "Emergency department",
@@ -2649,7 +2777,7 @@
         "chanceOneNow": "The district serving this settlement is vacant today; {pct}% chance it still will be in 12 months."
       }
     },
-    "methodLink": "Method →",
+    "methodLink": "Method",
     "steps": {
       "heading": "How much of the association remains?",
       "raw": "Raw association",
@@ -2917,12 +3045,13 @@
     "kpi": {
       "people": "people live in the top {n} districts",
       "avoidable": "avoidable deaths per 100,000 in these districts — {rest} in the other rural districts",
-      "income": "yearly income per resident — {rest} in the other rural districts",
+      "income": "yearly income per resident, before tax — {rest} in the other rural districts",
       "jobs": "share of jobseekers — {rest} in the other rural districts"
     },
     "col": {
       "district": "District",
-      "score": "Rank score"
+      "score": "Rank score",
+      "sort": "Sort by {col}"
     },
     "factor": {
       "gpRate": "Vacant GP districts",
@@ -2976,7 +3105,7 @@
       "cluster": "Part of a contiguous care desert: around {name}, {n} settlements, {pop} residents.",
       "change": "Since {month}, vacant or dissolved {kind} districts serving it: {then} then, {now} now.",
       "newDoctorsLabel": "districts with a new doctor in a year",
-      "income": "Income per resident ({year}): {value}; the median settlement: {median}.",
+      "income": "Yearly income per resident, before tax ({year}): {value}; the median settlement: {median}.",
       "districtCol": "{district} district",
       "medianCol": "median settlement"
     },
@@ -3350,8 +3479,11 @@
     "loading": "Loading the European data…",
     "sideNav": "Europe",
     "side": {
-      "countries": "Countries",
-      "regions": "Regions"
+      "overview": "Overview",
+      "demand": "Demand and doctors",
+      "access": "Access and outcomes",
+      "money": "Money",
+      "regions": "Comparisons and regions"
     },
     "toc": {
       "attekintes": "Overview",
@@ -3860,16 +3992,21 @@
     "county": {
       "label": "County",
       "group": {
-        "county": "The county"
+        "county": "The county",
+        "country": "Nationally"
       },
       "varmegye": "Choose a county",
-      "attekintes": "Overview",
-      "ellatas": "Care in numbers",
-      "egeszseg": "Health and living conditions",
-      "elorejelzes": "Forecast and grants",
+      "attekintes": "At a glance",
+      "ellatas": "Care",
+      "elerhetoseg": "Access",
+      "nepesseg": "Population",
+      "gazdasag": "Economy and society",
+      "egeszseg": "Health",
       "jarasai": "Its districts",
-      "keresztmetszet": "Cross-sections",
-      "telepulesek": "Its settlements"
+      "telepulesek": "Its settlements",
+      "osszehasonlitas": "Among the others",
+      "fluktuacio": "Doctor changes",
+      "rangsor": "County ranking"
     },
     "district": {
       "label": "District",
@@ -3878,12 +4015,13 @@
         "country": "Nationally"
       },
       "jaras": "Choose a district",
-      "allapot": "State of care",
-      "fejlettseg": "Development",
-      "egeszseg": "Health and living conditions",
-      "keresztmetszet": "Cross-sections",
-      "rangsor": "Ranking",
-      "osszefugges": "Association",
+      "allapot": "Overview",
+      "ellatas": "Care",
+      "elerhetoseg": "Access",
+      "nepesseg": "Population",
+      "gazdasag": "Economy and society",
+      "egeszseg": "Health",
+      "osszehasonlitas": "National comparison",
       "telepulesek": "Its settlements",
       "veszelyeztetett": "The most vulnerable districts"
     },
@@ -4205,7 +4343,7 @@
     "living": {
       "text": "The settlement beside its district, its county and a reference value. Income: KSH TIMEA (tax data), {incomeYear}; births, deaths and migration are four-year averages; census shares are from 2022.",
       "note": "Reference: the median Hungarian settlement for income and population change, the national value for jobseekers and the census shares. In a small settlement a few births or moves shift the rates a great deal.",
-      "incomeChart": "Income per resident ({year})",
+      "incomeChart": "Yearly income per resident, before tax ({year})",
       "incomeCaption": "Million forints a year, income on which personal income tax is assessed. Source: KSH TIMEA from tax data."
     },
     "jobseekers": {

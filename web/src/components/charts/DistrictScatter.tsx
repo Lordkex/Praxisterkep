@@ -47,6 +47,9 @@ export function DistrictScatter({ data, branch, selected, onPick, axis = 'travel
   const py = (v: number) => H - PAD.bottom - (v / maxY) * (H - PAD.top - PAD.bottom);
   const pr = (v: number) => 2.5 + Math.sqrt(v / maxR) * 7;
   const shown = points.find((p) => p.name === (hover ?? selected));
+  const sel = points.find((p) => p.name === selected);
+  // the selected járás is never drawn smaller than this, however few live there
+  const selR = sel ? Math.max(pr(sel.r), 5) : 0;
 
   const ticksX = [0, 0.25, 0.5, 0.75, 1].map((f) => minX + f * (maxX - minX));
   const ticksY = [0, 0.25, 0.5, 0.75, 1].map((f) => f * maxY);
@@ -75,10 +78,12 @@ export function DistrictScatter({ data, branch, selected, onPick, axis = 'travel
         <text x={14} y={15} className="district-scatter__axis">
           {t('district.scatterY')}
         </text>
-        {points.map((p) => {
+        {/* the selected one last, so the cloud does not cover it */}
+        {[...points.filter((p) => p.name !== selected),
+          ...points.filter((p) => p.name === selected)].map((p) => {
           const on = p.name === selected;
           return (
-            <circle key={p.name} cx={px(p.x)} cy={py(p.y)} r={pr(p.r)}
+            <circle key={p.name} cx={px(p.x)} cy={py(p.y)} r={on ? selR : pr(p.r)}
               className={`district-scatter__dot${on ? ' is-on' : ''}${
                 onPick ? ' is-clickable' : ''}`}
               onPointerEnter={() => setHover(p.name)}
@@ -88,6 +93,16 @@ export function DistrictScatter({ data, branch, selected, onPick, axis = 'travel
             </circle>
           );
         })}
+        {/* a pulse around the selected one, which a small járás would
+            otherwise lose in the cloud: it runs while the pointer is over the
+            chart and a few times after the axis changes (the key remounts it,
+            which restarts the animation) */}
+        {sel && (
+          <g className="district-scatter__mark" aria-hidden="true"
+            style={{ transform: `translate(${px(sel.x)}px, ${py(sel.y)}px)` }}>
+            <circle key={`${axis}-${branch}-${selected}`} className="district-scatter__pulse" r={selR + 2} />
+          </g>
+        )}
       </svg>
       {shown && (
         <p className="district-map__read">

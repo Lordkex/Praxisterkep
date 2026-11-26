@@ -8,15 +8,19 @@
     { "key": "settlements", "slug": "telepulesek", "items": ["index", "keresztmetszet", "hianyteruletek"] }
   ],
   "europe": [
-    { "key": "countries", "items": ["attekintes", "igeny", "munkaero", "vandorlas", "hozzaferes", "eredmeny", "kiadas", "berek", "ketmutato"] },
-    { "key": "regions", "items": ["regiok", "hatar", "korhaz-eleres", "szomszedok"] }
+    { "key": "overview", "items": ["attekintes"] },
+    { "key": "demand", "items": ["igeny", "munkaero", "vandorlas"] },
+    { "key": "access", "items": ["hozzaferes", "eredmeny"] },
+    { "key": "money", "items": ["kiadas", "berek"] },
+    { "key": "regions", "items": ["ketmutato", "regiok", "hatar", "korhaz-eleres", "szomszedok"] }
   ],
   "county": [
-    { "key": "county", "items": ["varmegye", "attekintes", "ellatas", "egeszseg", "elorejelzes", "jarasai", "keresztmetszet", "telepulesek"] }
+    { "key": "county", "items": ["varmegye", "attekintes", "ellatas", "elerhetoseg", "nepesseg", "gazdasag", "egeszseg", "jarasai", "telepulesek"] },
+    { "key": "country", "items": ["osszehasonlitas", "fluktuacio", "rangsor"] }
   ],
   "district": [
-    { "key": "district", "items": ["jaras", "allapot", "fejlettseg", "egeszseg", "keresztmetszet", "rangsor", "osszefugges", "telepulesek"] },
-    { "key": "country", "items": ["veszelyeztetett"] }
+    { "key": "district", "items": ["jaras", "allapot", "ellatas", "elerhetoseg", "nepesseg", "gazdasag", "egeszseg", "telepulesek"] },
+    { "key": "country", "items": ["osszehasonlitas", "veszelyeztetett"] }
   ],
   "specialist": [
     { "key": "specialist", "items": ["vedono", "szakellatas", "varolistak", "gyogyszertar", "segedeszkoz"] }

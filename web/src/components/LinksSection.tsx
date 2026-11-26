@@ -14,6 +14,7 @@ import {
 } from '../lib/outcomes';
 import { CorrMatrix } from './charts/CorrMatrix';
 import { OutcomeScatter, type ScatterPoint } from './charts/OutcomeScatter';
+import { PageLink } from './PageLink';
 
 const ROWS = ['gpRate', 'gpLongTerm', 'dentalRate', 'gpMinutes', 'sboMinutes'];
 const COLS = ['avoidable', 'amenable', 'allCause', 'income', 'degree', 'employed',
@@ -79,8 +80,8 @@ export function LinksSection() {
           {part2 && ` ${t('outcomes.links.pairPartial2', { r: formatDecimal(part2.partial.toFixed(2)) })}`}
         </p>
       )}
-      <p className="notice">{t('outcomes.links.caveat')}{' '}
-        <a href="modszertan.html#kimenetek">{t('outcomes.methodLink')}</a></p>
+      <p className="notice">{t('outcomes.links.caveat')}</p>
+      <PageLink href="modszertan.html#kimenetek">{t('outcomes.methodLink')}</PageLink>
     </section>
   );
 }

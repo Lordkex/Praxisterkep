@@ -101,7 +101,7 @@ export function Story({ title, mascot, scenes, script = true }: {
             )}
           </button>
           <button type="button" onClick={() => jump(0)} className="cutstory__play" aria-label={t('story.ui.replay')} title={t('story.ui.replay')}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="cutstory__replay"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5M3.5 3.5v5h5" /></svg>
           </button>
           <div className="cutstory__track">
             {scenes.map((s, i) => {

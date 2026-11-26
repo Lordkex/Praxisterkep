@@ -100,12 +100,14 @@ export function ScaleMark({ value, lo, hi, threshold, thresholdLabel, format }: 
  * "37 of 49"; the dots keep it, and a járás of forty villages looks like a
  * járás of forty villages.
  */
-export function ShareDots({ total, marked, title, max = 120 }: {
+export function ShareDots({ total, marked, title, max = 120, dense = false }: {
   total: number; marked: number; title?: string; max?: number;
+  /** smaller dots, for the hundreds of settlements of a county */
+  dense?: boolean;
 }) {
   if (!total || total > max) return null;
   return (
-    <span className="sharedots" title={title}
+    <span className={`sharedots${dense ? ' sharedots--dense' : ''}`} title={title}
       aria-label={`${formatNumber(marked)} / ${formatNumber(total)}`}>
       {Array.from({ length: total }, (_, i) => (
         <i key={i} className={i < marked ? 'is-on' : undefined} />

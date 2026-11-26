@@ -12,8 +12,10 @@ import { formatNumber, formatPercent } from '../../lib/format';
 export interface AgeSplit { young: number; working: number; old: number }
 export type AgeKey = keyof AgeSplit;
 
+// no green among them: green is "betöltött" on the rings beside the age
+// split, and the youngest group in the same colour read as the same thing
 export const AGE_COLORS: Record<AgeKey, string> = {
-  young: 'var(--good)', working: 'var(--gp)', old: 'var(--warn)',
+  young: 'var(--violet)', working: 'var(--gp)', old: 'var(--warn)',
 };
 const ORDER: AgeKey[] = ['young', 'working', 'old'];
 
@@ -75,7 +77,8 @@ export function AgeLegend({ split, compare, active, onActive }: {
   const total = split.young + split.working + split.old;
   const cTotal = compare ? compare.young + compare.working + compare.old : 0;
   return (
-    <ul className="agelegend" onPointerLeave={() => onActive?.(null)}>
+    <ul className={`agelegend legend-table${compare ? ' legend-table--diff' : ''}`}
+      onPointerLeave={() => onActive?.(null)}>
       {ORDER.map((key) => {
         const share = total ? split[key] / total : 0;
         const theirs = cTotal ? compare![key] / cTotal : null;
@@ -86,8 +89,8 @@ export function AgeLegend({ split, compare, active, onActive }: {
             onFocus={() => onActive?.(key)} tabIndex={onActive ? 0 : undefined}>
             <i style={{ background: AGE_COLORS[key] }} />
             <span className="agelegend__label">{t(`age.part.${key}`)}</span>
-            <strong>{formatPercent(share)}</strong>
-            <span className="agelegend__count">{formatNumber(split[key])}</span>
+            <strong>{formatNumber(split[key])}</strong>
+            <span className="agelegend__count">{formatPercent(share)}</span>
             {diff !== null && (
               <span className={`agelegend__diff${diff > 0 ? ' is-more' : ''}`}>
                 {diff > 0 ? '+' : '−'}{formatPercent(Math.abs(diff))}

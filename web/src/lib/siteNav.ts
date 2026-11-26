@@ -6,7 +6,7 @@
 // pages, each with a different idea of which pages exist. This module is the
 // single definition; the static generator reads the same labels out of the
 // Hungarian locale file, so the two cannot drift apart again.
-import type { NavEntry } from '../components/NavMenu';
+import type { NavChild, NavEntry } from '../components/NavMenu';
 import { contextHref } from './context';
 import { entries } from './siteNav.json';
 
@@ -37,6 +37,6 @@ export function withContext(entries: readonly NavEntry[]): NavEntry[] {
     ...e,
     href: contextHref(resolve(e.href)),
     children: e.children?.map((c) => [contextHref(resolve(c[0])), ...c.slice(1)] as
-      unknown as readonly [string, string, string]),
+      unknown as NavChild),
   }));
 }

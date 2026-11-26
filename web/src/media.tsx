@@ -9,7 +9,9 @@ import { MediaPage } from './components/MediaPage';
 function Page() {
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.documentElement.dataset.kind = 'gp';
+    // no branch on this page: the neutral accent, so blue and green only
+    // ever mean GP and dentist (index.css [data-kind='none'])
+    document.documentElement.dataset.kind = 'none';
   }, []);
   return <MediaPage />;
 }

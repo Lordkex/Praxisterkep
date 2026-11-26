@@ -68,7 +68,7 @@ export function DonutLegend({ slices, active, onActive, onPick }: {
 }) {
   const total = slices.reduce((a, s) => a + s.value, 0);
   return (
-    <ul className="agelegend donut-legend" onPointerLeave={() => onActive?.(null)}>
+    <ul className="agelegend donut-legend legend-table" onPointerLeave={() => onActive?.(null)}>
       {slices.filter((s) => s.value > 0).map((s) => (
         <li key={s.label} className={active === s.label ? 'is-on' : undefined}
           onPointerEnter={() => onActive?.(s.label)}

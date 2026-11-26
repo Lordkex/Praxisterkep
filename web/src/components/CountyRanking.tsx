@@ -6,7 +6,7 @@ import { countyRanking } from '../lib/selectors';
 import { useSnapshot } from '../store/useAppStore';
 import { AgeBlock } from './AgeBlock';
 import { CountyCompare } from './CountyCompare';
-import { GuessGame } from './GuessGame';
+import { SegmentedControl } from './SegmentedControl';
 import { DissolvedSwitch } from './DissolvedSwitch';
 import { useContextStore } from '../lib/context';
 
@@ -45,14 +45,10 @@ export function CountyRanking() {
         {minYears > 0 && t('ranking.filterNote', { n: minYears })}
       </p>
       <div className="map-controls">
-        <div className="seg" role="group">
-          {YEAR_OPTIONS.map((y) => (
-            <button key={y} aria-pressed={minYears === y}
-              onClick={() => setMinYears(y)}>
-              {y === 0 ? t('ranking.filterAll') : t('ranking.filterYears', { n: y })}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl<string> size="xs" ariaLabel={t('ranking.heading')}
+          value={String(minYears)} onChange={(v) => setMinYears(Number(v))}
+          options={YEAR_OPTIONS.map((y) => ({ value: String(y),
+            label: y === 0 ? t('ranking.filterAll') : t('ranking.filterYears', { n: y }) }))} />
         {/* the duration filter and the reading of "vacant" are the same kind
             of control: both decide what the bars count */}
         <DissolvedSwitch compact />
@@ -96,7 +92,6 @@ export function CountyRanking() {
       </div>
       <AgeBlock />
       <CountyCompare />
-      <GuessGame />
     </section>
   );
 }

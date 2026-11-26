@@ -8,43 +8,54 @@ import { vacancyOf } from '../lib/vacancy';
 import { useContextStore } from '../lib/context';
 import type { CountyAggregate } from '../types';
 
-const W = 460;
-const H = 150;
-const PAD = { top: 12, right: 10, bottom: 22, left: 34 };
+// the middle column is about 500px wide; this height makes the chart as tall
+// as the two cards beside it
+const W = 500;
+const H = 330;
+const PAD = { top: 14, right: 40, bottom: 26, left: 36 };
 const COLOR_A = 'var(--accent)';
 const COLOR_B = 'var(--s5)';
 
-function CountyCard({ county, color }: { county: CountyAggregate; color: string }) {
-  // both readings, side by side and labelled: a comparison of two counties is
-  // exactly where the choice between them must not be made for the reader
+type Row = [string, string];
+
+/**
+ * A county's figures in three groups — with the dissolved districts counted,
+ * without them, and the county's own size and stock — each opened by its
+ * name, so the nine lines no longer read as one list.
+ */
+function rowsOf(county: CountyAggregate) {
+  // both readings, labelled: a comparison of two counties is exactly where
+  // the choice between them must not be made for the reader
   const withD = vacancyOf(county, 'with');
   const withoutD = vacancyOf(county, 'without');
   const pct = (v: number | null) => (v !== null ? formatPercent(v) : '–');
-  const rows: [string, string][] = [
-    [t('ranking.compareVacant'), `${withD.count} / ${county.total ?? '–'}`],
-    [t('ranking.compareRate'), pct(withD.rate)],
-    [t('ranking.comparePopWith'), formatNumber(withD.population)],
-    [t('ranking.compareVacantOnly'), `${withoutD.count} / ${county.total ?? '–'}`],
-    [t('ranking.compareRateOnly'), pct(withoutD.rate)],
-    [t('ranking.comparePopOnly'), formatNumber(withoutD.population)],
+  const reading = (v: typeof withD): Row[] => [
+    [t('ranking.compareShort.vacant'), `${v.count} / ${county.total ?? '–'}`],
+    [t('ranking.compareShort.rate'), pct(v.rate)],
+    [t('ranking.compareShort.pop'), formatNumber(v.population)],
   ];
-  if (county.populationShare != null) {
-    rows.push([t('ranking.comparePopShare'), formatPercent(county.populationShare)]);
-  }
-  if (county.praxesPer10k != null) {
-    rows.push([t('ranking.comparePer10k'), formatDecimal(county.praxesPer10k.toFixed(2))]);
-  }
-  if (county.longTerm != null) {
-    rows.push([t('ranking.compareLongTerm'), String(county.longTerm)]);
-  }
+  const other: Row[] = [
+    [t('ranking.comparePopShare'), county.populationShare != null ? formatPercent(county.populationShare) : '–'],
+    [t('ranking.comparePer10k'), county.praxesPer10k != null ? formatDecimal(county.praxesPer10k.toFixed(2)) : '–'],
+    [t('ranking.compareLongTerm'), county.longTerm != null ? String(county.longTerm) : '–'],
+  ];
+  return [['with', reading(withD)], ['without', reading(withoutD)], ['other', other]] as const;
+}
+
+function CountyCard({ county, color }: { county: CountyAggregate; color: string }) {
   return (
     <div className="compare-card">
       <h4><span className="compare-dot" style={{ background: color }} />{county.name}</h4>
-      <dl>
-        {rows.map(([label, value]) => (
-          <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
-        ))}
-      </dl>
+      {rowsOf(county).map(([group, rows]) => (
+        <div key={group} className="compare-card__group">
+          <p className="compare-card__head">{t(`ranking.compareGroup.${group}`)}</p>
+          <dl>
+            {rows.map(([label, value]) => (
+              <div key={label}><dt>{label}</dt><dd style={{ color }}>{value}</dd></div>
+            ))}
+          </dl>
+        </div>
+      ))}
     </div>
   );
 }
@@ -120,23 +131,38 @@ export function CountyCompare() {
       <div className="compare__grid">
         <CountyCard county={a} color={COLOR_A} />
         <div className="compare-chart">
-          <p>{t('ranking.compareChart', { kind: t(`kinds.${kind}.adj`) })}</p>
+          <div className="compare-chart__head">
+            <p>{t('ranking.compareChart', { kind: t(`kinds.${kind}.adj`) })}</p>
+            <span className="compare-chart__legend">
+              <span><i className="compare-dot" style={{ background: COLOR_A }} />{a.name}</span>
+              <span><i className="compare-dot" style={{ background: COLOR_B }} />{b.name}</span>
+            </span>
+          </div>
           <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('ranking.compareTitle')}>
             {[0, 0.5, 1].map((f) => (
               <g key={f}>
                 <line x1={PAD.left} x2={W - PAD.right} y1={yAt(f * maxY)} y2={yAt(f * maxY)}
                   stroke="var(--line)" strokeWidth={1} />
-                <text x={PAD.left - 5} y={yAt(f * maxY) + 3.5} textAnchor="end"
-                  fill="var(--ink-faint)" fontSize="10">{Math.round(f * maxY)}</text>
+                <text x={PAD.left - 6} y={yAt(f * maxY) + 4} textAnchor="end"
+                  fill="var(--ink-faint)" fontSize="11">{Math.round(f * maxY)}</text>
               </g>
             ))}
             {years.map(({ i, label }) => (
-              <text key={label} x={xAt(i)} y={H - 6} fill="var(--ink-faint)" fontSize="10">
-                {label}
-              </text>
+              <text key={label} x={xAt(i)} y={H - 6} fill="var(--ink-faint)" fontSize="11">{label}</text>
             ))}
-            <path d={line(series.a)} fill="none" stroke={COLOR_A} strokeWidth={2.2} />
-            <path d={line(series.b)} fill="none" stroke={COLOR_B} strokeWidth={2.2} />
+            <path d={line(series.a)} fill="none" stroke={COLOR_A} strokeWidth={2.4} />
+            <path d={line(series.b)} fill="none" stroke={COLOR_B} strokeWidth={2.4} />
+            {/* the latest value at each line's end */}
+            {([['a', series.a, COLOR_A], ['b', series.b, COLOR_B]] as const).map(([k, vals, color]) => {
+              const i = vals.map((v) => v !== null).lastIndexOf(true);
+              if (i < 0) return null;
+              return (
+                <g key={k}>
+                  <circle cx={xAt(i)} cy={yAt(vals[i] as number)} r={3.5} fill={color} />
+                  <text x={xAt(i) + 7} y={yAt(vals[i] as number) + 4} fill={color} fontSize="12" fontWeight="700">{vals[i]}</text>
+                </g>
+              );
+            })}
           </svg>
         </div>
         <CountyCard county={b} color={COLOR_B} />

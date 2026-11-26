@@ -36,8 +36,10 @@ describe('the analysis parts', () => {
 
   it('can place every analysis link of the menu', () => {
     const entry = nav.entries.find((e) => e.href === '/elemzo.html')!;
-    for (const [href] of entry.children ?? []) {
-      expect(partOfHash(href.split('#')[1] ?? ''), href).not.toBeNull();
+    for (const [href, , kind] of entry.children ?? []) {
+      // the closing "Összes elemzés" is the overview, which is no part
+      if (kind === 'all') expect(partOfHash(href.split('#')[1] ?? ''), href).toBeNull();
+      else expect(partOfHash(href.split('#')[1] ?? ''), href).not.toBeNull();
     }
   });
 });

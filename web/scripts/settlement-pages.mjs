@@ -381,10 +381,15 @@ const pagePath = (slug) => `${LANG === 'en' ? '/en' : ''}/telepules/${slug ? `${
 const internalEntry = () => `<div class="topnav__group only-internal"><a href="${esc(INTERNAL_URL)}" title="${
   esc(label('nav.internalTitle'))}">${esc(label('nav.internal'))}<span class="topnav__out" aria-hidden="true">\u2197</span></a></div>`;
 
-// a county in the menu is its own name in every language
-const childLabel = (key, kind) => (kind === 'name' ? key : label(key));
+// a submenu row, as components/NavMenu.tsx draws it: "group" is a heading,
+// "desc" carries a line under the label (its key is the fourth element),
+// "all" closes the list with the link to the whole page
+const ROW_CLASS = { group: 'topnav__subhead', all: 'topnav__all' };
+const navRow = ([href, key, kind, desc], profile) => `<a href="${esc(ctx(href, profile))}"${
+  ROW_CLASS[kind] ? ` class="${ROW_CLASS[kind]}"` : ''}>${desc === undefined ? esc(label(key))
+  : `<span class="topnav__label">${esc(label(key))}</span><span class="topnav__desc">${esc(label(desc))}</span>`}</a>`;
 
-const navBar = (profile) => nav.entries.map((e, i) => {
+const navBar = (profile) => nav.entries.map((e) => {
   const grouped = (e.children ?? []).some((c) => c[2] === 'group');
   // a heading and its links stay together in one column, as in the app
   const cols = [];
@@ -392,13 +397,10 @@ const navBar = (profile) => nav.entries.map((e, i) => {
     if (c[2] === 'group' || !cols.length) cols.push([]);
     cols[cols.length - 1].push(c);
   }
-  const children = cols.map((col) => `<div class="topnav__subcol${
-    col.some((c) => c[2] === 'name') ? ' topnav__subcol--names' : ''}">${col.map(([href, key, kind]) =>
-    `<a href="${esc(ctx(href, profile))}"${kind === 'group' ? ' class="topnav__subhead"' : ''}>${
-      esc(childLabel(key, kind))}</a>`).join('')}</div>`).join('');
+  const children = cols.map((col) => `<div class="topnav__subcol">${
+    col.map((c) => navRow(c, profile)).join('')}</div>`).join('');
   const methodology = /modszertan\.html/.test(e.href);
-  return `${methodology ? internalEntry() : ''}<div class="topnav__group${methodology ? ' no-internal' : ''}${
-    i === 0 ? ' topnav__group--first' : ''}"><a href="${esc(ctx(e.href, profile))}">${
+  return `${methodology ? internalEntry() : ''}<div class="topnav__group${methodology ? ' no-internal' : ''}"><a href="${esc(ctx(e.href, profile))}">${
     esc(label(e.labelKey))}${children ? '<i class="topnav__caret" aria-hidden="true"></i>' : ''
   }</a>${children ? `<button type="button" class="topnav__toggle" aria-expanded="false" aria-label="${
     esc(label(e.labelKey))}"></button>` : ''}${children ? `<div class="topnav__submenu${grouped ? ' is-grouped' : ''}" hidden>${
@@ -576,7 +578,8 @@ function travelRows(profile) {
   }).join('\n');
 }
 
-const AGE_COLORS = { young: 'var(--good)', working: 'var(--gp)', old: 'var(--warn)' };
+// as components/charts/AgePie.tsx: no green, which means "betöltött"
+const AGE_COLORS = { young: 'var(--violet)', working: 'var(--gp)', old: 'var(--warn)' };
 const ageLabel = (key) => S(`age.${key}`);
 
 /**
@@ -1746,8 +1749,8 @@ function livingBlock(profile, nationalJobs) {
         article: /^[aáeéiíoóöőuúüű]/i.test(district) ? 'Az' : 'A',
         district: `${district}${profile.county === 'Budapest' ? '' : ` ${L('districtSuffix')}`}`,
         value: dec(l.avoidable.district, 0), median: dec(l.avoidable.median, 0), year: l.avoidable.year }))}</p>
-      <p class="tp-note">${esc(L('avoidableNote'))}
-        <a href="${esc(ctx(`/jaras.html?jar=${encodeURIComponent(district)}#egeszseg`, profile))}">${esc(L('avoidableLink'))}</a></p>
+      <p class="tp-note">${esc(L('avoidableNote'))}</p>
+      <a class="pagelink" href="${esc(ctx(`/jaras.html?jar=${encodeURIComponent(district)}#egeszseg`, profile))}"><span class="pagelink__text">${esc(L('avoidableLink'))}</span><span class="pagelink__arrow" aria-hidden="true">→</span></a>
     </div>` : '';
   if (l.census) parts.push(censusPlot(l.census));
   parts.push(grantsCard(l.grants));
@@ -1789,7 +1792,7 @@ function page(profile) {
   const cluster = profile.cluster;
 
   return `<!doctype html>
-<html lang="${LANG}">
+<html lang="${LANG}" data-kind="none">
 <head>
 <meta charset="utf-8">
 ${bootScript()}
@@ -2011,7 +2014,7 @@ function writeIndex(root) {
   </section>`).join('\n');
 
   writeFileSync(join(root, 'index.html'), `<!doctype html>
-<html lang="${LANG}">
+<html lang="${LANG}" data-kind="none">
 <head>
 <meta charset="utf-8">
 ${bootScript()}

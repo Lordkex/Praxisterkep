@@ -24,14 +24,11 @@
     }
   },
   "nav": {
-    "highlights": "Kiemelések",
     "map": "Térkép",
-    "mine": "Nálam",
     "ranking": "Rangsor",
     "methodology": "Módszertan",
     "sources": "Források",
     "stats": "Statisztika",
-    "why": "Miért fontos?",
     "versus": "Háziorvos vs Fogorvos",
     "eeszt": "EESZT",
     "access": "Távolság",
@@ -40,19 +37,25 @@
     "specialist": "Szakellátás",
     "home": "Főoldal",
     "vedono": "Védőnő",
-    "countyPage": "Megye",
-    "settlements": "Település",
+    "countyPage": "Megyék",
+    "settlements": "Település keresése",
     "registry": "Nyilvántartás",
     "whoElse": "Továbbiak",
     "menu": "Menü",
-    "stock": "Körzetállomány",
     "nonTerritorial": "TEK nélküli háziorvosok",
-    "districtPage": "Járás",
-    "districtChoose": "Járás kiválasztása",
-    "districtVulnerable": "A legveszélyeztetettebb járások",
+    "districtPage": "Járások",
     "europe": "Európa",
     "internal": "Belső",
-    "internalTitle": "Vissza a belső elemző oldalra (belso.praxisterkep.hu)"
+    "internalTitle": "Vissza a belső elemző oldalra (belso.praxisterkep.hu)",
+    "analysisAll": "Összes elemzés",
+    "part": {
+      "national": "trendek, háziorvos és fogorvos, lefedettség",
+      "changes": "évről évre, hónapról hónapra",
+      "future": "kockázat, túlélés, egy év múlva, támogatások",
+      "districts": "halálozás, jövedelem, népesség, összefüggések",
+      "access": "ügyelet, távolság, menetidő, busz",
+      "settlements": "összetett index, keresztmetszetek, hiányterületek"
+    }
   },
   "theme": {
     "toLight": "Világos mód",
@@ -213,10 +216,18 @@
     "filterYears": "{n}+ éve",
     "filterNote": "Csak a legalább {n} éve betöltetlen körzetekkel számolva.",
     "compareTitle": "Megye-összehasonlító",
-    "compareExplain": "Válassz két megyét: a kártyákon a jelenlegi mutatók, középen a betöltetlen körzetek számának alakulása az archivált hónapokban.",
-    "compareVacant": "Betöltetlen (megszűnttel)",
-    "compareRate": "Betöltetlenségi arány (megszűnttel)",
-    "comparePop": "Érintett lakosság",
+    "compareExplain": "Válassz két megyét: a két szélén a jelenlegi mutatók, középen a betöltetlen körzetek számának alakulása az archivált hónapokban.",
+    "compareColumn": "Mutató",
+    "compareGroup": {
+      "with": "Megszűnt körzetekkel együtt",
+      "without": "Megszűnt körzetek nélkül",
+      "other": "A megye"
+    },
+    "compareShort": {
+      "vacant": "Betöltetlen körzet",
+      "rate": "Betöltetlenségi arány",
+      "pop": "Érintett lakosság"
+    },
     "comparePopShare": "Lakosság aránya",
     "comparePer10k": "Körzet 10 000 lakosra",
     "compareLongTerm": "Tartósan betöltetlen",
@@ -226,6 +237,7 @@
     "guessQuestion2": "?",
     "guessPlaceholder": "tipped",
     "guessShow": "Mutasd!",
+    "guessLead": "Mielőtt bármit megnéznél a megyéről, tippelj — utána a lap megmutatja a valós számot.",
     "guessYours": "Tipped",
     "guessReality": "Valóság",
     "guessSpotOn": "Telitalálat — sajnos.",
@@ -233,11 +245,7 @@
     "guessLow": "A helyzet rosszabb: {n} helyett {actual}.",
     "guessHigh": "A helyzet ennél valamivel jobb: {n} helyett {actual}.",
     "guessAgain": "Új tipp",
-    "guessTotal": "összesen {n} körzet",
-    "comparePopWith": "Érintett lakosság (megszűnttel)",
-    "compareVacantOnly": "Betöltetlen (megszűnt nélkül)",
-    "compareRateOnly": "Betöltetlenségi arány (megszűnt nélkül)",
-    "comparePopOnly": "Érintett lakosság (megszűnt nélkül)"
+    "guessTotal": "összesen {n} körzet"
   },
   "methodology": {
     "heading": "Módszertan",
@@ -1579,7 +1587,7 @@
     "statYoung": "0–14 éves lakos",
     "statOldest": "a legidősebb megye ({share} 65 felett)",
     "statYoungest": "a legfiatalabb megye ({share} 0–14 éves)",
-    "openTable": "Korösszetétel megyénként",
+    "openTable": "Megyék korösszetétele táblázatban",
     "tableTitle": "Korösszetétel megyénként",
     "tableSubtitle": "A {year}-es népszámlálás arányai a mai lakosságra vetítve",
     "colYoungNow": "0–14 éves (fő)",
@@ -1933,7 +1941,6 @@
     "pick": "Megye",
     "pickNone": "Válassz megyét…",
     "nothingPicked": "Válassz egy megyét a listából — a választás a többi lapon is megőrződik.",
-    "population": "lakos",
     "settlements": "település",
     "gpVacantOnly": "település, ahol csak betöltetlen háziorvosi körzet van",
     "oncall": "medián menetidő a legközelebbi ügyeletig",
@@ -1943,10 +1950,6 @@
     "dentalLine": "Fogászati ellátás",
     "stateLine": "{filled} településnek van betöltött körzete, {partial} helyen betöltött és betöltetlen is van, {vacant} helyen csak betöltetlen.",
     "dentalSeats": "További {n} település egyik fogászati körzet listáján sem körzetszékhely — ez nem azt jelenti, hogy nincs ellátásuk, hanem azt, hogy máshonnan kapják.",
-    "travelLine": "Medián menetidő (autóval)",
-    "travelValues": "háziorvos {gp} · fogorvos {dental} · kórház {inpatient}",
-    "busLine": "Busszal",
-    "busValue": "{n} településről ({share}) nincs közvetlen járat a legközelebbi háziorvosi rendelőhöz a referencianapon.",
     "bandLine": "Összetett kockázati index",
     "bandValue": "{kiemelt} település kiemelt, {magas} magas sávban.",
     "tableHeading": "{county} települései",
@@ -1981,7 +1984,6 @@
     "gpVacantOnlyOf": "településen nincs szerződött háziorvos",
     "dentalDistricts": "betöltetlen fogorvosi körzet a megyében lévőkből",
     "dentalLongTerm": "ebből {n} tartósan betöltetlen · {dissolved} megszűnt körzet",
-    "oncallPoints": "közfinanszírozott ügyeleti pont a megyében",
     "ambulance": "{n} mentőállomás",
     "oncallMedian": "medián {m} az ügyeletig",
     "ageOf": "{group} — a megye lakosságának {share}-a",
@@ -1997,11 +1999,83 @@
     "filtered": "Csak azok a települések látszanak, ahol a {branch} ellátás: {state} ({n} település).",
     "clearFilter": "Mind",
     "pointUnknownShort": "telephely nélkül",
-    "settlementsOf": "település",
-    "sizeLabel": "mekkora megye ez?",
     "benchSettlements": "Települések száma",
     "benchPopulation": "Lakosság",
-    "benchAverage": "átlagos megye"
+    "benchAverage": "átlagos megye",
+    "stateHeading": "{name} összképe",
+    "introText": "Kik laknak itt, hány településen nincs szerződött háziorvos, és mi lett a megye fogorvosi körzeteivel. Egy gyűrűszeletre kattintva a lenti településlista csak azokat a településeket mutatja.",
+    "populationIn": "lakos {n} településen",
+    "median": "megyei medián",
+    "stripNote": "A csík a 20 megyét egy-egy vonással jelöli, a mediánt magasabbal, a pont ez a megye; a rossz vég mindig jobbra esik. A kártya piros, ha a megye a legrosszabb negyedben van, és türkiz, ha a legjobb negyedben.",
+    "part": {
+      "care": "Ellátás",
+      "access": "Elérhetőség",
+      "people": "Népesség",
+      "economy": "Gazdaság és társadalom",
+      "health": "Egészség",
+      "compare": "A megye a többi mellett"
+    },
+    "partLead": {
+      "care": "Hány körzet üresedhet meg egy éven belül, hány település esik a kockázati index felső sávjaiba, és hogyan alakultak a letelepedési támogatások. A kártyák a megye értékét a 20 megye között mutatják.",
+      "access": "Milyen messze van autóval a háziorvos, a fogorvos, a kórház és a sürgősségi osztály, eljut-e oda busz, és hol vannak az ügyeleti pontok és a mentőállomások. Alatta a négy keresztmetszet a megye településeire.",
+      "people": "Születések és halálozások, odaköltözők és elköltözők, és hány háztartásban élnek csak idősek. A korösszetétel fent, az első gyűrűn látszik.",
+      "economy": "Jövedelem, munka, iskolázottság, digitális aktivitás és lakáskörülmények, alattuk az álláskeresők és a jövedelem alakulása.",
+      "health": "Mennyien halnak meg elkerülhető okból, ebből mennyi múlik az ellátáson, és mekkora a teljes halálozás a megyében, a másik tizenkilenc mellett.",
+      "compare": "A 20 megye egyetlen mérőszám szerint, a legrosszabbtól a legjobbig; a kiemelt sor ez a megye. Válts mérőszámot a témák szerint."
+    },
+    "measureGroup": {
+      "care": "Ellátás és elérés",
+      "people": "Népesség és egészség",
+      "economy": "Gazdaság"
+    },
+    "measureShort": {
+      "gpRateIn12": "Betöltetlenség 1 év múlva",
+      "sboMinutes": "Sürgősségi menetidő",
+      "naturalChange": "Népmozgalom",
+      "migration": "Vándorlás",
+      "income": "Jövedelem",
+      "jobseekers": "Álláskeresők",
+      "degree": "Diplomások",
+      "noDigital": "Digitálisan inaktívak",
+      "avoidable": "Elkerülhető halálozás",
+      "gpRate": "Üres háziorvosi körzet"
+    },
+    "access": {
+      "gp": "Menetidő a háziorvosig",
+      "dental": "Menetidő a fogorvosig",
+      "inpatient": "Menetidő a kórházig",
+      "driveNote": "a megye településeinek mediánja, autóval",
+      "bus": "Közvetlen busz nélküli települések",
+      "busNote": "a megye {n} települése közül ({share})",
+      "busDots": "{n} település közvetlen busz nélkül, összesen {of}"
+    },
+    "bandCard": "Kiemelt kockázatú települések",
+    "bandCardNote": "az összetett kockázati index legfelső sávjában; további {magas} a magas sávban, a {n} település közül",
+    "districtsExplain": "A megye járásai öt mutatóban. A jövedelem az egy lakosra jutó éves, adózás előtti jövedelem (a személyi jövedelemadó alapja, a gyerekeket és a nyugdíjasokat is beleszámolva). A fejlécre kattintva rendezhető (újra kattintva megfordul), egy sorra kattintva a járás oldala nyílik meg.",
+    "districtsExplainCapital": "A főváros kerületei öt mutatóban. A fejlécre kattintva rendezhető (újra kattintva megfordul), egy sorra kattintva a kerület oldala nyílik meg.",
+    "sortBy": "Rendezés: {col}",
+    "showAll": "Mind a {n} település mutatása",
+    "showFirst": "Csak az első {n} mutatása",
+    "rowsShown": "{n} / {of} település látszik",
+    "pointsTitle": "Ügyeleti pontok és mentőállomások",
+    "pointGroup": {
+      "oncall": "Ügyeleti pontok",
+      "ambulance": "Mentőállomások"
+    },
+    "pointMany": "{n} {what}",
+    "forecastValue": "betöltetlen háziorvosi körzet a megye {n} körzetéből",
+    "forecastLater": "várhatóan egy év múlva",
+    "forecastFacts": {
+      "new": "Várható új üresedés",
+      "refills": "Várható betöltődés",
+      "band": "90%-os sáv egy év múlva",
+      "rateNow": "Betöltetlenségi arány ma",
+      "rateLater": "Betöltetlenségi arány egy év múlva"
+    },
+    "grantsFacts": {
+      "total": "Szerződést kötött nyertes összesen",
+      "filled": "Ma is van orvos a körzetben"
+    }
   },
   "next": {
     "heading": "Mit nézz meg ezután?",
@@ -2152,6 +2226,53 @@
     "withoutShort": "megszűnt nélkül"
   },
   "district": {
+    "measureShort": {
+      "gpVacancy": "Háziorvosi betöltetlenség",
+      "dentalVacancy": "Fogorvosi betöltetlenség",
+      "index": "Kockázati index",
+      "gpMin": "Háziorvosig",
+      "oncallMin": "Ügyeletig",
+      "development": "Fejlettség",
+      "lagging": "Elmaradott települések",
+      "ageing": "65+ aránya"
+    },
+    "measureGroup": {
+      "care": "Ellátás",
+      "access": "Menetidő",
+      "society": "Társadalom"
+    },
+    "part": {
+      "care": "Ellátás",
+      "access": "Elérhetőség",
+      "people": "Népesség",
+      "economy": "Gazdaság és társadalom",
+      "economyCards": "Jövedelem, munka, iskolázottság, lakás",
+      "health": "Egészség",
+      "compare": "Országos összehasonlítás"
+    },
+    "partLead": {
+      "economy": "Mennyire fejlett a járás a hivatalos besorolás szerint, és mit mutatnak a jövedelmek, a munka, az iskolázottság és a lakások.",
+      "care": "Mennyi beteg jut egy háziorvosra, és mennyi körzet üresedhet meg egy éven belül. A kártyák a járás értékét a 174 vidéki járás mediánja és a megye mellett mutatják: a csík minden vidéki járást egy vonással jelöl, a mediánt magasabbal, a pont ez a járás. A rossz vég mindig jobbra esik.",
+      "access": "Milyen messze van autóval a háziorvos, az ügyelet, a kórház és a sürgősségi osztály, eljut-e oda busz, és hány ellátóhely van a járásban.",
+      "people": "Születések és halálozások, odaköltözők és elköltözők, és hány háztartásban élnek csak idősek. A korösszetétel fent, az első gyűrűn látszik.",
+      "health": "Mennyien halnak meg elkerülhető okból, ebből mennyi múlik az ellátáson, és miben tér el a járás halálozása az országostól. A halálozás az NNGYK {year}. évi adata.",
+      "compare": "Hol áll a járás a többi között: az eloszlás és a rangsor ugyanazt a mérőszámot mutatja, kezdetben az éppen nézett ág betöltetlenségét. Végül egy pontdiagram arról, összefügg-e a betöltetlenség a távolsággal vagy a fejlettséggel."
+    },
+    "rankingTitle": "A legrosszabb és a legjobb nyolc",
+    "rankingExplainMeasure": "A kiválasztott mérőszám ({measure}) szerint a legrosszabb és a legjobb nyolc járás, közöttük ez a járás. A szaggatott vonal az országos medián. A sávok kattinthatók.",
+    "access": {
+      "gp": "Menetidő a háziorvosig",
+      "oncall": "Menetidő az ügyeletig",
+      "inpatient": "Menetidő a kórházig",
+      "driveNote": "a járás településeinek mediánja, autóval",
+      "bus": "Közvetlen busz nélküli települések",
+      "busNote": "a járás {n} települése közül",
+      "busDots": "{n} település közvetlen busz nélkül, összesen {of}",
+      "sites": "Ellátóhelyek a járásban",
+      "oncallPoints": "ügyeleti pont",
+      "ambulance": "mentőállomás",
+      "pharmacies": "gyógyszertár"
+    },
     "heading": "Járások",
     "lead": "A megyei adatok túl általánosak, a településszintű elemzés pedig túlságosan széttagolt. A járás az a területi egység, ahol a fogászati ellátáshoz való hozzáférés valós különbségei már jól kirajzolódnak: hol érhető el fogorvos, milyen távolságra található a legközelebbi ellátóhely, és biztosított-e a sürgősségi ellátás. Ezért az ország 174 járását és Budapest 23 kerületét egyenként vizsgáljuk.",
     "mapNote": "A térkép a {kind} körzetek betöltetlenségét mutatja járásonként: minél sötétebb, annál nagyobb az arány. A skála teteje a 90. percentilis — ami fölötte van, az ugyanazt a legerősebb színt kapja. Vidd rá az egeret, vagy kattints rá.",
@@ -2166,11 +2287,8 @@
     "sliceOf": "{state} {branch} körzet a járásban",
     "longTerm": "{n} tartósan betöltetlen",
     "per10k": "{n} betöltött körzet 10 000 lakosra",
-    "travelLabel": "medián menetidő: háziorvos · ügyelet · kórház",
-    "accessLine": "{bus} településre nem megy közvetlen busz · {oncall} ügyeleti pont · {ambulance} mentőállomás · {pharmacies} gyógyszertár",
     "medianIndex": "medián kockázati index: {n}",
     "rankingHeading": "Hol áll a többihez képest?",
-    "rankingExplain": "A legrosszabb és a legjobb nyolc járás a {branch} betöltetlenség szerint, közöttük a kiválasztott. A szaggatott vonal az országos medián. A sávok kattinthatók.",
     "medianLine": "országos medián: {n}",
     "scatterHeading": {
       "travel": "Összefügg a távolsággal?",
@@ -2214,6 +2332,20 @@
     "laggingLabel": "a járás településeiből elmaradott besorolású",
     "laggingParts": "{socio} társadalmi-gazdasági, {unemployment} munkanélküliséggel sújtott, {temporary} átmenetileg",
     "laggingPopulation": "a lakosság {share}-a él bennük",
+    "devFacts": {
+      "grade": "Besorolás",
+      "rank": "Helyezés a {of} járás között",
+      "rankNote": "1. = a legelmaradottabb",
+      "threshold": "A kedvezményezettség határa",
+      "thresholdNote": "ez alatt kedvezményezett a járás"
+    },
+    "laggingFacts": {
+      "socio": "Társadalmi-gazdasági és infrastrukturális szempontból elmaradott",
+      "unemployment": "Jelentős munkanélküliséggel sújtott",
+      "temporary": "Átmenetileg kedvezményezett",
+      "population": "A járás lakóiból ezekben él",
+      "overlap": "Egy település több csoportba is tartozhat, ezért a számok összege nagyobb lehet az elmaradott települések számánál."
+    },
     "distHeading": "Hol áll ez a 197 járás között?",
     "distExplain": "Minden oszlop egy sáv: hány járás esik bele. A kiválasztott járás oszlopa kiemelve, alatta a pálcika mutatja a pontos értékét. A rangsorszám önmagában félrevezet: a 103. lehet hajszálnyira a mediántól és félúton a mélypontig is. Válts mértéket, vagy vigyéd rá az egeret egy oszlopra — alatta megjelennek a járások, és át lehet kattintani rájuk.",
     "distMedian": "medián: {n}",
@@ -2342,7 +2474,7 @@
       "preventable": "Csak megelőzéssel elkerülhető",
       "both": "Ellátással és megelőzéssel is",
       "allCause": "Összhalálozás",
-      "income": "Jövedelem egy lakosra",
+      "income": "Éves jövedelem egy lakosra, adózás előtt",
       "incomeIndex": "Jövedelem a járási medián %-ában",
       "taxpayers": "Adózók ezer lakosra",
       "jobseekers": "Álláskeresők aránya",
@@ -2514,12 +2646,13 @@
       "ageText": "A települések a 65 év felettiek aránya szerint sávokba rendezve; az oszlop azt mutatja, hányadukat látja el kizárólag betöltetlen háziorvosi körzet.",
       "ageTitle": "{from}–{to}% idős: {n} település, {share}% csak üres körzettel",
       "ageNote": "U alakú: a legfiatalabb és a legidősebb falvak a legkiszolgáltatottabbak. A két szélső sávban kevés a település, ezért ott egy-két község is sokat mozdít az arányon.",
+      "busCols": { "name": "Település", "people": "Lakos", "since": "Mióta üres a körzet" },
       "busHeading": "Ahová busz sem visz",
       "busBig": "település ({people} fő) a {of} közül, amelyet csak betöltetlen körzet lát el, közvetlen busszal sem éri el a legközelebbi orvost.",
       "desertHeading": "Ellátási sivatagok",
       "desertBig": "összefüggő folt {settlements} településsel, ahol {people} ember él",
       "desertText": "Emellett {isolated} elszigetelt település ({isolatedPeople} fő) van, ahol nincs betöltött háziorvosi körzet, és a szomszédja sem segít.",
-      "desertMore": "A térkép és a módszer →",
+      "desertMore": "A térkép és a módszer",
       "localHeading": "Négy keresztmetszet — {name}",
       "localLead": "Ugyanaz a négy kérdés, mint az elemzőben, csak ennek a területnek a településeire: mennyi ideje üres a körzet és milyen messze a következő orvos, mennyire idős a falu, eljut-e oda busz, és tartozik-e összefüggő ellátási sivatagba.",
       "desertLocal": "település tartozik összefüggő ellátási sivatagba ({clusters} klaszterben, {people} lakossal) a terület {of} településéből.",
@@ -2529,14 +2662,11 @@
     "yr": "év",
     "people": "fő",
     "district": {
-      "heading": "Egészség és életkörülmények",
-      "explain": "Az elkerülhető halálozás és a járás körülményei, a 174 vidéki járás mediánja és a megye mellett. A csík minden vidéki járást egy vonással mutat, a mediánt magasabb vonallal; a pont ez a járás. A rossz vég mindig jobbra esik. A halálozás az NNGYK {year}. évi adata.",
       "median": "vidéki medián",
       "rank": "{article} {rank}. legrosszabb a {of} vidéki járás közül",
       "capitalWide": "a főváros egészére",
       "capital": "Budapest egésze",
       "stripNote": "A kártya színe akkor piros, ha a járás a legrosszabb negyedben van, és akkor türkiz, ha a legjobb negyedben.",
-      "avoidHeading": "Miből áll az elkerülhető halálozás?",
       "avoidExplain": "A három NNGYK-csoport 100 ezer lakosra; az összegük az elkerülhető halálozás. Ha a piros rész a nagy, a hiányzó ellátás számít többet; ha a lila, a megelőzés.",
       "causeHeading": "Halálozás halálokok szerint",
       "shhNote": "Standardizált halálozási hányados (SHH): 100 az, amennyi halált az országos arányok a járás kor- és nemszerkezete alapján előre jeleznének. 140 = 40%-kal több a vártnál.",
@@ -2544,7 +2674,7 @@
       "incomeHeading": "Jövedelem a medián járás százalékában",
       "source": "Források: NNGYK Halandósági adatbázis; KSH TIMEA (NAV-adatok); NFSZ településsoros adatai.",
       "grantsHeading": "Állami támogatással betöltött körzetek a járásban ({n})",
-      "grantsLink": "Hogyan alakultak a támogatott körzetek országosan? →"
+      "grantsLink": "Hogyan alakultak a támogatott körzetek országosan?"
     },
     "cause": {
       "all": "Összes halálozás",
@@ -2559,15 +2689,13 @@
       "mental": "Mentális zavarok"
     },
     "county": {
-      "heading": "Egészség és életkörülmények — {county}",
-      "explain": "A megye a másik tizenkilenc mellett, öt mutatóban; mindegyik rangsor a legrosszabbtól a legjobbig tart. A halálozás az NNGYK {year}. évi adata, a többi a KSH TIMEA és az NFSZ legfrissebb közlése.",
       "place": "{rank}. a {of} megyéből (a legrosszabbtól számolva)",
       "jobsHeading": "Álláskeresők aránya — a megye és az ország",
       "incomeHeading": "Jövedelem a medián járás százalékában",
       "districtsHeading": "{county} járásai egymás mellett",
       "colDistrict": "Járás",
       "forecastHeading": "Betöltetlen háziorvosi körzetek a következő 12 hónapban",
-      "forecastLink": "Az előrejelzés módszere →",
+      "forecastLink": "Az előrejelzés módszere",
       "grantsHeading": "Háziorvosi letelepedési támogatások évenként",
       "grantsRow": "{n} nyertes, ma {filled} körzetben van orvos",
       "grantsNone": "A megyében nem volt szerződést kötött nyertes.",
@@ -2580,7 +2708,7 @@
       "medianSettlement": "medián település",
       "districtSuffix": "járás",
       "national": "ország",
-      "incomeHeading": "Jövedelem egy lakosra",
+      "incomeHeading": "Éves jövedelem egy lakosra, adózás előtt",
       "perYear": "évente, {year}",
       "capitalWide": "A KSH a fővárost egyetlen településként közli, ezért ez a szám Budapest egészére vonatkozik, nem a kerületre.",
       "taxpayers": "Ezer lakosból {n} fizet személyi jövedelemadót.",
@@ -2598,7 +2726,7 @@
       "loadText": "A rendelőben megjelentek, a beteglátogatások és a telemedicinális ellátások együtt. Ahol a környéken üres körzet van, a megmaradt orvosokra több jut.",
       "avoidable": "{article} {district} elkerülhető halálozása {value} / 100 ezer lakos ({year}); a vidéki járások mediánja {median}.",
       "avoidableNote": "Ez járási adat: településenként az NNGYK nem közöl elkerülhető halálozást, mert ennyi kis számból nem lehetne megbízható arányt számolni.",
-      "avoidableLink": "A járás egészségi adatai →",
+      "avoidableLink": "A járás egészségi adatai",
       "noise": "Egy kis településen néhány születés vagy költözés is nagyot mozdít az arányon, ezért a népmozgalmi számok négy év átlagai; a nagyon kis falvaknál így is óvatosan kell olvasni őket.",
       "source": "Források: KSH TIMEA (a jövedelem a NAV adataiból), KSH 2022. évi népszámlálás, NFSZ településsoros adatai, NNGYK Halandósági adatbázis, NEAK letelepedési pályázatok nyertesei és havi adatai; az előrejelzés saját számítás.",
       "sboLayer": "Sürgősségi osztály",
@@ -2649,7 +2777,7 @@
         "chanceOneNow": "A települést ellátó körzet ma betöltetlen; {pct}% az esélye, hogy 12 hónap múlva is az lesz."
       }
     },
-    "methodLink": "Módszertan →",
+    "methodLink": "Módszertan",
     "steps": {
       "heading": "Mennyi marad az összefüggésből?",
       "raw": "Nyers összefüggés",
@@ -2917,12 +3045,13 @@
     "kpi": {
       "people": "ember él az első {n} járásban",
       "avoidable": "elkerülhető halálozás 100 ezer lakosra ezekben a járásokban — a többi vidéki járásban {rest}",
-      "income": "egy lakosra jutó éves jövedelem — a többi vidéki járásban {rest}",
+      "income": "éves jövedelem egy lakosra, adózás előtt — a többi vidéki járásban {rest}",
       "jobs": "az álláskeresők aránya — a többi vidéki járásban {rest}"
     },
     "col": {
       "district": "Járás",
-      "score": "Rangszám"
+      "score": "Rangszám",
+      "sort": "Rendezés: {col}"
     },
     "factor": {
       "gpRate": "Üres háziorvosi körzet",
@@ -2976,7 +3105,7 @@
       "cluster": "Egy összefüggő ellátási hiányterület része: {name} környéke, {n} település, {pop} lakos.",
       "change": "{month} óta az ide tartozó betöltetlen vagy megszűnt {kind} körzetek száma {then} helyett {now}.",
       "newDoctorsLabel": "körzetben kezdett új orvos egy év alatt",
-      "income": "Jövedelem egy lakosra ({year}): {value}; a medián településen {median}.",
+      "income": "Éves jövedelem egy lakosra, adózás előtt ({year}): {value}; a medián településen {median}.",
       "districtCol": "{district} járás",
       "medianCol": "medián település"
     },
@@ -3350,8 +3479,11 @@
     "loading": "Az európai adatok betöltése…",
     "sideNav": "Európa",
     "side": {
-      "countries": "Országok",
-      "regions": "Régiók"
+      "overview": "Áttekintés",
+      "demand": "Igény és orvosok",
+      "access": "Hozzáférés és eredmény",
+      "money": "Pénz",
+      "regions": "Összevetés és régiók"
     },
     "toc": {
       "attekintes": "Áttekintés",
@@ -3860,16 +3992,21 @@
     "county": {
       "label": "Megye",
       "group": {
-        "county": "A megye"
+        "county": "A megye",
+        "country": "Országosan"
       },
       "varmegye": "Megye választása",
-      "attekintes": "Áttekintés",
-      "ellatas": "Ellátás számokban",
-      "egeszseg": "Egészség és életkörülmények",
-      "elorejelzes": "Előrejelzés és támogatások",
+      "attekintes": "Összkép",
+      "ellatas": "Ellátás",
+      "elerhetoseg": "Elérhetőség",
+      "nepesseg": "Népesség",
+      "gazdasag": "Gazdaság és társadalom",
+      "egeszseg": "Egészség",
       "jarasai": "A megye járásai",
-      "keresztmetszet": "Keresztmetszetek",
-      "telepulesek": "A megye települései"
+      "telepulesek": "A megye települései",
+      "osszehasonlitas": "A megye a többi mellett",
+      "fluktuacio": "Orvosváltások",
+      "rangsor": "Megyei rangsor"
     },
     "district": {
       "label": "Járás",
@@ -3878,12 +4015,13 @@
         "country": "Országosan"
       },
       "jaras": "Járás választása",
-      "allapot": "Az ellátás állapota",
-      "fejlettseg": "Fejlettség",
-      "egeszseg": "Egészség és életkörülmények",
-      "keresztmetszet": "Keresztmetszetek",
-      "rangsor": "Rangsor",
-      "osszefugges": "Összefüggés",
+      "allapot": "Összkép",
+      "ellatas": "Ellátás",
+      "elerhetoseg": "Elérhetőség",
+      "nepesseg": "Népesség",
+      "gazdasag": "Gazdaság és társadalom",
+      "egeszseg": "Egészség",
+      "osszehasonlitas": "Országos összehasonlítás",
       "telepulesek": "A járás települései",
       "veszelyeztetett": "A legveszélyeztetettebb járások"
     },
@@ -4205,7 +4343,7 @@
     "living": {
       "text": "A település a járása, a megyéje és a viszonyítási érték mellett. Jövedelem: KSH TIMEA (NAV), {incomeYear}; a népmozgalmi számok négyéves átlagok; a népszámlálási arányok 2022-esek.",
       "note": "Viszonyítás: a jövedelemnél és a népmozgalomnál a magyar települések mediánja, az álláskeresőknél és a népszámlálási arányoknál az országos érték. Kis településen néhány születés vagy költözés is nagyot mozdít az arányokon.",
-      "incomeChart": "Jövedelem egy lakosra ({year})",
+      "incomeChart": "Éves jövedelem egy lakosra, adózás előtt ({year})",
       "incomeCaption": "Millió forint évente, SZJA-alapot képező jövedelem. Forrás: KSH TIMEA a NAV adataiból."
     },
     "jobseekers": {

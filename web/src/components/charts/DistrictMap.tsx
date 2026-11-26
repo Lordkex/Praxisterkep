@@ -9,7 +9,7 @@
 // in the corner. And the empty quarter of the frame above the Danube is where
 // the hover goes: the name of the járás, its seat, and its number, big enough
 // to read without hunting for a tooltip.
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { t } from '../../lib/i18n';
 import { useDistrictShapes, type Box, type DistrictShape } from '../../lib/districtShapes';
 
@@ -19,12 +19,25 @@ const H = 440;
 // country under it, and the capital's inset in a column of its own on the
 // right — the inset used to sit on the Great Plain and the readout on the
 // north-west counties
-const READ_H = 50;
+// the readout strip is 60 high: at 50 its two lines touched its edges
+const READ_H = 60;
 const SIDE = 172;
 const COUNTRY: Box = { x: 0, y: READ_H + 6, width: W - SIDE - 8, height: H - READ_H - 6 };
 const INSET: Box = { x: W - SIDE + 9, y: H - 168, width: SIDE - 18, height: 140 };
-// the empty north-west corner, where no járás is ever drawn
-const READ = { x: 6, y: 6, width: W - 12 };
+// the strip runs edge to edge, so its sides line up with the heading and the
+// text of the page (half the 1px stroke inside the drawing, not clipped)
+const READ = { x: 0.5, y: 0.5, width: W - 1 };
+// the top of the right-hand column, under the readout: where a page may put
+// its own controls (the járás page's pickers), flush with the right edge
+// like the readout and the inset, as a share of the drawing so it scales
+// (custom properties, not inline left/top: the phone layout in index.css has
+// to be able to set them aside)
+const SIDE_SLOT = {
+  '--slot-left': `${((W - SIDE) / W) * 100}%`,
+  '--slot-width': `${(SIDE / W) * 100}%`,
+  '--slot-top': `${((READ_H + 10) / H) * 100}%`,
+  '--slot-bottom': `${((H - INSET.y + 18) / H) * 100}%`,
+} as CSSProperties;
 
 /**
  * The ramp.
@@ -129,7 +142,7 @@ function Legend({ ends, shadeAt, empty, format, hasEmpty, scaled }: {
 
 export function DistrictMap({
   values, format, color = 'var(--bad)', empty = 'var(--bg-panel)', onPick, selected,
-  legendFormat, total, seatOf, scale,
+  legendFormat, total, seatOf, scale, side,
 }: {
   /** járás name -> value in 0..1; a missing one is drawn as empty */
   values: Map<string, number>;
@@ -146,13 +159,25 @@ export function DistrictMap({
   seatOf?: (name: string) => string | undefined;
   /** for a measure that is not a rate from zero (see MapScale) */
   scale?: MapScale;
+  /** controls for the right-hand column above the capital's inset; on a
+   *  phone, where that column is a thumb wide, they fall under the map */
+  side?: ReactNode;
 }) {
   const inset = useMemo(() => INSET, []);
   const country = useMemo(() => COUNTRY, []);
   const { shapes, capital } = useDistrictShapes(W, H, inset, country);
   const [hover, setHover] = useState<string | null>(null);
   // hold the map's place while the outlines load, so the pickers under it stay put
-  if (!shapes.length) return <div className="district-map" aria-hidden="true"><div style={{ aspectRatio: `${W} / ${H}` }} /></div>;
+  if (!shapes.length) {
+    return (
+      <div className="district-map">
+        <div className="district-map__stage">
+          <div aria-hidden="true" style={{ aspectRatio: `${W} / ${H}` }} />
+          {side && <div className="district-map__side" style={SIDE_SLOT}>{side}</div>}
+        </div>
+      </div>
+    );
+  }
   const sorted = [...values.values()].sort((a, b) => a - b);
   // the ramp tops out at the 90th percentile, not at the single worst járás:
   // a lone 75% would squash every other shape into the background, and the
@@ -180,6 +205,7 @@ export function DistrictMap({
 
   return (
     <div className="district-map">
+      <div className="district-map__stage">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('district.heading')}
         onPointerLeave={() => setHover(null)}>
         {shapes.map((s) => shape(s, s.name))}
@@ -211,29 +237,31 @@ export function DistrictMap({
           <rect x={READ.x} y={READ.y} width={READ.width} height={READ_H - 6} rx={8} />
           {shownName ? (
             <>
-              <text x={READ.x + 14} y={READ.y + 20} className="district-map__read-name">
+              <text x={READ.x + 16} y={READ.y + 24} className="district-map__read-name">
                 {shownName}</text>
               {seat && seat !== shownName && (
-                <text x={READ.x + 14} y={READ.y + 37} className="district-map__read-seat">
+                <text x={READ.x + 16} y={READ.y + 43} className="district-map__read-seat">
                   {t('district.readSeat', { seat })}
                 </text>
               )}
-              <text x={READ.x + READ.width - 14} y={READ.y + 26} textAnchor="end"
+              <text x={READ.x + READ.width - 16} y={READ.y + 29} textAnchor="end"
                 className="district-map__read-value">
                 {value === undefined ? '–'
                   : legendFormat ? legendFormat(value) : String(value)}
               </text>
-              <text x={READ.x + READ.width - 14} y={READ.y + 39} textAnchor="end"
+              <text x={READ.x + READ.width - 16} y={READ.y + 45} textAnchor="end"
                 className="district-map__read-label">
                 {t('district.readValue')}
               </text>
             </>
           ) : (
-            <text x={READ.x + READ.width / 2} y={READ.y + 27} textAnchor="middle"
+            <text x={READ.x + READ.width / 2} y={READ.y + 32} textAnchor="middle"
               className="district-map__read-hint">{t('district.readHint')}</text>
           )}
         </g>
       </svg>
+      {side && <div className="district-map__side" style={SIDE_SLOT}>{side}</div>}
+      </div>
       {legendFormat && (
         <Legend ends={ramp.ends} shadeAt={ramp.shadeAt} empty={empty} format={legendFormat}
           hasEmpty={(total ?? shapes.length) > values.size} scaled={!!scale} />

@@ -79,7 +79,12 @@ export function CountyChurn({ county }: { county: string | null }) {
       <p className="section__explain">{t('churn.heatmapExplain')}</p>
       <ChurnHeatmap matrix={matrix} />
 
-      <h3 className="section__subheading">{t('churn.barsTitle')}</h3>
+      {/* the table of all counties belongs to this list: its button sits at
+          the list's top right, not under it */}
+      <div className="subhead-row">
+        <h3 className="section__subheading">{t('churn.barsTitle')}</h3>
+        <button className="data-btn" onClick={() => setOpen(true)}>{t('churn.openTable')}</button>
+      </div>
       <div className="churn-bars">
         {[...rows].sort((a, b) => (b.recentRate ?? 0) - (a.recentRate ?? 0)).map((r) => (
           <div key={r.county} className={`churn-bar${r.county === county ? ' is-on' : ''}`}>
@@ -97,11 +102,6 @@ export function CountyChurn({ county }: { county: string | null }) {
         ))}
       </div>
 
-      <div className="eeszt-actions">
-        <button className="data-btn data-btn--accent" onClick={() => setOpen(true)}>
-          {t('churn.openTable')}
-        </button>
-      </div>
       <p className="extra-note">{t('churn.caveat')}</p>
 
       <DataTableModal open={open} onClose={() => setOpen(false)}

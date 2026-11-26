@@ -67,6 +67,8 @@
   cursor: pointer; display: grid; place-items: center;
 }
 .cutstory__play svg { width: 100%; height: 100%; fill: currentColor; }
+/* the replay arrow is a line: the fill above turned its arc into a solid disc */
+.cutstory__play svg.cutstory__replay { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .cutstory__play:hover, .cutstory__play:focus-visible { border-color: var(--accent); }
 .cutstory__track { flex: 1; display: flex; gap: 4px; min-width: 60px; }
 .cutstory__seg {

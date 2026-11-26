@@ -15,24 +15,34 @@ import {
   vacancyRate,
   type Band, type DistrictRow, type Measure, type SettlementRow, type State,
 } from '../lib/districts';
-import { AgeLegend, AgePie, type AgeKey } from './charts/AgePie';
+import { AGE_COLORS, type AgeKey } from './charts/AgePie';
 import { Donut, DonutLegend } from './charts/Donut';
 import { DistrictMap } from './charts/DistrictMap';
 import { DistrictRanking } from './charts/DistrictRanking';
 import { DistrictScatter, type ScatterX } from './charts/DistrictScatter';
 import { DistrictOutcomes } from './DistrictOutcomes';
+import { useOutcomes } from '../lib/outcomes';
 import { DistrictDistribution } from './charts/DistrictDistribution';
 import { CompareBars, ScaleMark, ShareDots } from './charts/DistrictFigures';
+import { IconBusOff } from './icons';
 import { PageNav } from './PageNav';
+import { SegmentedControl } from './SegmentedControl';
 import { SideNav } from './SideNav';
 import { sideGroups } from '../lib/sideGroups';
 import { NextSteps } from './NextSteps';
+import { Headline } from './Headline';
 import { Footer } from './Footer';
 import { PdfButton } from './PdfButton';
 import { DistrictStory } from './story/PageStories';
 import { VulnerableDistricts } from './VulnerableDistricts';
 
 const DISTRICT_GROUPS = sideGroups('district');
+// the comparison's measures by theme, in the order of the page's sections
+const MEASURE_GROUPS: readonly (readonly [string, readonly string[]])[] = [
+  ['care', ['gpVacancy', 'dentalVacancy', 'index']],
+  ['access', ['gpMin', 'oncallMin']],
+  ['society', ['development', 'lagging', 'ageing']],
+];
 
 const NEXT = [
   { href: 'megye.html', titleKey: 'next.county.title', textKey: 'next.county.text' },
@@ -63,6 +73,57 @@ function StateDot({ state }: { state: State }) {
   return (
     <span className={`county-dot county-dot--${state || 'absent'}`}
       title={t(`county.state.${state || 'absent'}`)} />
+  );
+}
+
+const AGE_KEYS: readonly AgeKey[] = ['young', 'working', 'old'];
+// the three rings of the state cards: one size, one ring width
+const RING = 130;
+const RING_W = 20;
+
+
+/**
+ * The drive times and the places of care, as cards beside the outcome ones.
+ * They come from the districts file, which carries no strip or rank for
+ * them, so they show the figure alone. "drive" goes before the emergency
+ * department card, "places" after it.
+ */
+function AccessCards({ d, which }: { d: DistrictRow; which: 'drive' | 'places' }) {
+  if (which === 'drive') {
+    const drive = [['gp', d.medianGpMinutes], ['oncall', d.medianOncallMinutes],
+      ['inpatient', d.medianInpatientMinutes]] as const;
+    return drive.map(([k, v]) => (
+      <article key={k} className="yard-card">
+        <h3>{t(`district.access.${k}`)}</h3>
+        <div className="yard-card__value">{minutes(v)}</div>
+        <p className="yard-card__rank">{t('district.access.driveNote')}</p>
+      </article>
+    ));
+  }
+  return (
+    <>
+      <article className="yard-card">
+        <h3>{t('district.access.bus')}</h3>
+        {/* the struck-through bus beside the count, and every settlement as a
+            dot under it, the ones without a direct bus lit */}
+        <div className="yard-card__iconvalue">
+          <span className="yard-card__icon" aria-hidden="true"><IconBusOff /></span>
+          <div className="yard-card__value">{formatNumber(d.withoutDirectBus)}</div>
+        </div>
+        <p className="yard-card__rank">{t('district.access.busNote', {
+          n: formatNumber(d.settlements) })}</p>
+        <ShareDots total={d.settlements} marked={d.withoutDirectBus} max={500} dense={d.settlements > 120}
+          title={t('district.access.busDots', { n: formatNumber(d.withoutDirectBus), of: formatNumber(d.settlements) })} />
+      </article>
+      <article className="yard-card">
+        <h3>{t('district.access.sites')}</h3>
+        <ul className="yard-card__facts">
+          <li><b>{formatNumber(d.oncallPoints)}</b> {t('district.access.oncallPoints')}</li>
+          <li><b>{formatNumber(d.ambulanceStations)}</b> {t('district.access.ambulance')}</li>
+          <li><b>{formatNumber(d.pharmacies)}</b> {t('district.access.pharmacies')}</li>
+        </ul>
+      </article>
+    </>
   );
 }
 
@@ -112,10 +173,11 @@ export function DistrictPage() {
   const district = useContextStore((s) => s.district);
   const setDistrict = useContextStore((s) => s.setDistrict);
   const [sort, setSort] = useState<SortKey>('band');
-  const [ageOn, setAgeOn] = useState<AgeKey | null>(null);
+  const [ageOn, setAgeOn] = useState<string | null>(null);
   const [gpOn, setGpOn] = useState<string | null>(null);
   const [dentalOn, setDentalOn] = useState<string | null>(null);
-  const [measureKey, setMeasureKey] = useState('development');
+  // null: the vacancy of the branch being looked at, until the reader picks
+  const [measureKey, setMeasureKey] = useState<string | null>(null);
   const [scatterX, setScatterX] = useState<ScatterX>('travel');
 
   const d = districtOf(data, district);
@@ -155,7 +217,10 @@ export function DistrictPage() {
     setDistrict(name);
   };
 
-  const measure = MEASURES.find((m) => m.key === measureKey) ?? MEASURES[0];
+  const measure = MEASURES.find((m) => m.key === (measureKey
+    ?? (kind === 'gp' ? 'gpVacancy' : 'dentalVacancy'))) ?? MEASURES[0];
+  const outcomes = useOutcomes();
+  const outcomesYear = String(outcomes?.sources.mortality.year ?? '');
 
   // What this járás is read against. A kerület is not a járás in any sense a
   // reader means — 23 of them share one town — so the capital is compared
@@ -207,7 +272,9 @@ export function DistrictPage() {
       value: d.settlements,
       reference: marks.jaras.settlements,
       referenceLabel: t('district.benchAverage'),
-      format: (v: number) => formatDecimal(v.toFixed(v < 10 ? 1 : 0)),
+      // the járás's own count is whole ("5", not "5,0"); the average is not
+      format: (v: number) => (Number.isInteger(v) ? formatNumber(v)
+        : formatDecimal(v.toFixed(v < 10 ? 1 : 0))),
     }] : []),
   ];
 
@@ -226,8 +293,10 @@ export function DistrictPage() {
     { value: d.dentalDistricts.dissolved, color: 'var(--line-strong)',
       label: t('stats.statusDissolved') },
   ].filter((s) => s.value > 0) : [];
-  const gpActive = gpSlices.find((s) => s.label === gpOn) ?? null;
-  const dentalActive = dentalSlices.find((s) => s.label === dentalOn) ?? null;
+  // the age split as a ring like the other two, so the three read as one row
+  const ageSlices = d?.age ? AGE_KEYS.map((key) => ({
+    key, value: d.age![key], color: AGE_COLORS[key], label: t(`age.part.${key}`),
+  })) : [];
 
   return (
     <>
@@ -244,30 +313,31 @@ export function DistrictPage() {
           total={data?.districts.length}
           seatOf={(name) => districtOf(data, name)?.seat}
           legendFormat={(v) => formatPercent(v, 0)}
-          format={(name, v) => `${name}: ${v === undefined ? '–' : formatPercent(v)}`} />
+          format={(name, v) => `${name}: ${v === undefined ? '–' : formatPercent(v)}`}
+          side={(
+            <div className="district-pickers">
+              <label className="county-picker">
+                <span>{t('county.pick')}</span>
+                <select value={county ?? ''} onChange={(e) => setCounty(e.target.value || null)}>
+                  <option value="">{t('district.allCounties')}</option>
+                  {counties.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </label>
+              <label className="county-picker">
+                <span>{t('district.pick')}</span>
+                <select value={district ?? ''}
+                  onChange={(e) => (e.target.value ? pick(e.target.value) : setDistrict(null))}>
+                  <option value="">{t('district.pickNone')}</option>
+                  {options.map((x) => (
+                    <option key={x.name} value={x.name}>{x.name}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )} />
         <p className="tp-note">{t('district.mapNote', {
           kind: t(`kinds.${kind}.adj`),
         })}</p>
-
-        <div className="district-pickers">
-          <label className="county-picker">
-            <span>{t('county.pick')}</span>
-            <select value={county ?? ''} onChange={(e) => setCounty(e.target.value || null)}>
-              <option value="">{t('district.allCounties')}</option>
-              {counties.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </label>
-          <label className="county-picker">
-            <span>{t('district.pick')}</span>
-            <select value={district ?? ''}
-              onChange={(e) => (e.target.value ? pick(e.target.value) : setDistrict(null))}>
-              <option value="">{t('district.pickNone')}</option>
-              {options.map((x) => (
-                <option key={x.name} value={x.name}>{x.name}</option>
-              ))}
-            </select>
-          </label>
-        </div>
 
         <DistrictStory />
 
@@ -276,113 +346,227 @@ export function DistrictPage() {
 
         {d && (
           <>
-            <h2 className="section__subheading" id="allapot">
-              {t('district.stateHeading', { name: d.name })}
-            </h2>
-            <Verdict data={data} d={d} />
+            {/* the heading and its sentence on the left, the yardstick beside
+                them from the heading down: how big this járás is against an
+                average one reads with the verdict, not under the age ring */}
+            <div className="district-intro">
+              <div className="district-intro__text">
+                <h2 className="section__subheading" id="allapot">
+                  {t('district.stateHeading', { name: d.name })}
+                </h2>
+                <Verdict data={data} d={d} />
+              </div>
+              {bench && bench.length > 0 && (
+                <div className="district-intro__bench"><CompareBars rows={bench} /></div>
+              )}
+            </div>
 
-            <div className="county-cards">
-              <article className="county-card">
-                {d.age && (
-                  <div className="county-card__figure">
-                    <AgePie split={d.age} size={150} hole={44}
-                      active={ageOn} onActive={setAgeOn} />
-                  </div>
-                )}
-                <div className="county-card__body">
-                  {ageOn && d.age ? (
-                    <>
-                      <div className="stat__value">{formatNumber(d.age[ageOn])}</div>
-                      <div className="stat__label">{t('county.ageOf', {
-                        group: t(`age.part.${ageOn}`),
-                        share: formatPercent(d.age[ageOn] / d.age.total),
-                      })}</div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="stat__value">{formatNumber(d.population)}</div>
-                      <div className="stat__label">{t('district.population', {
-                        n: formatNumber(d.settlements),
-                      })}</div>
-                    </>
+            <div className="county-cards county-cards--fill">
+              {/* three rings alike: the figure and its words beside the ring,
+                  the legend and the context under both */}
+              <article className="county-card county-card--stacked">
+                <div className="county-card__head">
+                  {d.age && (
+                    <div className="county-card__figure">
+                      <Donut size={RING} thickness={RING_W} slices={ageSlices}
+                        active={ageOn} onActive={setAgeOn}>
+                        {/* the share the page worries about: the over-65s */}
+                        <span className="donut__stack">
+                          <strong>{formatPercent(d.age.old / d.age.total)}</strong>
+                          <small>{t('age.part.old')}</small>
+                        </span>
+                      </Donut>
+                    </div>
                   )}
-                  {d.age && <AgeLegend split={d.age} active={ageOn} onActive={setAgeOn} />}
+                  <Headline on={ageOn ?? ''} variants={[
+                    { key: '', value: formatNumber(d.population),
+                      label: t('district.population', { n: formatNumber(d.settlements) }) },
+                    ...ageSlices.map((s) => ({
+                      key: s.label, value: formatNumber(s.value),
+                      label: t('county.ageOf', {
+                        group: s.label, share: formatPercent(s.value / d.age!.total),
+                      }),
+                    })),
+                  ]} />
+                </div>
+                <div className="county-card__body">
+                  {d.age && <DonutLegend slices={ageSlices} active={ageOn} onActive={setAgeOn} />}
                   <div className="stat__context">{t('district.seatLine', {
                     seat: d.seat, county: d.county,
                   })}</div>
-                  {bench && <CompareBars rows={bench} />}
                 </div>
               </article>
 
               {(['gp', 'dental'] as const).map((branch) => {
                 const cell = branch === 'gp' ? d.gpDistricts : d.dentalDistricts;
                 const slices = branch === 'gp' ? gpSlices : dentalSlices;
-                const active = branch === 'gp' ? gpActive : dentalActive;
+                const on = branch === 'gp' ? gpOn : dentalOn;
                 const onActive = branch === 'gp' ? setGpOn : setDentalOn;
                 const rate = vacancyRate(d, branch);
                 const thin = per10k(d, branch);
+                const of = (n: number) => (
+                  <>{formatNumber(n)}<span className="stat__of"> / {formatNumber(cell?.total ?? 0)}</span></>
+                );
                 return (
-                  <article className="county-card" key={branch}>
-                    <div className="county-card__figure">
-                      <Donut size={150} thickness={20} slices={slices}
-                        active={branch === 'gp' ? gpOn : dentalOn} onActive={onActive}>
-                        <strong>{rate === null ? '–' : formatPercent(rate)}</strong>
-                      </Donut>
+                  <article className="county-card county-card--stacked" key={branch}>
+                    <div className="county-card__head">
+                      <div className="county-card__figure">
+                        <Donut size={RING} thickness={RING_W} slices={slices}
+                          active={on} onActive={onActive}>
+                          <strong>{rate === null ? '–' : formatPercent(rate)}</strong>
+                        </Donut>
+                      </div>
+                      <Headline on={on ?? ''} variants={[
+                        { key: '', value: of((cell?.vacant ?? 0) + (cell?.dissolved ?? 0)),
+                          label: t('district.vacantOf', { branch: t(`kinds.${branch}.adj`) }) },
+                        ...slices.map((s) => ({
+                          key: s.label, value: of(s.value),
+                          label: t('district.sliceOf', {
+                            state: s.label.toLowerCase(), branch: t(`kinds.${branch}.adj`),
+                          }),
+                        })),
+                      ]} />
                     </div>
                     <div className="county-card__body">
-                      {active ? (
-                        <>
-                          <div className="stat__value">{formatNumber(active.value)}
-                            <span className="stat__of"> / {formatNumber(
-                              cell?.total ?? 0)}</span>
-                          </div>
-                          <div className="stat__label">{t('district.sliceOf', {
-                            state: active.label.toLowerCase(),
-                            branch: t(`kinds.${branch}.adj`),
-                          })}</div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="stat__value">
-                            {formatNumber((cell?.vacant ?? 0) + (cell?.dissolved ?? 0))}
-                            <span className="stat__of"> / {formatNumber(
-                              cell?.total ?? 0)}</span>
-                          </div>
-                          <div className="stat__label">{t('district.vacantOf', {
-                            branch: t(`kinds.${branch}.adj`),
-                          })}</div>
-                        </>
+                      <DonutLegend slices={slices} active={on} onActive={onActive} />
+                      {/* two facts, two lines */}
+                      {cell?.longTerm ? (
+                        <div className="stat__context">{t('district.longTerm', {
+                          n: formatNumber(cell.longTerm) })}</div>
+                      ) : null}
+                      {thin !== null && (
+                        <div className="stat__context">{t('district.per10k', {
+                          n: formatDecimal(thin.toFixed(2)) })}</div>
                       )}
-                      <DonutLegend slices={slices}
-                        active={branch === 'gp' ? gpOn : dentalOn} onActive={onActive} />
-                      <div className="stat__context">
-                        {cell?.longTerm ? `${t('district.longTerm', {
-                          n: formatNumber(cell.longTerm) })} · ` : ''}
-                        {thin !== null && t('district.per10k', {
-                          n: formatDecimal(thin.toFixed(2)) })}
-                      </div>
                     </div>
                   </article>
                 );
               })}
 
-              <article className="county-card county-card--wide">
-                <div className="county-card__body">
-                  <div className="stat__value">{minutes(d.medianGpMinutes)}
-                    <span className="stat__of"> · {minutes(d.medianOncallMinutes)}
-                      {' · '}{minutes(d.medianInpatientMinutes)}</span>
-                  </div>
-                  <div className="stat__label">{t('district.travelLabel')}</div>
-                  <div className="stat__context">{t('district.accessLine', {
-                    bus: formatNumber(d.withoutDirectBus),
-                    oncall: formatNumber(d.oncallPoints),
-                    ambulance: formatNumber(d.ambulanceStations),
-                    pharmacies: formatNumber(d.pharmacies),
-                  })}</div>
-                </div>
-              </article>
             </div>
 
+            {/* Below the summary the page goes theme by theme, each with the
+                same cards (value, strip, rural median, county, rank) and the
+                one or two charts that belong to it. It used to follow the data
+                files instead: fifteen outcome cards in one block, the drive
+                times on a card of their own, the national comparison in three
+                places, and several numbers two to five times over. */}
+
+            <h2 className="section__subheading" id="ellatas">{t('district.part.care')}</h2>
+            <p className="section__explain">{t('district.partLead.care')}</p>
+            <DistrictOutcomes name={d.name} part="care" />
+
+            <h2 className="section__subheading" id="elerhetoseg">{t('district.part.access')}</h2>
+            <p className="section__explain">{t('district.partLead.access')}</p>
+            <DistrictOutcomes name={d.name} part="access"
+              lead={<AccessCards d={d} which="drive" />} trail={<AccessCards d={d} which="places" />} />
+
+            <h2 className="section__subheading" id="nepesseg">{t('district.part.people')}</h2>
+            <p className="section__explain">{t('district.partLead.people')}</p>
+            <DistrictOutcomes name={d.name} part="people" />
+
+            <h2 className="section__subheading" id="gazdasag">{t('district.part.economy')}</h2>
+            <p className="section__explain">{t('district.partLead.economy')}</p>
+            <h3 className="why__chain-title" id="fejlettseg">{t('district.devHeading')}</h3>
+            <p className="section__explain">{t('district.devExplain', {
+              year: String(data?.development?.measuredYear ?? ''),
+            })}</p>
+            {d.development && (
+              <div className="county-cards county-cards--fill">
+                {/* the figure and its chart on the left, what it means listed
+                    on the right in reading size: the grade, the place, the
+                    threshold used to sit in small print under the scale */}
+                <article className="county-card county-card--wide dev-card">
+                  <div className="dev-card__main">
+                    <div className="stat__value">{formatDecimal(d.development.complex.toFixed(2))}</div>
+                    <div className="stat__label">{t('district.devValue')}</div>
+                    <ScaleMark value={d.development.complex}
+                      lo={devRange.lo} hi={devRange.hi}
+                      threshold={data?.development?.beneficiaryBelow ?? null}
+                      thresholdLabel={t('district.devThresholdShort')}
+                      format={(v) => formatDecimal(v.toFixed(1))} />
+                  </div>
+                  <dl className="dev-card__facts">
+                    <div>
+                      <dt>{t('district.devFacts.grade')}</dt>
+                      <dd>{d.development.grade ? (
+                        <span className={`dev-badge dev-badge--${d.development.grade}`}>
+                          {t(`district.devGrade.${d.development.grade}`)}
+                        </span>
+                      ) : (
+                        <span className="dev-badge dev-badge--none">{t('district.devGrade.none')}</span>
+                      )}</dd>
+                    </div>
+                    {d.development.rank !== null && (
+                      <div>
+                        <dt>{t('district.devFacts.rank', { of: formatNumber(data?.districts.length ?? 0) })}
+                          <small>{t('district.devFacts.rankNote')}</small></dt>
+                        <dd><b>{formatNumber(d.development.rank)}.</b></dd>
+                      </div>
+                    )}
+                    {data?.development?.beneficiaryBelow != null && (
+                      <div>
+                        <dt>{t('district.devFacts.threshold')}
+                          <small>{t('district.devFacts.thresholdNote')}</small></dt>
+                        <dd><b>{formatDecimal(data.development.beneficiaryBelow.toFixed(2))}</b></dd>
+                      </div>
+                    )}
+                  </dl>
+                </article>
+                {d.lagging && d.lagging.settlements > 0 && (
+                  <article className="county-card county-card--wide dev-card">
+                    <div className="dev-card__main">
+                      <div className="stat__value">
+                        {formatPercent(d.lagging.share)}
+                        <span className="stat__of"> · {formatNumber(
+                          d.lagging.settlements)} / {formatNumber(d.settlements)}</span>
+                      </div>
+                      <div className="stat__label">{t('district.laggingLabel')}</div>
+                      <ShareDots total={d.settlements}
+                        marked={d.lagging.settlements}
+                        title={t('district.laggingDots', {
+                          n: formatNumber(d.lagging.settlements),
+                          of: formatNumber(d.settlements),
+                        })} />
+                    </div>
+                    <div className="dev-card__side">
+                    <dl className="dev-card__facts">
+                      {(['socio', 'unemployment', 'temporary'] as const).map((k) => (
+                        <div key={k}>
+                          <dt>{t(`district.laggingFacts.${k}`)}</dt>
+                          <dd><b>{formatNumber(d.lagging![k])}</b></dd>
+                        </div>
+                      ))}
+                      {d.lagging.populationShare !== null && (
+                        <div>
+                          <dt>{t('district.laggingFacts.population')}</dt>
+                          <dd><b>{formatPercent(d.lagging.populationShare)}</b></dd>
+                        </div>
+                      )}
+                    </dl>
+                    <p className="dev-card__note">{t('district.laggingFacts.overlap')}</p>
+                    </div>
+                  </article>
+                )}
+              </div>
+            )}
+            <p className="extra-note">{t('district.devSource', {
+              source: data?.development?.source ?? '',
+              benefit: data?.development?.benefitSource ?? '',
+            })}</p>
+            <h3 className="why__chain-title">{t('district.part.economyCards')}</h3>
+            <DistrictOutcomes name={d.name} part="economy" />
+
+            <h2 className="section__subheading" id="egeszseg">{t('district.part.health')}</h2>
+            <p className="section__explain">{t('district.partLead.health', {
+              year: outcomesYear,
+            })}</p>
+            <DistrictOutcomes name={d.name} part="health" />
+
+            <h2 className="section__subheading" id="telepulesek">
+              {t('district.tableHeading', { name: d.name })}
+            </h2>
+            <p className="section__explain">{t('county.tableExplain')}</p>
             <table className="info-table">
               <tbody>
                 <tr>
@@ -399,10 +583,11 @@ export function DistrictPage() {
                     filled: formatNumber(d.dentalFilled),
                     partial: formatNumber(d.dentalPartial),
                     vacant: formatNumber(d.dentalVacantOnly),
-                  })}{' '}
-                    <span className="county-note">{t('county.dentalSeats', {
+                  })}
+                    {/* "0 further settlements …" said nothing and still took a line */}
+                    {d.dentalAbsent > 0 && <>{' '}<span className="county-note">{t('county.dentalSeats', {
                       n: formatNumber(d.dentalAbsent),
-                    })}</span>
+                    })}</span></>}
                   </td>
                 </tr>
                 <tr>
@@ -416,177 +601,115 @@ export function DistrictPage() {
                 </tr>
               </tbody>
             </table>
-
-            <h2 className="section__subheading" id="fejlettseg">
-              {t('district.devHeading')}
-            </h2>
-            <p className="section__explain">{t('district.devExplain', {
-              year: String(data?.development?.measuredYear ?? ''),
-            })}</p>
-            {d.development && (
-              <div className="county-cards">
-                <article className="county-card county-card--wide">
-                  <div className="county-card__body">
-                    <div className="stat__value">
-                      {formatDecimal(d.development.complex.toFixed(2))}
-                      {d.development.rank !== null && (
-                        <span className="stat__of"> · {t('district.devRank', {
-                          rank: formatNumber(d.development.rank),
-                          of: formatNumber(data?.districts.length ?? 0),
-                        })}</span>
-                      )}
-                    </div>
-                    <div className="stat__label">{t('district.devValue')}</div>
-                    <ScaleMark value={d.development.complex}
-                      lo={devRange.lo} hi={devRange.hi}
-                      threshold={data?.development?.beneficiaryBelow ?? null}
-                      thresholdLabel={t('district.devThresholdShort')}
-                      format={(v) => formatDecimal(v.toFixed(1))} />
-                    <div className="stat__context">
-                      {d.development.grade ? (
-                        <span className={`dev-badge dev-badge--${d.development.grade}`}>
-                          {t(`district.devGrade.${d.development.grade}`)}
-                        </span>
-                      ) : (
-                        <span className="dev-badge dev-badge--none">
-                          {t('district.devGrade.none')}
-                        </span>
-                      )}
-                      {data?.development?.beneficiaryBelow != null && (
-                        <> · {t('district.devThreshold', {
-                          n: formatDecimal(
-                            data.development.beneficiaryBelow.toFixed(2)),
-                        })}</>
-                      )}
-                    </div>
-                  </div>
-                </article>
-                {d.lagging && d.lagging.settlements > 0 && (
-                  <article className="county-card county-card--wide">
-                    <div className="county-card__body">
-                      <div className="stat__value">
-                        {formatPercent(d.lagging.share)}
-                        <span className="stat__of"> · {formatNumber(
-                          d.lagging.settlements)} / {formatNumber(d.settlements)}</span>
-                      </div>
-                      <div className="stat__label">{t('district.laggingLabel')}</div>
-                      <ShareDots total={d.settlements}
-                        marked={d.lagging.settlements}
-                        title={t('district.laggingDots', {
-                          n: formatNumber(d.lagging.settlements),
-                          of: formatNumber(d.settlements),
-                        })} />
-                      <div className="stat__context">{t('district.laggingParts', {
-                        socio: formatNumber(d.lagging.socio),
-                        unemployment: formatNumber(d.lagging.unemployment),
-                        temporary: formatNumber(d.lagging.temporary),
-                      })}{d.lagging.populationShare !== null && ` · ${
-                        t('district.laggingPopulation', {
-                          share: formatPercent(d.lagging.populationShare),
-                        })}`}</div>
-                    </div>
-                  </article>
-                )}
-              </div>
-            )}
-
-            <h3 className="why__chain-title">{t('district.distHeading')}</h3>
-            <p className="section__explain">{t('district.distExplain')}</p>
-            <div className="map-controls">
-              <div className="seg" role="group">
-                {MEASURES.map((m) => (
-                  <button key={m.key} aria-pressed={m.key === measureKey}
-                    onClick={() => setMeasureKey(m.key)}>
-                    {t(`district.measure.${m.key}`)}
-                  </button>
-                ))}
-              </div>
+            <div className="table-sort">
+              <SegmentedControl<SortKey> size="xs" className="segc--stack segc--full"
+                value={sort} onChange={setSort}
+                options={(['band', 'population', 'name', 'gpMin', 'oncallMin'] as const).map((k) => ({
+                  value: k, label: t(`county.sort.${k}`) }))} />
             </div>
-            <DistrictDistribution rows={data?.districts ?? []}
-              measure={measure} selected={d.name} onPick={pick}
-              format={measureFormat(measure)} />
-            <p className="extra-note">{t('district.devSource', {
-              source: data?.development?.source ?? '',
-              benefit: data?.development?.benefitSource ?? '',
-            })}</p>
-
-            {/* the outcome analyses, turned to this járás */}
-            <DistrictOutcomes name={d.name} />
-
-            <h2 className="section__subheading" id="rangsor">
-              {t('district.rankingHeading')}
-            </h2>
-            <p className="section__explain">{t('district.rankingExplain', {
-              branch: t(`kinds.${kind}.adj`),
-            })}</p>
-            <DistrictRanking data={data} branch={kind} selected={d.name}
-              onPick={pick} />
-
-            <h2 className="section__subheading" id="osszefugges">
-              {t(`district.scatterHeading.${scatterX}`)}
-            </h2>
-            <p className="section__explain">{t(
-              `district.scatterExplain.${scatterX}`)}</p>
-            <div className="map-controls">
-              <div className="seg" role="group">
-                {(['travel', 'development'] as ScatterX[]).map((x) => (
-                  <button key={x} aria-pressed={x === scatterX}
-                    onClick={() => setScatterX(x)}>
-                    {t(`district.scatterAxis.${x}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <DistrictScatter data={data} branch={kind} selected={d.name}
-              onPick={pick} axis={scatterX} />
-
-            <h2 className="section__subheading" id="telepulesek">
-              {t('district.tableHeading', { name: d.name })}
-            </h2>
-            <p className="section__explain">{t('county.tableExplain')}</p>
-            <div className="county-sort">
-              {(['band', 'population', 'name', 'gpMin', 'oncallMin'] as const).map((k) => (
-                <button key={k} className={sort === k ? 'is-on' : ''}
-                  onClick={() => setSort(k)}>{t(`county.sort.${k}`)}</button>
-              ))}
-            </div>
-            <table className="info-table county-table">
-              <thead>
-                <tr>
-                  <th>{t('county.thSettlement')}</th>
-                  <th className="is-num">{t('county.thPopulation')}</th>
-                  <th>{t('county.thGp')}</th>
-                  <th>{t('county.thDental')}</th>
-                  <th className="is-num">{t('county.thGpMin')}</th>
-                  <th className="is-num">{t('county.thOncall')}</th>
-                  <th>{t('county.thBand')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.slug} className={r.name === d.seat ? 'is-seat' : undefined}>
-                    <td><a href={settlementHref(r.slug)}>{r.name}</a></td>
-                    <td className="is-num">{formatNumber(r.population)}</td>
-                    <td><StateDot state={r.gp} /></td>
-                    <td><StateDot state={r.dental} /></td>
-                    <td className="is-num">{minutes(r.gpMin)}</td>
-                    <td className="is-num">{minutes(r.oncallMin)}</td>
-                    <td>{r.band ? t(`county.band.${r.band}`) : '–'}</td>
+            <div className="table-wrap">
+              <table className="info-table county-table">
+                <thead>
+                  <tr>
+                    <th>{t('county.thSettlement')}</th>
+                    <th className="is-num">{t('county.thPopulation')}</th>
+                    <th>{t('county.thGp')}</th>
+                    <th>{t('county.thDental')}</th>
+                    <th className="is-num">{t('county.thGpMin')}</th>
+                    <th className="is-num">{t('county.thOncall')}</th>
+                    <th>{t('county.thBand')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    // the whole row leads to the settlement; the name stays a
+                    // real link for the keyboard and for a new tab
+                    <tr key={r.slug} className={`is-link${r.name === d.seat ? ' is-seat' : ''}`}
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('a')) return;
+                        window.location.href = settlementHref(r.slug);
+                      }}>
+                      <td><a href={settlementHref(r.slug)}>{r.name}</a></td>
+                      <td className="is-num">{formatNumber(r.population)}</td>
+                      <td><StateDot state={r.gp} /></td>
+                      <td><StateDot state={r.dental} /></td>
+                      <td className="is-num">{minutes(r.gpMin)}</td>
+                      <td className="is-num">{minutes(r.oncallMin)}</td>
+                      <td>{r.band ? t(`county.band.${r.band}`) : '–'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <p className="extra-note">{t('district.caveat')}
               {data?.unplaced?.dental ? ` ${t('district.unplaced', {
                 n: formatNumber(data.unplaced.dental),
               })}` : ''}
             </p>
+
+            {/* the national comparison closes the járás and leads into the
+                national part of the page (the most vulnerable járás after it):
+                one measure, read by the distribution and the ranking; it opens
+                on the branch being looked at */}
+            <h2 className="section__subheading" id="osszehasonlitas">{t('district.part.compare')}</h2>
+            <p className="section__explain">{t('district.partLead.compare')}</p>
+            {/* eight measures in three themed switches, in the landing's style:
+                one row of eight did not fit even a laptop */}
+            <div className="measure-picker" role="group" aria-label={t('district.part.compare')}>
+              {MEASURE_GROUPS.map(([group, keys]) => (
+                <div key={group} className="measure-picker__group">
+                  <span className="measure-picker__label">{t(`district.measureGroup.${group}`)}</span>
+                  <SegmentedControl<string> size="xs" className="segc--stack" fit
+                    ariaLabel={t(`district.measureGroup.${group}`)}
+                    value={measure.key} onChange={setMeasureKey}
+                    options={keys.map((k) => ({ value: k, label: t(`district.measureShort.${k}`),
+                      title: t(`district.measure.${k}`) }))} />
+                </div>
+              ))}
+            </div>
+            <h3 className="why__chain-title">{t('district.distHeading')}</h3>
+            <p className="section__explain">{t('district.distExplain')}</p>
+            <DistrictDistribution rows={data?.districts ?? []}
+              measure={measure} selected={d.name} onPick={pick}
+              format={measureFormat(measure)} />
+
+            <h3 className="why__chain-title" id="rangsor">{t('district.rankingTitle')}</h3>
+            <p className="section__explain">{t('district.rankingExplainMeasure', {
+              measure: t(`district.measure.${measure.key}`),
+            })}</p>
+            <DistrictRanking data={data} measure={measure} format={measureFormat(measure)}
+              selected={d.name} onPick={pick} />
+
+            <h3 className="why__chain-title" id="osszefugges">
+              {t(`district.scatterHeading.${scatterX}`)}
+            </h3>
+            {/* both explanations in one cell, the hidden one keeping its room:
+                they differ by a line, and the chart under them jumped on
+                every switch of the axis */}
+            <div className="steady">
+              {(['travel', 'development'] as ScatterX[]).map((x) => (
+                <p key={x} className={`section__explain${x === scatterX ? '' : ' is-off'}`}
+                  aria-hidden={x === scatterX ? undefined : true}>
+                  {t(`district.scatterExplain.${x}`)}</p>
+              ))}
+            </div>
+            <div className="map-controls">
+              <SegmentedControl<ScatterX> size="xs" value={scatterX} onChange={setScatterX}
+                ariaLabel={t(`district.scatterHeading.${scatterX}`)}
+                options={(['travel', 'development'] as ScatterX[]).map((x) => ({
+                  value: x, label: t(`district.scatterAxis.${x}`) }))} />
+            </div>
+            <DistrictScatter data={data} branch={kind} selected={d.name}
+              onPick={pick} axis={scatterX} />
           </>
         )}
-
+      </section>
+      {/* the national comparison above leads straight into the most
+          vulnerable járás; where to go next closes the page */}
+      <VulnerableDistricts />
+      <section className="section section--next container">
         <NextSteps items={NEXT} />
       </section>
-      <VulnerableDistricts />
       <Footer />
     </>
   );

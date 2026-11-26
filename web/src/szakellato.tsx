@@ -9,7 +9,9 @@ import { SpecialistPage } from './components/SpecialistPage';
 function Page() {
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.documentElement.dataset.kind = 'dental';
+    // no branch on this page: the neutral accent, so blue and green only
+    // ever mean GP and dentist (index.css [data-kind='none'])
+    document.documentElement.dataset.kind = 'none';
   }, []);
   return <SpecialistPage />;
 }

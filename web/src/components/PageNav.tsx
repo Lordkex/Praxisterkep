@@ -8,6 +8,7 @@ import { NavMenu } from './NavMenu';
 import { LangToggle } from './LangToggle';
 import { SITE_NAV, withContext } from '../lib/siteNav';
 import { IconStethoscope, IconTooth } from './icons';
+import { SegmentedControl } from './SegmentedControl';
 import type { PraxisKind } from '../types';
 
 interface Props {
@@ -23,19 +24,15 @@ export function PageNav({ kind = null, onKind }: Props) {
     <nav className="topnav">
       <div className="topnav__inner">
         <a className="topnav__brand" href={contextHref(home)}>{t('site.title')}</a>
+        {/* the same switch as the landing's: these were bare buttons with no
+            style of their own, a grey block beside the brand */}
         {kind && onKind && (
-          <div className="topnav__kind" role="group">
-            <button aria-pressed={kind === 'dental'}
-              title={t('kinds.dental.label')} aria-label={t('kinds.dental.label')}
-              onClick={() => onKind('dental')}>
-              <IconTooth />
-            </button>
-            <button aria-pressed={kind === 'gp'}
-              title={t('kinds.gp.label')} aria-label={t('kinds.gp.label')}
-              onClick={() => onKind('gp')}>
-              <IconStethoscope />
-            </button>
-          </div>
+          <SegmentedControl<PraxisKind> size="xs" className="topnav__kind"
+            ariaLabel={t('search.kindLabel')} value={kind} onChange={onKind}
+            options={[
+              { value: 'gp', label: <IconStethoscope />, ariaLabel: t('kinds.gp.label'), title: t('kinds.gp.label') },
+              { value: 'dental', label: <IconTooth />, ariaLabel: t('kinds.dental.label'), title: t('kinds.dental.label') },
+            ]} />
         )}
         <LangToggle />
         <NavMenu entries={withContext(SITE_NAV)} />

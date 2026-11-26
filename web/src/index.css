@@ -65,6 +65,12 @@
 :root[data-kind='gp'] {
   --accent: var(--gp);
 }
+/* a page with no branch (Továbbiak, Sajtó, Adatkezelés, the settlement
+   pages, which show both): the accent is the ink, so green and blue keep
+   meaning dentist and GP everywhere */
+:root[data-kind='none'] {
+  --accent: var(--ink);
+}
 
 .seg--kind { margin: 10px 0 22px; }
 .seg--kind button { font-size: 14px; padding: 9px 20px; font-weight: 600; }
@@ -216,6 +222,11 @@ a.topnav__brand:hover, a.topnav__brand:focus-visible { color: var(--accent); tex
 
 /* ---------- sections ---------- */
 .section { padding: 64px 0 24px; }
+/* the side padding the landing has: the shorthand above zeroed the
+   container's, so every other page ran 32px wider each side than the landing
+   and than its own footer. The footer takes the same gutter. */
+:root { --gutter: clamp(16px, 3vw, 32px); }
+.section.container, .footer .container { padding-inline: var(--gutter); }
 .section__heading {
   font-size: clamp(26px, 3.6vw, 38px);
   font-weight: 800; font-stretch: 108%;
@@ -767,29 +778,40 @@ a.topnav__brand:hover, a.topnav__brand:focus-visible { color: var(--accent); tex
   font: 600 13.5px var(--font-body); padding: 8px 12px;
 }
 .compare__vs { color: var(--ink-faint); font: 700 13px var(--font-display); }
+.compare-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.compare-chart {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg-raised); padding: 14px 18px 8px;
+}
+.compare-chart__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; margin-bottom: 6px; }
+.compare-chart__head p { margin: 0; color: var(--ink-faint); font-size: 12.5px; }
+.compare-chart__legend { display: flex; gap: 16px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.compare-chart__legend span { display: inline-flex; align-items: center; gap: 7px; }
+.compare-chart svg { width: 100%; height: auto; display: block; }
+/* county – chart – county: the cards' groups each opened by their name, the
+   chart as tall as the cards */
 .compare__grid {
-  display: grid; grid-template-columns: minmax(190px, 240px) 1fr minmax(190px, 240px);
-  gap: 16px; align-items: start;
+  display: grid; grid-template-columns: minmax(200px, 250px) minmax(0, 1fr) minmax(200px, 250px);
+  gap: 16px; align-items: stretch;
 }
 .compare-card {
   border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--bg-raised); padding: 14px 16px;
 }
 .compare-card h4 {
-  margin: 0 0 10px; font-family: var(--font-display); font-size: 15px;
+  margin: 0 0 4px; font-family: var(--font-display); font-size: 15px;
   display: flex; align-items: center; gap: 8px;
 }
-.compare-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.compare-card dl { margin: 0; display: grid; gap: 7px; }
-.compare-card dl div { display: flex; justify-content: space-between; gap: 10px; }
-.compare-card dt { color: var(--ink-faint); font-size: 12.5px; }
-.compare-card dd { margin: 0; font-weight: 700; font-size: 13px; white-space: nowrap; }
-.compare-chart {
-  border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--bg-raised); padding: 12px 14px 6px;
+.compare-card__group + .compare-card__group { margin-top: 4px; }
+.compare-card__head {
+  margin: 10px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--line);
+  font: 600 10.5px var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint);
 }
-.compare-chart p { margin: 0 0 6px; color: var(--ink-faint); font-size: 12px; }
-.compare-chart svg { width: 100%; height: auto; display: block; }
+.compare-card dl { margin: 0; display: grid; gap: 6px; }
+.compare-card dl div { display: flex; justify-content: space-between; gap: 10px; }
+.compare-card dt { color: var(--ink-dim); font-size: 12.5px; }
+.compare-card dd { margin: 0; font-weight: 700; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.compare-chart { display: flex; flex-direction: column; justify-content: center; }
 @media (max-width: 860px) {
   .compare__grid { grid-template-columns: 1fr 1fr; }
   .compare-chart { grid-column: 1 / -1; order: 3; }
@@ -797,6 +819,13 @@ a.topnav__brand:hover, a.topnav__brand:focus-visible { color: var(--accent); tex
 
 /* ---------- guess game ---------- */
 .guess { margin-top: 44px; }
+/* on the county page the guess comes first, before any number shows */
+.guess--lead {
+  margin: 18px 0 26px; padding: 16px 20px; border: 1px solid var(--line);
+  border-radius: var(--radius); background: var(--bg-raised);
+}
+.guess--lead .why__chain-title { margin-top: 0; }
+.guess__lead { margin: 0 0 12px; color: var(--ink-dim); font-size: 14px; }
 .guess__row {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   font-size: 14px; color: var(--ink-dim);
@@ -1513,6 +1542,11 @@ html[data-internal] .no-internal { display: none !important; }
 
 /* "Mit nézz meg ezután?" — the hand-off at the end of a page or a section. */
 .nextsteps { margin: 28px 0 8px; }
+/* the closing "where next" row on its own, right after the last section:
+   no section padding of its own, and the footer follows close behind */
+.section.section--next { padding-top: 0; padding-bottom: 0; }
+.section--next .nextsteps { margin: 36px 0 0; }
+.section--next + .footer { margin-top: 48px; padding-top: 12px; }
 .nextsteps__heading {
   font: 600 13px var(--font-display); color: var(--ink-faint);
   text-transform: uppercase; letter-spacing: 0.07em; margin: 0 0 10px;
@@ -1525,7 +1559,12 @@ html[data-internal] .no-internal { display: none !important; }
   display: block; padding: 12px 14px; border: 1px solid var(--line);
   border-radius: 10px; background: var(--bg-raised); text-decoration: none;
 }
-.nextsteps__card:hover { border-color: var(--accent); background: var(--bg-panel); }
+/* a card is not a text link: the site-wide a:hover underline outranked the
+   plain class and ran under the title and the line beneath it, which the
+   landing had already switched off for its own cards */
+.nextsteps__card:is(:hover, :active, :focus-visible) {
+  text-decoration: none; border-color: var(--accent); background: var(--bg-panel);
+}
 .nextsteps__title {
   display: block; font-weight: 600; color: var(--ink); margin-bottom: 3px;
 }
@@ -1579,10 +1618,16 @@ html[data-internal] .no-internal { display: none !important; }
 /* The clickable county picker on the county page. */
 .countypicker { margin: 10px 0 16px; }
 .countypicker svg { width: 100%; height: auto; display: block; }
+/* the dropdown in the map's top-right corner, not a second picker under it */
+.countypicker { position: relative; }
+.countypicker__side { position: absolute; top: 0; right: 0; }
+.countypicker__side .county-picker { margin: 0; }
+@media (max-width: 720px) { .countypicker__side { position: static; margin-top: 10px; } }
 .countypicker__county path {
   fill: var(--bg-panel); stroke: var(--line-strong); stroke-width: 0.8;
   cursor: pointer; transition: fill 120ms;
 }
+.countypicker__label { pointer-events: none; }
 .countypicker__county text {
   font-size: 8px; fill: var(--ink-faint); pointer-events: none;
   text-transform: uppercase; letter-spacing: 0.04em;
@@ -1631,6 +1676,16 @@ html[data-internal] .no-internal { display: none !important; }
 .county-card__body { min-width: 0; flex: 1 1 190px; }
 .county-card .stat__value { font-size: 28px; line-height: 1.1; }
 .county-card .stat__label { line-height: 1.35; }
+/* a figure with its headline beside it and the legend under both */
+.county-card--stacked { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+.county-card--stacked > .county-card__body { flex: none; align-self: stretch; }
+.county-card__head { display: flex; align-items: center; gap: 14px; }
+.county-card__headline { min-width: 0; display: grid; }
+/* every text the headline can show, stacked in one cell (DistrictPage
+   Headline): the cell keeps the height of the longest */
+.county-card__variant { grid-area: 1 / 1; }
+.county-card__variant.is-off { visibility: hidden; }
+.county-card__head .stat__label { margin-top: 2px; }
 .stat__of { color: var(--ink-faint); font-size: 17px; font-weight: 500; }
 .county-card--icon .county-card__ghost {
   position: absolute; right: -14px; top: -10px; width: 96px; height: 96px;
@@ -1648,6 +1703,21 @@ html[data-internal] .no-internal { display: none !important; }
   pointer-events: none;
 }
 .donut-legend li { cursor: pointer; }
+/* a ring's centre with a word under its figure */
+.donut__stack { display: grid; justify-items: center; line-height: 1.05; text-align: center; }
+.donut__stack small { font: 500 10px var(--font-body); color: var(--ink-faint); margin-top: 3px; }
+/* a legend read as a table with no rules: the names, the counts and the
+   shares each in a column of their own, the figures right-aligned. Two
+   classes, to outrank the plain .agelegend rows further down (the static
+   settlement pages keep those, with a link in each row) */
+.agelegend.legend-table { display: grid; grid-template-columns: 9px minmax(0, 1fr) auto auto; column-gap: 10px; }
+.agelegend.legend-table--diff { grid-template-columns: 9px minmax(0, 1fr) auto auto auto; }
+.agelegend.legend-table li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline; gap: 0 10px; }
+.agelegend.legend-table i { align-self: center; }
+.agelegend.legend-table .agelegend__label { min-width: 0; }
+.agelegend.legend-table li > strong, .agelegend.legend-table .agelegend__count, .agelegend.legend-table .agelegend__diff {
+  text-align: right; font-variant-numeric: tabular-nums; margin-left: 0;
+}
 .agelegend { list-style: none; margin: 8px 0 0; padding: 0; font-size: 12.5px; }
 .agelegend li {
   display: flex; align-items: baseline; gap: 7px; padding: 1px 0;
@@ -1948,7 +2018,8 @@ html[data-internal] .no-internal { display: none !important; }
 
 /* Turnover heatmap: counties down, years across. */
 .heatmap { overflow-x: auto; margin: 10px 0 18px; }
-.heatmap table { border-collapse: separate; border-spacing: 2px; font-size: 12.5px; }
+/* wider than its content, not the full page: about 820px reads as one grid */
+.heatmap table { border-collapse: separate; border-spacing: 3px; font-size: 13px; width: min(100%, 820px); }
 .heatmap th[scope="col"] {
   color: var(--ink-faint); font-size: 11px; font-weight: 600; padding: 2px 6px;
   text-align: center; white-space: nowrap;
@@ -1962,7 +2033,7 @@ html[data-internal] .no-internal { display: none !important; }
 .heatmap th[scope="row"] button:hover { color: var(--ink); text-decoration: underline; }
 .heatmap tr.is-on th[scope="row"] button { color: var(--accent); font-weight: 700; }
 .heatmap td {
-  min-width: 42px; padding: 5px 6px; text-align: center; border-radius: 4px;
+  min-width: 48px; padding: 6px 6px; text-align: center; border-radius: 4px;
   color: var(--ink); font-variant-numeric: tabular-nums;
   border: 1px solid var(--line);
 }
@@ -2005,6 +2076,13 @@ html[data-internal] .no-internal { display: none !important; }
 .donut circle.is-clickable { cursor: pointer; }
 .county-card--wide { grid-column: span 2; }
 @media (max-width: 700px) { .county-card--wide { grid-column: auto; } }
+/* the járás page: three cards and a wide one. In the grid the wide card
+   found no room beside the third and wrapped, and the row ended in an empty
+   column; here every row stretches to the right edge, whatever the width */
+.county-cards--fill { display: flex; flex-wrap: wrap; }
+.county-cards--fill > .county-card { flex: 1 1 280px; }
+.county-cards--fill > .county-card--wide { flex: 2 1 560px; }
+@media (max-width: 700px) { .county-cards--fill > .county-card--wide { flex-basis: 280px; } }
 .pointgrid { margin: 10px 0 4px; }
 .pointgrid__dots { display: flex; flex-wrap: wrap; gap: 6px; }
 .pointgrid__dot {
@@ -2405,6 +2483,22 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
    járás at 60% and another at 0%. */
 .district-map { margin: 18px 0 4px; }
 .district-map svg { width: 100%; height: auto; display: block; }
+/* the drawing and anything a page lays over its right-hand column */
+.district-map__stage { position: relative; }
+.district-map__side {
+  position: absolute; left: var(--slot-left); width: var(--slot-width);
+  top: var(--slot-top); bottom: var(--slot-bottom);
+  display: flex; flex-direction: column; justify-content: flex-start;
+}
+.district-map__side .district-pickers { flex-direction: column; gap: 10px; margin: 0; }
+.district-map__side .county-picker { flex-direction: column; align-items: stretch; gap: 4px; margin: 0; }
+.district-map__side .county-picker select { width: 100%; min-width: 0; }
+/* too narrow beside the map on a phone or a small tablet: under it */
+@media (max-width: 860px) {
+  .district-map__side { position: static; width: auto; margin-top: 10px; }
+  .district-map__side .district-pickers { flex-direction: row; flex-wrap: wrap; }
+  .district-map__side .county-picker { flex: 1 1 200px; }
+}
 .district-map__shape {
   stroke: var(--bg); stroke-width: 0.6; transition: fill-opacity 120ms;
 }
@@ -2447,6 +2541,20 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
   margin: 6px 0 18px; max-width: 72ch; font-size: 15px; color: var(--ink);
   border-left: 3px solid var(--accent); padding-left: 14px;
 }
+/* the verdict with the size comparison beside it; under it on a narrow screen */
+/* the bars start level with the heading: beside the paragraph alone, centred
+   or not, they sat lower to the eye than the block they belong to */
+.district-intro { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px 40px; margin: 30px 0 18px; }
+.district-intro__text { flex: 1 1 420px; min-width: 0; }
+/* the heading's own top margin moves to the row, or the bars would start
+   30px above it */
+.district-intro__text > .section__subheading { margin-top: 0; }
+/* the bars' first label on the heading's line: its 20px line centred on the
+   heading's 24px one */
+.district-intro__bench { padding-top: 2px; }
+.district-intro__bench .cmpbars { margin-top: 0; }
+.district-intro__text > .district-verdict { margin-bottom: 0; }
+.district-intro__bench { flex: 1 1 300px; max-width: 460px; }
 
 .district-ranking svg { width: 100%; height: auto; }
 .district-ranking__row { cursor: pointer; }
@@ -2461,12 +2569,32 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .district-scatter svg { width: 100%; height: auto; }
 .district-scatter__dot {
   fill: var(--bad); fill-opacity: 0.45; stroke: var(--bg); stroke-width: 0.6;
-  transition: fill-opacity 120ms;
 }
 .district-scatter__dot.is-clickable { cursor: pointer; }
 .district-scatter__dot:hover { fill-opacity: 0.9; }
+/* the járás being looked at: amber, which no branch owns and which stands
+   out of the red cloud, with a dark edge rather than a white ring */
 .district-scatter__dot.is-on {
-  fill: var(--accent); fill-opacity: 1; stroke: var(--ink); stroke-width: 1.2;
+  fill: var(--warn); fill-opacity: 1; stroke: var(--bg); stroke-width: 1.5;
+}
+/* when the axis changes the dots glide to their new place, so the eye can
+   follow the selected one (cx/cy as CSS properties: Chromium and Firefox) */
+.district-scatter__dot { transition: fill-opacity 120ms, cx .6s ease, cy .6s ease; }
+.district-scatter__mark { pointer-events: none; transition: transform .6s ease; }
+.district-scatter__pulse {
+  fill: none; stroke: var(--warn); stroke-width: 2; opacity: 0; vector-effect: non-scaling-stroke;
+  transform-box: fill-box; transform-origin: center;
+  /* after an axis change: wait for the glide, then three pulses */
+  animation: scatter-pulse 1.1s ease-out .6s 3;
+}
+.district-scatter svg:hover .district-scatter__pulse { animation: scatter-pulse 1.1s ease-out infinite; }
+@keyframes scatter-pulse {
+  0% { transform: scale(1); opacity: .95; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .district-scatter__dot, .district-scatter__mark { transition: none; }
+  .district-scatter__pulse, .district-scatter svg:hover .district-scatter__pulse { animation: none; }
 }
 .district-scatter__tick { fill: var(--ink-faint); font-size: 10.5px; }
 .district-scatter__axis { fill: var(--ink-dim); font-size: 11.5px; }
@@ -2512,6 +2640,10 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
   display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px;
 }
 .district-dist__chips-label { font-size: 12px; color: var(--ink-faint); }
+/* the live chips and their hidden full-size copy share one cell */
+.district-dist__chipstack { display: grid; }
+.district-dist__chipstack > * { grid-area: 1 / 1; align-self: start; }
+.district-dist__chips.is-ghost { visibility: hidden; pointer-events: none; }
 .district-dist__chip {
   appearance: none; border: 1px solid var(--line-strong); background: var(--bg-raised);
   color: var(--ink-dim); border-radius: 999px; padding: 3px 10px;
@@ -2783,6 +2915,10 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
   gap: 22px; align-items: start;
 }
 @media (max-width: 900px) { .outcome__pair { grid-template-columns: 1fr; } }
+/* two charts of the same build side by side: equal columns, so they come out
+   the same height and their readouts on one line */
+.outcome__pair--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 900px) { .outcome__pair--even { grid-template-columns: 1fr; } }
 .outcome__finding {
   margin: 16px 0 0; padding: 14px 16px; border-radius: var(--radius);
   background: color-mix(in srgb, var(--alert) 8%, var(--bg-raised));
@@ -2926,13 +3062,14 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 @media (max-width: 700px) { .cross-card--row { grid-template-columns: 1fr; } }
 .cross-card h3 { font: 600 16px var(--font-display); margin: 0 0 8px; }
 .cross-card p { color: var(--ink-dim); line-height: 1.55; margin: 0 0 12px; }
-.cross-card__big { display: flex; align-items: baseline; gap: 12px; }
+/* the figure beside its words, centred on them: on the first line's baseline
+   a two-line text left the number hanging above it */
+.cross-card__big { display: flex; align-items: center; gap: 12px; }
 .cross-card__big b { font: 800 40px var(--font-display); color: var(--alert); line-height: 1; }
 .cross-card__big span { color: var(--ink-dim); font-size: 14px; }
-.cross-card__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 5px; }
-.cross-card__list li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; font-size: 13.5px; }
-.cross-card__list span, .cross-card__list small { color: var(--ink-faint); font-variant-numeric: tabular-nums; }
-.cross-card__more { display: inline-block; margin-top: 6px; font-weight: 600; }
+.cross-card__more { margin-top: 10px; }
+.cross-card--row .cross-card__more { grid-column: -2 / -1; justify-self: end; margin-top: 0; }
+@media (max-width: 700px) { .cross-card--row .cross-card__more { grid-column: auto; justify-self: start; } }
 .bandbars { display: grid; gap: 8px; margin: 6px 0 16px; }
 .bandbars__row { display: grid; grid-template-columns: 150px 1fr 70px 90px; gap: 10px; align-items: center; }
 .bandbars__label { color: var(--ink-dim); font-size: 13px; }
@@ -2941,7 +3078,9 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .bandbars__row b { font-variant-numeric: tabular-nums; text-align: right; }
 .bandbars__row small { color: var(--ink-faint); font-size: 12px; }
 @media (max-width: 600px) { .bandbars__row { grid-template-columns: 1fr 70px; } .bandbars__bar, .bandbars__row small { display: none; } }
-.agebars { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; align-items: end; height: 190px; margin: 6px 0 8px; }
+/* one column per band, however many: a járás has three or four, and in a
+   fixed nine-column grid they huddled at the left of the card */
+.agebars { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; align-items: end; height: 190px; margin: 6px 0 8px; }
 .agebars__col { display: grid; grid-template-rows: auto 1fr auto auto; align-items: end; justify-items: center; height: 100%; gap: 3px; }
 .agebars__val { font-size: 11.5px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
 .agebars__bar { width: 100%; background: var(--violet); border-radius: 3px 3px 0 0; min-height: 2px; align-self: end; }
@@ -2960,6 +3099,17 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .yard-card__compare { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 4px 0 0; font-size: 12px; color: var(--ink-faint); }
 .yard-card__compare b { color: var(--ink-dim); font-weight: 600; }
 .yard-card__rank { margin: 4px 0 0; font-size: 12px; color: var(--ink-dim); }
+/* a card with a chart of its own inside: avoidable mortality and its make-up */
+.yard-card--wide { grid-column: span 2; }
+/* the strip scales with its card: on a double card it came out twice as
+   tall as on the others. It keeps a single card's width instead. */
+.yard-card--wide > .strip { max-width: calc(50% - 6px); }
+@media (max-width: 560px) { .yard-card--wide { grid-column: auto; } }
+.yard-card__detail { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.yard-card__detail .outcome__hint { margin-bottom: 0; }
+/* a card of counts: the places of care in a járás */
+.yard-card__facts { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; font-size: 13px; color: var(--ink-dim); }
+.yard-card__facts b { font: 800 20px var(--font-display); color: var(--ink); margin-right: 4px; }
 .strip { width: 100%; height: auto; display: block; margin: 6px 0 2px; }
 .strip__axis { stroke: var(--line-strong); }
 .strip__tick { stroke: var(--ink-faint); stroke-width: 1; opacity: 0.45; }
@@ -2976,6 +3126,9 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .cause-bars__bar.is-under { background: var(--calm); }
 .cause-bars__hundred { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: 0.6; z-index: 1; }
 .cause-bars__row b { text-align: right; font-variant-numeric: tabular-nums; }
+/* the all-causes row is the reference the sorted causes are read against */
+.cause-bars__row.is-total { padding-bottom: 8px; margin-bottom: 2px; border-bottom: 1px solid var(--line); }
+.cause-bars__row.is-total .cause-bars__label { color: var(--ink); font-weight: 600; }
 @media (max-width: 560px) { .cause-bars__row { grid-template-columns: 1fr 44px; } .cause-bars__track { grid-column: 1 / -1; order: 3; } }
 
 /* the county page: five small rankings of twenty */
@@ -2993,6 +3146,28 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .county-rank li b { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
 .outcome-table td, .outcome-table th { font-variant-numeric: tabular-nums; }
 .outcome-table__name { white-space: nowrap; }
+/* a table wider than the page scrolls inside its own box */
+.table-wrap { overflow-x: auto; max-width: 100%; }
+/* a sortable header: the label, and an arrow for the order */
+.th-sort {
+  display: inline-flex; align-items: flex-end; gap: 5px; padding: 0; border: 0; background: none;
+  font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: inherit;
+  color: inherit; cursor: pointer;
+}
+th.is-num .th-sort { flex-direction: row; justify-content: flex-end; }
+.th-sort:hover, .th-sort:focus-visible, .th-sort.is-on { color: var(--ink); }
+.th-sort__arrow { flex: none; font-size: 9px; letter-spacing: 0; opacity: .55; }
+.th-sort.is-on .th-sort__arrow { opacity: 1; color: var(--accent); }
+/* "show all" under a long table */
+.table-more { margin-top: 10px; }
+/* the comparison: one ranking of the twenty, full width */
+.county-rank--single { margin: 6px 0 14px; padding: 16px 18px; }
+.county-rank--single h3 { font-size: 14px; }
+.county-rank--single li { grid-template-columns: 190px 1fr 80px; font-size: 13px; gap: 12px; }
+.county-rank--single ol { gap: 4px; }
+@media (max-width: 560px) { .county-rank--single li { grid-template-columns: 120px 1fr 64px; font-size: 12px; } }
+/* the emergency points card: the points under the figure */
+.yard-card--points .pointgrid { margin: 6px 0 4px; }
 .outcome-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--ink) 3%, transparent); }
 
 /* settlement pages: how people live here (no script) */
@@ -3197,7 +3372,7 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 /* where the content reaches the left edge, it leaves room for the dot rail */
 @media (max-width: 1240px) { body.has-side-nav .container { padding-left: max(30px, var(--gutter, 16px)); } }
 /* the content leaves room for the menu where both fit side by side */
-@media (min-width: 1500px) { body.has-side-nav .section.container, body.has-side-nav .page-toc { margin-left: max(232px, calc((100vw - 1100px) / 2)); } }
+@media (min-width: 1500px) { body.has-side-nav .section.container, body.has-side-nav .page-toc, body.has-side-nav .footer .container { margin-left: max(232px, calc((100vw - 1100px) / 2)); } }
 @media (max-width: 1499px) {
   .side-nav { width: auto; top: auto; bottom: auto; top: 50%; transform: translateY(-50%); }
   .side-nav__toggle { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; background: color-mix(in srgb, var(--bg-panel) 88%, transparent); border: 1px solid var(--line-strong); border-left: 0; border-radius: 0 10px 10px 0; cursor: pointer; color: var(--ink-dim); }
@@ -3210,32 +3385,27 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
   .side-nav.is-open .side-nav__panel { display: block; width: min(280px, 78vw); background: var(--bg-panel); border: 1px solid var(--line-strong); border-left: 0; border-radius: 0 12px 12px 0; box-shadow: 0 10px 30px rgb(0 0 0 / 45%); padding-top: 14px; order: -1; }
   .side-nav.is-open .side-nav__toggle { align-self: center; }
 }
-/* the analysis dropdown: 22 sections in five headed columns */
-.topnav__submenu.is-grouped { display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 0 6px; min-width: 0; width: max-content; max-width: min(92vw, 1020px); left: -300px; padding: 8px 6px; }
+/* the Europe dropdown: its sections under the groups of the page's own side
+   menu. Five columns in a row ran off the right edge of a laptop; the four
+   groups sit two by two, under "Áttekintés", which is a heading with no
+   links of its own. It hangs from the right end of its label, away from the
+   edge of the window. */
+.topnav__submenu.is-grouped { display: grid; grid-template-columns: repeat(2, max-content); align-items: start; gap: 4px 6px; min-width: 0; left: auto; right: -10px; padding: 8px 6px; }
+.topnav__submenu.is-grouped > .topnav__subcol:has(> .topnav__subhead:only-child) { grid-column: 1 / -1; }
 .topnav__submenu.is-grouped[hidden] { display: none; }
-.topnav__group:hover > .topnav__submenu.is-grouped[hidden] { display: flex; }
+.topnav__group:hover > .topnav__submenu.is-grouped[hidden] { display: grid; }
 .topnav__subcol { display: flex; flex-direction: column; gap: 2px; min-width: 170px; }
 .topnav__submenu:not(.is-grouped) > .topnav__subcol { min-width: 0; }
-/* the map dropdown: the twenty counties under "Megye" and "Település" in
-   two narrow columns each, so the panel stays shorter than a laptop screen */
-.topnav__subcol--names { display: grid; grid-template-columns: repeat(2, auto); grid-template-rows: auto repeat(10, auto); grid-auto-flow: column; column-gap: 2px; row-gap: 0; min-width: 0; }
-.topnav__subcol--names > .topnav__subhead { grid-row: 1; grid-column: 1 / -1; }
-.topnav__subcol--names > a:not(.topnav__subhead) { padding: 4px 10px; font-size: 12.5px; }
-/* "Térkép" is the first entry: its wide panel is centred under it, so it
-   fits on a laptop screen instead of running off the right edge */
-.topnav__group--first > .topnav__submenu.is-grouped { left: 50%; transform: translateX(-50%); flex-wrap: nowrap; max-width: min(96vw, 1180px); }
-.topnav__group--first .topnav__subcol:not(.topnav__subcol--names) { min-width: 0; }
-@media (min-width: 721px) and (max-width: 1120px) {
-  /* too narrow to centre it under the entry: it spans the window instead */
-  .topnav__group--first > .topnav__submenu.is-grouped { position: fixed; top: var(--topnav-h, 56px); left: 2vw; right: 2vw; transform: none; width: auto; flex-wrap: wrap; max-width: none; }
-}
 .topnav__out { margin-left: 3px; font-size: 0.95em; opacity: 0.75; }
+/* the analysis dropdown: each part with a line on what it holds */
+.topnav__label { display: block; color: var(--ink); font-weight: 600; }
+.topnav__desc { display: block; margin-top: 2px; font-size: 11.5px; color: var(--ink-faint); }
+.topnav__all { margin-top: 4px; padding-top: 9px !important; border-top: 1px solid var(--line); font-weight: 600; }
 .topnav__subhead { font-weight: 700 !important; color: var(--ink) !important; text-transform: uppercase !important; font-size: 11px !important; letter-spacing: .07em !important; padding-top: 10px !important; }
 @media (max-width: 720px) {
-  .topnav__submenu.is-grouped { display: flex; flex-direction: column; left: 0; width: auto; max-width: none; padding: 4px 0 4px 12px; }
+  .topnav__submenu.is-grouped { display: flex; flex-direction: column; left: 0; right: auto; width: auto; max-width: none; padding: 4px 0 4px 12px; }
   .topnav__subcol { min-width: 0; }
   .topnav__group:hover > .topnav__submenu.is-grouped[hidden] { display: none; }
-  .topnav__group--first > .topnav__submenu.is-grouped { left: 0; transform: none; flex-wrap: wrap; max-width: none; }
 }
 /* the analysis page's group headings and grouped table of contents */
 .analysis-group { padding-top: 56px; padding-bottom: 0; border-top: 1px solid var(--line); margin-top: 32px; }
@@ -3279,16 +3449,36 @@ body:has(.tp-rail) .tp-map svg { margin-top: 0; }
 .highlight__more { margin-top: auto; font-size: 13px; color: var(--accent); }
 /* járás page: the most vulnerable districts */
 .vulnerable { display: grid; gap: 2px; margin: 14px 0 10px; overflow-x: auto; }
-.vulnerable__head, .vulnerable__row { display: grid; grid-template-columns: minmax(170px, 1.4fr) repeat(4, minmax(110px, 1fr)) 64px; gap: 10px; align-items: center; min-width: 760px; }
-.vulnerable__head { font: 700 11px var(--font-body); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); padding: 0 8px 6px; }
+.vulnerable__head, .vulnerable__row { display: grid; grid-template-columns: minmax(170px, 1.4fr) repeat(4, minmax(110px, 1fr)) 72px; gap: 10px 28px; align-items: center; min-width: 820px; }
+.vulnerable__head { align-items: end; padding: 0 8px 6px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+/* every header sorts its column: a click picks it, a second turns it round */
+.vulnerable__sort {
+  display: inline-flex; align-items: flex-end; gap: 5px; padding: 2px 0; border: 0; background: none;
+  font: 700 11px var(--font-body); letter-spacing: .05em; text-transform: uppercase; text-align: left;
+  color: var(--ink-faint); cursor: pointer;
+}
+.vulnerable__sort { justify-self: start; }
+.vulnerable__sort:last-child { justify-self: end; text-align: right; }
+.vulnerable__sort:hover, .vulnerable__sort:focus-visible { color: var(--ink); }
+.vulnerable__sort.is-on { color: var(--ink); }
+.vulnerable__arrow { flex: none; font-size: 9px; letter-spacing: 0; opacity: .55; }
+.vulnerable__sort.is-on .vulnerable__arrow { opacity: 1; color: var(--accent); }
 .vulnerable__row { padding: 7px 8px; border-radius: 6px; color: var(--ink-dim); text-decoration: none; font-size: 13px; }
-.vulnerable__row:hover { background: var(--bg-raised); color: var(--ink); }
+/* a row is a link to the járás, not a line of text: no underline under every
+   cell, and a hover that stands out from the page, tinted like its bars */
+.vulnerable__row:is(:hover, :focus-visible) {
+  text-decoration: none; color: var(--ink);
+  background: color-mix(in srgb, var(--alert-soft) 16%, var(--bg-raised));
+}
 .vulnerable__name { color: var(--ink); font-weight: 600; }
 .vulnerable__name em { font-style: normal; color: var(--ink-faint); margin-right: 4px; }
 .vulnerable__name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-faint); }
-.vulnerable__cell { position: relative; display: grid; grid-template-columns: 1fr 52px; gap: 6px; align-items: center; }
-.vulnerable__cell i { display: block; height: 8px; border-radius: 2px; background: var(--alert-soft); }
-.vulnerable__cell b { font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; }
+/* each measure is its value over its own bar, so a number never sits next to
+   the neighbouring column's bar; the faint track shows the full scale */
+.vulnerable__cell { display: grid; gap: 4px; min-width: 0; }
+.vulnerable__cell b { font-weight: 500; font-variant-numeric: tabular-nums; font-size: 12.5px; white-space: nowrap; color: var(--ink); }
+.vulnerable__track { display: block; height: 6px; border-radius: 3px; background: var(--bg-panel); overflow: hidden; }
+.vulnerable__track i { display: block; height: 100%; border-radius: 3px; background: var(--alert-soft); }
 .vulnerable__score { font: 800 18px var(--font-display); color: var(--alert-soft); text-align: right; }
 .cross-local { margin-top: 26px; }
 
@@ -3728,6 +3918,49 @@ body:has(.tp-rail) section[id] { scroll-margin-top: calc(var(--topnav-h, 56px) +
 .segc--filled.segc--alert .segc__indicator { background: var(--alert); }
 .segc--filled.segc--alert .segc__option.is-active { color: var(--on-warm); }
 .segc--full { display: grid; width: 100%; }
+/* options as wide as their labels; the indicator is placed by measurement */
+.segc--fit { grid-auto-columns: auto; }
+.segc--fit .segc__indicator { transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1), width 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+/* a control whose value lives in a sibling control: nothing lit here */
+.segc--none .segc__indicator { opacity: 0; }
+.segc--none .segc__option.is-active { color: var(--ink-dim); font-weight: 500; }
+/* on a phone a long control fills the width and its labels wrap, rather
+   than running off the side */
+@media (max-width: 720px) {
+  .segc--stack { display: grid; width: 100%; }
+  .segc--stack .segc__option { white-space: normal; padding-inline: 6px; text-align: center; }
+}
+/* the járás page's comparison: three themed switches, each with its label */
+.measure-picker { display: flex; flex-wrap: wrap; gap: 12px 16px; margin: 12px 0 20px; }
+/* content-sized options a little tighter, so the themes fit one row on a laptop */
+.measure-picker .segc--fit .segc__option { padding-inline: 8px; }
+.measure-picker__group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.measure-picker__label { font: 600 10.5px var(--font-body); text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-faint); }
+@media (max-width: 720px) { .measure-picker__group { flex: 1 1 100%; } }
+.table-sort { margin: 10px 0 12px; }
+/* texts that change with a switch, stacked in one cell: the cell keeps the
+   height of the longest, so what stands under it does not move */
+/* the járás page's cards fill their rows: three cards in a four-column grid
+   left a hole at the end of the row */
+#jaras .yard-grid, #varmegye .yard-grid { display: flex; flex-wrap: wrap; }
+:is(#jaras, #varmegye) .yard-grid > .yard-card { flex: 1 1 240px; min-width: 0; }
+:is(#jaras, #varmegye) .yard-grid > .yard-card--wide { flex: 2 1 492px; }
+/* a whole row of the settlements table leads to the settlement, not only
+   its name */
+.county-table tr.is-link { cursor: pointer; }
+.county-table tr.is-link:hover td { background: color-mix(in srgb, var(--ink) 7%, var(--bg-raised)); }
+.county-table tr.is-link:hover td:first-child a { color: var(--accent); }
+/* a járás's cross-section: the bands and the scatter side by side, so the
+   scatter is not a half-screen-tall chart of a handful of villages */
+.cross-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 28px; align-items: center; }
+.cross-split .bandbars { margin-bottom: 0; }
+@media (max-width: 900px) { .cross-split { grid-template-columns: 1fr; } }
+.steady { display: grid; }
+.steady > * { grid-area: 1 / 1; }
+.steady > .is-off { visibility: hidden; }
+/* on the járás page the explanations run the width of the page, the edges
+   of the cards and charts they explain, not a narrow column beside them */
+:is(#jaras, #veszelyeztetett, #varmegye, #fluktuacio, #rangsor) .section__explain { max-width: none; }
 @media (prefers-reduced-motion: reduce) { .segc__indicator { transition: none; } }
 
 /* the branch, in the top bar: icons only, the active one in the accent */
@@ -4071,6 +4304,23 @@ body:has(.tp-rail) section[id] { scroll-margin-top: calc(var(--topnav-h, 56px) +
 .balance__tekcard-arrow { margin-left: auto; color: var(--accent); font-size: 18px; transition: transform .15s; }
 .balance__tekcard:hover .balance__tekcard-arrow { transform: translateX(3px); }
 
+/* ---------- link to another page: a small button with a trailing arrow ----------
+   A lighter cousin of .balance__tekcard on the landing page: same border,
+   hover and sliding arrow, one line, no icon. Links inside a sentence stay
+   plain text links. */
+.pagelink {
+  display: flex; align-items: center; gap: 12px; width: fit-content; max-width: 100%;
+  margin-top: 12px; padding: 9px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg); color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.35;
+  text-decoration: none; transition: border-color .15s, background .15s;
+}
+.pagelink:hover, .pagelink:focus-visible {
+  border-color: var(--accent); background: var(--bg-panel); color: var(--ink); text-decoration: none;
+}
+.pagelink__text { min-width: 0; }
+.pagelink__arrow { flex: none; margin-left: auto; color: var(--accent); font-size: 16px; transition: transform .15s; }
+.pagelink:hover .pagelink__arrow, .pagelink:focus-visible .pagelink__arrow { transform: translateX(3px); }
+
 /* ---------- landing map: one grouped panel, the save button on the map ----------
    View (how it is drawn) · Filters (which districts) · Layers (what it is
    drawn over), each control with its own small caption. */
@@ -4248,3 +4498,164 @@ body:has(.tp-rail) section[id] { scroll-margin-top: calc(var(--topnav-h, 56px) +
 .source-status div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; }
 .source-status dt { font-weight: 600; }
 .source-status dd { margin: 0; color: var(--ink-dim); }
+
+/* járás and county pages: three heading levels that read as three.
+   A theme (Ellátás, Gazdaság és társadalom …) opens with a rule and a larger
+   heading; a part inside it (Milyen járás ez?, the cross-sections, the
+   ranking) is smaller; a chart's own title (.outcome__sub, 15px) is smaller
+   still. Both used to be 20px and looked like one level. The summary's
+   heading sits in .district-intro, not directly in the section, and keeps
+   its size. */
+:is(#jaras, #varmegye) > h2.section__subheading {
+  margin: 56px 0 8px; padding-top: 22px; border-top: 1px solid var(--line);
+  font-size: 26px; font-weight: 700; letter-spacing: 0;
+}
+:is(#jaras, #varmegye) .why__chain-title {
+  margin: 30px 0 6px; font: 600 17px/1.3 var(--font-display); font-stretch: 100%;
+}
+:is(#jaras, #varmegye) .guess--lead .why__chain-title { margin-top: 0; }
+/* the summary is a theme too: the same size, without the rule above it */
+:is(#jaras, #varmegye) .district-intro__text > .section__subheading { font-size: 26px; font-weight: 700; letter-spacing: 0; }
+
+/* "Milyen járás ez?": the figure and its chart on the left, what it means
+   listed on the right in reading size (the grade, the place, the threshold;
+   the groups of lagging settlements), as on the other cards of the page */
+.county-card.dev-card {
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+  gap: 14px 36px; align-items: stretch;
+}
+.dev-card__main { min-width: 0; }
+.dev-card__facts { margin: 0; display: grid; gap: 0; align-content: start; }
+.dev-card__facts > div {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: baseline;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.dev-card__facts > div:last-child { border-bottom: 0; }
+.dev-card__side { min-width: 0; display: flex; flex-direction: column; }
+/* the link to the method sits at the card's bottom, under the list */
+.dev-card__side > .pagelink { margin-top: auto; }
+.dev-card__side > .dev-card__facts { margin-bottom: 14px; }
+.dev-card__facts dt { color: var(--ink-dim); font-size: 14px; line-height: 1.4; }
+.dev-card__facts dt small { display: block; font-size: 12px; color: var(--ink-faint); }
+.dev-card__facts dd { margin: 0; text-align: right; font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dev-card__facts dd b { font: 700 18px var(--font-display); }
+.dev-card__note { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-faint); }
+@media (max-width: 760px) { .county-card.dev-card { grid-template-columns: 1fr; } }
+
+/* emergency points: two groups, each with its icon, name and count; a town
+   with more than one point shows once, with ×2 */
+.pointgrid__group + .pointgrid__group { margin-top: 12px; }
+.pointgrid__head {
+  display: flex; align-items: center; gap: 6px; margin: 0 0 6px;
+  font: 600 11px var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint);
+}
+.pointgrid__head svg { width: 15px; height: 15px; }
+.pointgrid__group--oncall .pointgrid__head svg { color: var(--warn); }
+.pointgrid__group--ambulance .pointgrid__head svg { color: var(--alert); }
+.pointgrid__head b { color: var(--ink); font-size: 13px; letter-spacing: 0; }
+.pointgrid__dot { padding: 4px 10px; cursor: pointer; }
+.pointgrid__times { font-size: 11px; font-weight: 700; color: currentColor; }
+.pointgrid__caption { min-height: 1.5em; }
+
+/* the forecast as a scale: today, the expected count and its 90% band */
+.dev-card__title { margin-top: 0; }
+.fc-range { margin: 16px 0 4px; }
+.fc-range__track { position: relative; height: 10px; border-radius: 5px; background: var(--bg-panel); }
+.fc-range__band { position: absolute; top: 0; bottom: 0; border-radius: 5px; background: color-mix(in srgb, var(--warn) 30%, transparent); }
+.fc-range__mark { position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%; transform: translate(-50%, -50%); }
+.fc-range__mark--now { background: var(--bg); border: 2px solid var(--ink); }
+.fc-range__mark--later { background: var(--warn); border: 2px solid var(--bg); }
+.fc-range__labels { position: relative; height: 22px; margin-top: 6px; font-size: 12.5px; color: var(--ink-dim); }
+.fc-range__labels span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.fc-range__labels span:first-child { transform: translateX(-100%); padding-right: 6px; }
+.fc-range__labels span:last-child { transform: none; padding-left: 6px; }
+.fc-range__labels b { color: var(--ink); }
+.fc-range__axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-faint); }
+
+.dev-card__facts dd small { font-size: 12.5px; color: var(--ink-faint); }
+
+/* a heading with its button at the right */
+.subhead-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.subhead-row .data-btn { margin-bottom: 8px; }
+/* above a long table: how many rows show, and the button for the rest */
+.table-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 8px; font-size: 12.5px; color: var(--ink-faint); }
+/* the forecast's two figures side by side, each with its own word */
+.fc-pair { display: flex; gap: 36px; align-items: flex-end; }
+.fc-pair__when { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+.fc-pair .is-later .stat__value { color: var(--warn); }
+.extra-block .subhead-row { align-items: flex-start; }
+.extra-block .subhead-row .data-btn { margin-bottom: 0; }
+/* on a phone the two pickers share the row, and the chart keeps a readable
+   size, scrolling inside its card rather than shrinking its labels away */
+.compare__selects select { min-width: 0; flex: 0 1 220px; }
+@media (max-width: 600px) {
+  .compare__selects select { flex: 1 1 0; }
+  .compare__grid { grid-template-columns: 1fr; }
+  .compare-chart { overflow-x: auto; }
+}
+/* "A megye a többi mellett": on a change of measure the rows glide to their
+   new place and the bars to their new length (the FLIP in CountyOutcomes) */
+.county-rank__moving li { position: relative; transition: transform .6s cubic-bezier(0.4, 0, 0.2, 1); }
+.county-rank__moving .county-rank__track i { transition: left .6s cubic-bezier(0.4, 0, 0.2, 1), width .6s cubic-bezier(0.4, 0, 0.2, 1); }
+.county-rank__moving li.is-on { z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .county-rank__moving li, .county-rank__moving .county-rank__track i { transition: none; }
+}
+/* the age block: room between the heading row with its button and the text */
+.extra-block .subhead-row { margin-bottom: 10px; }
+/* the turnover figures at the size of the page's other cards, not the
+   landing's hero numbers */
+#fluktuacio .county-stats .stat { padding: 16px 18px 14px; border-radius: var(--radius); border: 1px solid var(--line); }
+#fluktuacio .county-stats .stat__value { font-size: 28px; font-weight: 800; font-stretch: 100%; letter-spacing: 0; }
+
+/* bus card: the struck-through bus beside the count, every settlement a dot */
+.yard-card__iconvalue { display: flex; align-items: center; gap: 10px; }
+.yard-card__icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 10px;
+  background: color-mix(in srgb, var(--alert-soft) 14%, transparent); color: var(--alert-soft); }
+.yard-card__icon svg { width: 24px; height: 24px; }
+.sharedots--dense { gap: 2px; }
+.sharedots--dense i { width: 6px; height: 6px; border-radius: 1.5px; }
+
+/* the cross-section's bands beside its scatter: spread over the chart's
+   height rather than bunched in its middle */
+.cross-split { align-items: stretch; }
+.cross-split .bandbars { align-content: space-evenly; margin: 0; padding: 18px 0 40px; }
+.cross-split .bandbars__bar { height: 16px; }
+
+/* the forecast card: its parts spaced out, the scale at the bottom, level
+   with the method button on the right */
+.dev-card__main:has(.fc-range) { display: flex; flex-direction: column; gap: 12px; }
+.dev-card__main:has(.fc-range) .fc-pair { margin-top: 6px; }
+.dev-card__main:has(.fc-range) .fc-range { margin-top: auto; padding-top: 12px; }
+.fc-pair .stat__value { font-size: 34px; }
+/* a county's settlements: a little larger dots, filling the card beside the
+   tall emergency card */
+#varmegye .yard-card .sharedots:not(.sharedots--dense) { gap: 4px; margin-top: 14px; }
+#varmegye .yard-card .sharedots:not(.sharedots--dense) i { width: 10px; height: 10px; }
+
+/* "Ahová busz sem visz": the settlements as a small table with a bar for how
+   long their district has been empty, filling the card beside the age chart */
+.bus-list { display: grid; margin-top: 4px; font-size: 13.5px; }
+.bus-list__head, .bus-list__row {
+  display: grid; grid-template-columns: minmax(0, 0.85fr) 72px minmax(120px, 1.35fr); gap: 14px; align-items: center;
+}
+.bus-list__head {
+  padding: 0 0 6px; border-bottom: 1px solid var(--line-strong);
+  font: 600 10.5px var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint);
+}
+.bus-list__head span:nth-child(2) { text-align: right; }
+.bus-list__row { padding: 9px 0; border-bottom: 1px solid var(--line); }
+.bus-list__row:last-child { border-bottom: 0; }
+.bus-list__row a { color: var(--accent); text-decoration: none; }
+.bus-list__row a:hover { text-decoration: underline; }
+.bus-list__people { color: var(--ink-dim); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* fixed columns in every row, so equal durations draw equal bars */
+.bus-list__since { display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 8px; align-items: center; }
+.bus-list__since small { text-align: right; }
+.bus-list__since i { display: block; height: 6px; border-radius: 3px; background: var(--alert-soft); min-width: 3px; }
+.bus-list__since small { color: var(--ink-faint); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* few rows spread over the card's height (set by the age chart beside it),
+   many rows keep their own height */
+.cross-card:has(.bus-list) { display: flex; flex-direction: column; }
+.cross-card:has(.bus-list) .bus-list { flex: 1; grid-auto-rows: minmax(38px, 1fr); align-content: stretch; }
+.cross-card:has(.bus-list) .bus-list__head { align-self: end; }
