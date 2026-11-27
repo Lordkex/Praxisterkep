@@ -12,6 +12,18 @@ import { useCountyShapes } from '../lib/countyShapes';
 const W = 720;
 const H = 260;
 
+/** A name longer than 12 letters, split at the hyphen nearest its middle:
+ *  "Győr-Moson-" over "Sopron", "Komárom-" over "Esztergom". On one line the
+ *  two crossed each other, and the longest ran over the map's edge. */
+function lines(name: string): string[] {
+  if (name.length <= 12) return [name];
+  const cuts = [...name].map((c, i) => (c === '-' ? i : -1)).filter((i) => i > 0);
+  if (!cuts.length) return [name];
+  const mid = name.length / 2;
+  const at = cuts.reduce((best, i) => (Math.abs(i - mid) < Math.abs(best - mid) ? i : best));
+  return [name.slice(0, at + 1), name.slice(at + 1)];
+}
+
 export function CountyPicker({ onPick }: { onPick?: (county: string) => void }) {
   const county = useContextStore((s) => s.county);
   const setCounty = useContextStore((s) => s.setCounty);
@@ -47,12 +59,24 @@ export function CountyPicker({ onPick }: { onPick?: (county: string) => void }) 
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') pick(s.name); }}>
             <title>{s.name}</title>
             <path d={s.d} />
-            {/* Budapest is too small to carry its name inside itself */}
-            {s.name !== 'Budapest' && (
-              <text x={s.cx} y={s.cy} textAnchor="middle">{s.name}</text>
-            )}
           </g>
           ))}
+        {/* the names in a layer of their own, over every outline: drawn with
+            their county, a neighbour painted later covered the start of a
+            long name ("JÁSZ-" vanished under Pest). Budapest is too small to
+            carry its name inside itself. */}
+        <g aria-hidden="true">
+          {shapes.filter((s) => s.name !== 'Budapest').map((s) => (
+            <g key={s.name} className={`countypicker__county countypicker__label${
+              s.name === county ? ' is-on' : ''}${s.name === hover ? ' is-hover' : ''}`}>
+              <text x={s.cx} y={s.cy} textAnchor="middle">
+                {lines(s.name).map((part, i, all) => (
+                  <tspan key={part} x={s.cx} dy={i === 0 ? `${-(all.length - 1) * 0.55}em` : '1.1em'}>{part}</tspan>
+                ))}
+              </text>
+            </g>
+          ))}
+        </g>
       </svg>
     </div>
   );

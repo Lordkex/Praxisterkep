@@ -1569,6 +1569,8 @@ html[data-internal] .no-internal { display: none !important; }
   fill: var(--bg-panel); stroke: var(--line-strong); stroke-width: 0.8;
   cursor: pointer; transition: fill 120ms;
 }
+/* the name layer never takes a click: it goes to the outline under it */
+.countypicker__label { pointer-events: none; }
 .countypicker__county text {
   font-size: 8px; fill: var(--ink-faint); pointer-events: none;
   text-transform: uppercase; letter-spacing: 0.04em;
