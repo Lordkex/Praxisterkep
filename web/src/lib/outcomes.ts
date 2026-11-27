@@ -313,7 +313,7 @@ export const MEASURES: Record<string, MeasureMeta> = {
   both: { key: 'both', direction: 'higherWorse', color: RED, format: num(0) },
   allCause: { key: 'allCause', direction: 'higherWorse', color: RED, format: num(0) },
   income: { key: 'income', direction: 'higherBetter', color: AMBER, capitalWide: true,
-    format: (v) => `${num(2)(v / 1000)} ${locale === 'en' ? 'm Ft' : 'M Ft'}` },
+    format: (v) => `${num(2)(v / 1000)}\u00a0${locale === 'en' ? 'm\u00a0Ft' : 'M\u00a0Ft'}` },
   incomeIndex: { key: 'incomeIndex', direction: 'higherBetter', color: AMBER, mid: 100,
     capitalWide: true, format: (v) => `${num(0)(v)}%` },
   taxpayers: { key: 'taxpayers', direction: 'higherBetter', color: AMBER, capitalWide: true,
